@@ -1,51 +1,46 @@
-## 4 correctifs UX + fix wizard projet + email invitations
+## Objectif
 
-### 1. Bouton retour vers landing depuis /auth
-- Ajouter dans `src/routes/auth.tsx` un `<Link to="/">← Retour à l'accueil</Link>` en haut à gauche (à côté du `LanguageSwitcher`), visible sur `/auth` et `/auth?mode=signup`.
-- Styles cohérents avec la charte parchemin/encre (text-ink/70 hover:text-clay).
+Corriger le graphique 52 semaines manquant (barres invisibles) et aligner la landing sur le HTML de référence `agriplan-landing-2.html` — copie littérale, seule différence : la marque reste **VisionOne**.
 
-### 2. Flèche de retour sur tous les formulaires d'ajout
-Problème : le bouton "Retour" (variant ghost) est peu lisible sur fond parchemin.
+## Correctif 1 — Le graphique 52 semaines (cause du bug)
 
-Pages concernées :
-- `src/routes/_authenticated/app.projects.new.tsx` (wizard — étape 2)
-- `src/routes/_authenticated/app.projects.$id.prefaisabilite.$profilCode.tsx`
-- `src/routes/_authenticated/app.budgets.$id.tsx`
-- `src/routes/_authenticated/app.business-plans.$id.tsx`
-- `src/routes/_authenticated/settings.tsx` (formulaires invitation / création org)
+Dans `WeeksTrame.tsx` les barres ont `scale-y-0` + `animation: bar-grow …`, mais aucun `@keyframes bar-grow` n'existe dans `src/styles.css`. Résultat : les barres restent écrasées à zéro (exactement ce que montre la capture avec la flèche rouge).
 
-Remplacer les `Button variant="ghost"` "Retour" par un composant réutilisable `<BackButton />` : `<ArrowLeft />` + label, styles `text-ink border border-line hover:bg-parch-2` (bien contrasté). Créer `src/components/agriplan/BackButton.tsx` qui accepte `to` OU `onClick`.
-
-### 3. Correction erreur création projet (voir capture "[object Object]")
-Cause identifiée dans `app.projects.new.tsx > submitStep1` :
-- `payload` n'inclut PAS `created_by` → colonne NOT NULL + politique RLS `WITH CHECK (created_by = auth.uid())` → 400/403.
-- `status: "brouillon"` : la colonne accepte tout texte, mais le reste du code utilise `"draft"`. Aligner sur `"draft"`.
-- `toast.error(String(e))` affiche `[object Object]` car les erreurs Supabase sont des `PostgrestError` (objets simples). Extraire `.message` proprement.
-
-Correctifs :
-```ts
-const { data: { user } } = await supabase.auth.getUser();
-const payload = { ...existing, created_by: user!.id, status: "draft" };
-// et:
-const msg = e?.message ?? e?.error_description ?? JSON.stringify(e);
-toast.error(msg);
+**Fix :** ajouter dans `src/styles.css` :
+```css
+@keyframes bar-grow { to { transform: scaleY(1); } }
 ```
-Appliquer le même utilitaire `formatError(e)` (nouveau `src/lib/format-error.ts`) partout où on toast des erreurs Supabase (auth, invite, budgets, BP, référentiel).
+Vérifier aussi que `.grain-overlay`, la couleur `bg-ink-2`, `text-clay`, `text-ochre`, `border-ink` sont bien exposées dans le thème Tailwind v4 (`@theme` dans `styles.css`) — sinon les barres de pic (clay) et cash (ochre) ne s'affichent pas non plus.
 
-### 4. Activation de l'envoi d'invitation par email
-Actuellement `settings.tsx` insère une ligne dans `invitations` et affiche le lien à copier manuellement. Objectif : envoyer réellement un email au destinataire avec le lien `/invite/:token`.
+## Correctif 2 — Alignement au HTML de référence
 
-Approche :
-- Créer une server function `sendInvitationEmail` dans `src/lib/invitations.functions.ts` (`createServerFn` + `requireSupabaseAuth`).
-- Vérifier que l'appelant est owner/admin de l'org.
-- Utiliser l'API Resend (secret `RESEND_API_KEY` — sera demandé via `add_secret` si absent) pour envoyer un email HTML minimaliste (charte Vision One) contenant : nom de l'org, rôle, lien absolu `${SITE_URL}/invite/${token}`, date d'expiration.
-- Loguer dans `audit_log` (action `invitation.email_sent`).
-- Appeler la fonction depuis `settings.tsx` juste après l'insert `invitations`; toast succès/erreur; garder l'affichage du lien en fallback.
-- Bouton "Renvoyer l'email" sur les invitations en attente.
+Repasser `src/routes/index.tsx` section par section face à `agriplan-landing-2.html` et corriger tous les écarts de structure/typo/copy pour obtenir une copie littérale :
 
-i18n : ajouter les clés `invite.emailSent`, `invite.emailFailed`, `invite.resend` dans FR/EN/AR.
+- Nav : liens `Méthode / Preuve / Institutions / Tarifs / Se connecter` + CTA `Pré-faisabilité gratuite` (déjà OK, vérifier l'ordre et le style).
+- Hero : eyebrow, H1 avec `<em>vérifier</em>` en italique clay, lead, deux CTA (clay + ghost), note.
+- Widget "Mode inversé" (`InverseWidget`) : header ink/parch, capital input + MAD, 4 chips zones, 3 résultats animés, footer parchemin — vérifier libellés exacts.
+- **Trame semaines** : titre + légende identiques, 52 barres avec pics S18–S22 (cash ocre) et S29–S34 (peak clay) — animation réparée par le correctif 1.
+- Manifeste (bloc sombre) : eyebrow ocre "La frontière IA", grande phrase serif avec `ne chiffre jamais` souligné ocre, paragraphe secondaire.
+- Sections 01→04 (Méthode, Référentiel/Moat, Preuve, Segments) : titres, sous-titres, cartes, listes — texte exact du HTML.
+- Contre-expertise (fond ink) : tableau écarts, barre de risque.
+- Tarifs : 3 cartes (Découverte / Pré-faisa / Pro), carte milieu `star`, badge, note italique serif.
+- Escalier institutions (3 marches, la 3ᵉ ink).
+- CTA final centré + footer.
 
-### Détails techniques
-- Aucune migration SQL nécessaire.
-- Ajout du secret `RESEND_API_KEY` requis avant d'activer l'email (demandé à l'utilisateur si non présent).
-- Le fix wizard (#4) est prioritaire — indépendant des autres correctifs.
+Seul changement autorisé vs HTML : `AGRI<span>PLAN</span>` → `Vision<span>One</span>` dans le wordmark (nav + footer + title/meta). Tout le reste de la copy reste tel quel (y compris "AGRIPLAN" dans le body devient "Vision One").
+
+## Vérification
+
+- Ouvrir `/` dans le preview, prendre une capture Playwright de la trame 52 semaines : les barres doivent former la courbe (préparation basse → plantation ocre → pic clay → décrue).
+- Vérifier que la page ne contient plus "AGRIPLAN" (`rg -i agriplan src/routes/index.tsx` → 0 résultat).
+- Contrôler visuellement les 11 sections vs le HTML de référence.
+
+## Portée
+
+Fichiers touchés :
+- `src/styles.css` (keyframe + tokens manquants éventuels)
+- `src/routes/index.tsx` (alignement copie)
+- `src/components/landing/WeeksTrame.tsx` (si besoin, mais logique OK une fois le keyframe ajouté)
+- `src/components/landing/InverseWidget.tsx` / `PdfMock.tsx` (seulement si la copie diverge du HTML)
+
+Aucun changement backend, aucun changement business logic.
