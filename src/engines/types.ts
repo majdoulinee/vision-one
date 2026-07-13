@@ -42,6 +42,8 @@ export interface Profil {
   charges: Record<Poste, number[]>;
   production: number[]; // parts hebdo, somme ≈ 1
   provenance?: unknown;
+  /** Source of weekly arrays: "real" (imported), "modeled" (generated from curves+totals), "mixed" (partial). UI-only, not read by formulas. */
+  norms_source?: "real" | "modeled" | "mixed";
 }
 
 export interface Mapping {
