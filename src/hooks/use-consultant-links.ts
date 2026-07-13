@@ -12,7 +12,7 @@ export function useConsultantLinksForClient() {
         .from("consultant_links")
         .select("*, consultant_org:organizations!consultant_links_consultant_org_id_fkey(name)")
         .eq("client_org_id", currentId!)
-        .eq("statut", "actif");
+        .order("accorde_le", { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
