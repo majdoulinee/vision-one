@@ -1,0 +1,77 @@
+{
+  "app": {
+    "name": "AGRIPLAN",
+    "tagline": "Planification financière agricole vérifiable"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "projects": "Projets",
+    "budgets": "Budgets",
+    "businessPlans": "Business Plans",
+    "settings": "Paramètres",
+    "signOut": "Se déconnecter"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "email": "Email",
+    "password": "Mot de passe",
+    "fullName": "Nom complet",
+    "continueWithGoogle": "Continuer avec Google",
+    "noAccount": "Pas encore de compte ?",
+    "haveAccount": "Déjà un compte ?",
+    "checkEmail": "Vérifiez votre email pour confirmer votre inscription.",
+    "orgSetup": "Créez votre organisation",
+    "orgName": "Nom de l'organisation",
+    "orgType": "Type d'organisation",
+    "country": "Pays",
+    "create": "Créer",
+    "signingIn": "Connexion...",
+    "signingUp": "Inscription..."
+  },
+  "orgType": {
+    "ferme": "Exploitation agricole",
+    "cooperative": "Coopérative",
+    "banque": "Banque / IMF",
+    "assureur": "Assureur",
+    "organisme_public": "Institution publique",
+    "groupe": "Groupe / Bureau conseil",
+    "autre": "Autre"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "organization": "Organisation",
+    "members": "Membres",
+    "invitations": "Invitations",
+    "invite": "Inviter",
+    "role": "Rôle",
+    "email": "Email",
+    "sendInvite": "Envoyer l'invitation",
+    "pending": "En attente",
+    "revoke": "Révoquer"
+  },
+  "role": {
+    "owner": "Propriétaire",
+    "admin": "Administrateur",
+    "editor": "Éditeur",
+    "viewer": "Lecteur"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "welcome": "Bienvenue",
+    "language": "Langue"
+  },
+  "landing": {
+    "hero": "Du budget de campagne au Business Plan bancable — vérifiable.",
+    "sub": "AGRIPLAN structure la planification financière agricole avec des calculs déterministes et un PDF vérifiable via QR code.",
+    "cta": "Commencer",
+    "signIn": "Se connecter"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "empty": "Aucun projet pour l'instant. Créez votre premier projet pour commencer."
+  }
+}

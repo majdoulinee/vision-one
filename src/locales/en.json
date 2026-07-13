@@ -1,0 +1,69 @@
+{
+  "app": { "name": "AGRIPLAN", "tagline": "Verifiable agricultural financial planning" },
+  "nav": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "budgets": "Budgets",
+    "businessPlans": "Business Plans",
+    "settings": "Settings",
+    "signOut": "Sign out"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full name",
+    "continueWithGoogle": "Continue with Google",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?",
+    "checkEmail": "Check your email to confirm your sign-up.",
+    "orgSetup": "Create your organization",
+    "orgName": "Organization name",
+    "orgType": "Organization type",
+    "country": "Country",
+    "create": "Create",
+    "signingIn": "Signing in...",
+    "signingUp": "Signing up..."
+  },
+  "orgType": {
+    "ferme": "Farm",
+    "cooperative": "Cooperative",
+    "banque": "Bank / MFI",
+    "assureur": "Insurer",
+    "organisme_public": "Public institution",
+    "groupe": "Group / Consulting",
+    "autre": "Other"
+  },
+  "settings": {
+    "title": "Settings",
+    "organization": "Organization",
+    "members": "Members",
+    "invitations": "Invitations",
+    "invite": "Invite",
+    "role": "Role",
+    "email": "Email",
+    "sendInvite": "Send invitation",
+    "pending": "Pending",
+    "revoke": "Revoke"
+  },
+  "role": { "owner": "Owner", "admin": "Admin", "editor": "Editor", "viewer": "Viewer" },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Error",
+    "welcome": "Welcome",
+    "language": "Language"
+  },
+  "landing": {
+    "hero": "From seasonal budget to bankable Business Plan — verifiable.",
+    "sub": "AGRIPLAN structures agricultural financial planning with deterministic calculations and a QR-verifiable PDF.",
+    "cta": "Get started",
+    "signIn": "Sign in"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "empty": "No project yet. Create your first project to get started."
+  }
+}
