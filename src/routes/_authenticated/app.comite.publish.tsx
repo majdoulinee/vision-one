@@ -5,6 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { ComiteShell } from "@/components/agriplan/ComiteShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { LotStatusBadge } from "@/components/agriplan/StatusBadge";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -98,41 +102,41 @@ function View() {
           <CardTitle>Publication de versions</CardTitle>
           <CardDescription>Un lot ne peut être publié que si toutes ses propositions sont « approuvée admin ». Une version publiée est immuable.</CardDescription>
         </CardHeader>
-        <CardContent className="p-0 overflow-x-auto">
-          <table className="w-full text-sm min-w-[700px]">
-            <thead className="bg-muted/50 text-xs uppercase font-mono tracking-wider">
-              <tr>
-                <th className="p-2 text-start">Version</th>
-                <th className="p-2 text-start">Statut</th>
-                <th className="p-2 text-start">Propositions</th>
-                <th className="p-2 text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
+        <CardContent className="p-0">
+          <Table className="min-w-[700px]">
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead className="mono-eyebrow">Version</TableHead>
+                <TableHead className="mono-eyebrow">Statut</TableHead>
+                <TableHead className="mono-eyebrow">Propositions</TableHead>
+                <TableHead className="mono-eyebrow text-end">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {(lots.data ?? []).map((l: any) => {
                 const s = stats.data?.[l.id]?.statuts ?? {};
                 const tot = (Object.values(s) as number[]).reduce((a, b) => a + b, 0);
                 const app = s["approuvee_admin"] ?? 0;
                 const canPublish = tot > 0 && app === tot && l.statut !== "publie";
                 return (
-                  <tr key={l.id}>
-                    <td className="p-2 font-mono text-xs font-semibold">v{l.version_cible}</td>
-                    <td className="p-2 text-xs">{l.statut}</td>
-                    <td className="p-2 text-xs">
+                  <TableRow key={l.id}>
+                    <TableCell className="font-mono text-xs font-semibold">v{l.version_cible}</TableCell>
+                    <TableCell><LotStatusBadge statut={l.statut} /></TableCell>
+                    <TableCell className="text-xs">
                       <span className="tabular-nums">{app}/{tot}</span> approuvées
                       {tot > 0 && Object.entries(s).map(([k, n]) => k !== "approuvee_admin" && <span key={k} className="ml-2 text-muted-foreground">· {k}: {n as number}</span>)}
-                    </td>
-                    <td className="p-2 text-end">
-                      <Button size="sm" disabled={!canPublish} onClick={() => openPublish(l)}>Publier</Button>
-                    </td>
-                  </tr>
+                    </TableCell>
+                    <TableCell className="text-end">
+                      <Button size="sm" variant="ink" disabled={!canPublish} onClick={() => openPublish(l)}>Publier</Button>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
               {(lots.data ?? []).length === 0 && (
-                <tr><td colSpan={4} className="p-6 text-center text-sm text-muted-foreground">Aucun lot.</td></tr>
+                <TableRow className="hover:bg-transparent"><TableCell colSpan={4} className="p-6 text-center text-sm text-muted-foreground">Aucun lot.</TableCell></TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 
@@ -158,11 +162,8 @@ function View() {
             </span>
             <Button
               size="sm"
-              className={`ml-auto rounded-sm ${
-                canPublishCurrent
-                  ? "bg-ochre text-ink hover:bg-ochre/90"
-                  : "bg-parch/15 text-parch/50 hover:bg-parch/15"
-              }`}
+              variant={canPublishCurrent ? "ochre" : "ink"}
+              className="ml-auto"
               disabled={!canPublishCurrent}
               onClick={() => openPublish(currentLot)}
             >
@@ -176,29 +177,29 @@ function View() {
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>Publier v{publish?.version} — irréversible</DialogTitle></DialogHeader>
           <div className="grid grid-cols-3 gap-2 text-center text-sm">
-            <div className="rounded border p-2">
+            <div className="rounded-sm border border-line p-2">
               <div className="text-2xl font-semibold tabular-nums">{publish?.nbNormes ?? 0}</div>
-              <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">Normes modifiées</div>
+              <div className="mono-eyebrow text-mute">Normes modifiées</div>
             </div>
-            <div className="rounded border p-2">
+            <div className="rounded-sm border border-line p-2">
               <div className="text-2xl font-semibold tabular-nums">{publish?.nbProfils ?? 0}</div>
-              <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">Profils touchés</div>
+              <div className="mono-eyebrow text-mute">Profils touchés</div>
             </div>
-            <div className="rounded border p-2">
+            <div className="rounded-sm border border-line p-2">
               <div className="text-2xl font-semibold tabular-nums">{impact?.projets ?? "…"}</div>
-              <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">Projets clients</div>
+              <div className="mono-eyebrow text-mute">Projets clients</div>
             </div>
           </div>
           <div className="rounded-sm border border-ochre bg-ochre/15 text-ink p-3 text-xs">
             <strong>Cette action est irréversible.</strong> La version sera figée à jamais. Toute correction exigera une nouvelle version. Les documents déjà générés restent vérifiables sur leur version d'origine.
           </div>
           <div>
-            <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Note de version (visible par les clients, min. 10 car.)</label>
+            <Label className="mono-eyebrow text-mute">Note de version (visible par les clients, min. 10 car.)</Label>
             <Textarea rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ex. Révision des besoins hydriques Avocat Zone Souss suite à campagne 2025-2026." />
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setPublish(null)}>Annuler</Button>
-            <Button onClick={doPublish} disabled={busy || note.trim().length < 10} className="bg-clay text-parch hover:bg-clay/90 rounded-sm">
+            <Button variant="clay" onClick={doPublish} disabled={busy || note.trim().length < 10}>
               Publier et figer
             </Button>
           </DialogFooter>

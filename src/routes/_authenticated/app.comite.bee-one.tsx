@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { ComiteShell } from "@/components/agriplan/ComiteShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { IngestionStatusBadge } from "@/components/agriplan/StatusBadge";
 import { ReasonDialog } from "@/components/agriplan/ReasonDialog";
 import { toast } from "sonner";
 import { formatError } from "@/lib/format-error";
@@ -94,8 +96,8 @@ function View() {
                   }`}
                 >
                   {blocked && (
-                    <div className="absolute top-0 right-0 mono-eyebrow bg-clay text-parch px-2 py-0.5 rounded-bl-sm">
-                      Bloqué · sous seuil k
+                    <div className="absolute top-0 right-0">
+                      <Badge variant="clay" className="rounded-none rounded-bl-sm">Bloqué · sous seuil k</Badge>
                     </div>
                   )}
                   <div className="flex items-start justify-between gap-2">
@@ -127,18 +129,18 @@ function View() {
                     Valeur agrégée : <code className="bg-muted px-1 rounded text-[10px]">{JSON.stringify(r.valeur_agrege)}</code>
                   </div>
                   <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-line">
-                    <span className="mono-eyebrow text-mute rounded-sm border border-line px-1.5 py-0.5">{r.statut}</span>
+                    <IngestionStatusBadge statut={r.statut} />
                     {r.statut === "a_examiner" && (
                       <div className="flex gap-1">
-                        <Button size="sm" disabled={blocked || !!accepting} onClick={() => acceptToProposition(r)}>
+                        <Button size="sm" variant="ink" disabled={blocked || !!accepting} onClick={() => acceptToProposition(r)}>
                           {accepting === r.id ? "…" : "Accepter → brouillon"}
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => setDialog({ id: r.id, decision: "ecartee" })}>Écarter</Button>
+                        <Button size="sm" variant="outline-ink" onClick={() => setDialog({ id: r.id, decision: "ecartee" })}>Écarter</Button>
                         <Button size="sm" variant="ghost" onClick={() => setDialog({ id: r.id, decision: "signalee" })}>Signaler</Button>
                       </div>
                     )}
                     {r.statut === "bloquee_k" && (
-                      <Button size="sm" variant="outline" onClick={() => setDialog({ id: r.id, decision: "ecartee" })}>Écarter (motif)</Button>
+                      <Button size="sm" variant="outline-ink" onClick={() => setDialog({ id: r.id, decision: "ecartee" })}>Écarter (motif)</Button>
                     )}
                   </div>
                   {r.motif && <div className="text-xs italic text-muted-foreground">Motif : {r.motif}</div>}

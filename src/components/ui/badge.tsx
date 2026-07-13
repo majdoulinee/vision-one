@@ -14,6 +14,12 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
         outline: "text-foreground",
+        ink: "mono-eyebrow rounded-sm border-transparent bg-ink text-parch px-1.5 py-0.5",
+        ochre: "mono-eyebrow rounded-sm border-transparent bg-ochre text-ink px-1.5 py-0.5",
+        clay: "mono-eyebrow rounded-sm border-transparent bg-clay text-parch px-1.5 py-0.5",
+        sky: "mono-eyebrow rounded-sm border-transparent bg-sky text-parch px-1.5 py-0.5",
+        line: "mono-eyebrow rounded-sm border-line bg-transparent text-mute px-1.5 py-0.5",
+        "ochre-soft": "mono-eyebrow rounded-sm border-transparent bg-ochre/15 text-parch px-1.5 py-0.5",
       },
     },
     defaultVariants: {

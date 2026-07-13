@@ -1,6 +1,7 @@
 import { Link, useLocation, Navigate } from "@tanstack/react-router";
 import { usePlatformRole } from "@/hooks/use-platform-role";
 import { Landmark } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const TABS = [
   { to: "/app/comite/propositions", label: "Propositions" },
@@ -32,7 +33,7 @@ export function ComiteShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-2 font-serif text-base">
             <Landmark className="h-4 w-4 text-ochre" />
             <span className="tracking-tight">Vision One</span>
-            <span className="mono-eyebrow bg-ochre text-ink rounded-sm px-2 py-0.5">Comité d'experts</span>
+            <Badge variant="ochre">Comité d'experts</Badge>
           </div>
           <nav className="flex flex-wrap items-center gap-1 ml-auto">
             {TABS.map((t) => {
@@ -56,7 +57,7 @@ export function ComiteShell({ children }: { children: React.ReactNode }) {
         <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-t border-parch/10 bg-parch/5">
           {PIPELINE.map((s, i) => (
             <span key={s} className="flex items-center gap-2">
-              <span className="mono-eyebrow bg-ochre/15 text-parch rounded-sm px-1.5 py-0.5">{s}</span>
+              <Badge variant="ochre-soft">{s}</Badge>
               {i < PIPELINE.length - 1 && <span className="text-parch/40">→</span>}
             </span>
           ))}
