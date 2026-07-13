@@ -87,9 +87,14 @@ function View() {
               const blocked = r.statut === "bloquee_k" || r.n_echantillon < r.seuil_k_anonymat;
               const ratio = Math.min(1, r.n_echantillon / Math.max(r.seuil_k_anonymat, 1));
               return (
-                <div key={r.id} className="relative rounded-md border p-4 space-y-3" style={blocked ? { borderColor: "#C0552F", background: "rgba(192,85,47,0.05)" } : undefined}>
+                <div
+                  key={r.id}
+                  className={`relative rounded-sm border p-4 space-y-3 bg-card ${
+                    blocked ? "border-clay bg-clay/5" : "border-line"
+                  }`}
+                >
                   {blocked && (
-                    <div className="absolute top-0 right-0 text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-bl" style={{ background: "#C0552F", color: "#F3EFE3" }}>
+                    <div className="absolute top-0 right-0 mono-eyebrow bg-clay text-parch px-2 py-0.5 rounded-bl-sm">
                       Bloqué · sous seuil k
                     </div>
                   )}
@@ -106,11 +111,14 @@ function View() {
                   </div>
                   {/* Jauge k-anonymat */}
                   <div className="space-y-1">
-                    <div className="relative h-2 rounded-full overflow-hidden" style={{ background: "rgba(0,0,0,0.08)" }}>
-                      <div className="absolute inset-y-0 left-0" style={{ width: `${ratio * 100}%`, background: blocked ? "#C0552F" : "#4E8C5F" }} />
-                      <div className="absolute inset-y-0" style={{ left: "100%", transform: "translateX(-1px)", width: 2, background: "#12211A" }} />
+                    <div className="relative h-2 rounded-sm overflow-hidden bg-ink/10">
+                      <div
+                        className={`absolute inset-y-0 left-0 ${blocked ? "bg-clay" : "bg-ink-2"}`}
+                        style={{ width: `${ratio * 100}%` }}
+                      />
+                      <div className="absolute inset-y-0 w-0.5 bg-ink" style={{ left: "100%", transform: "translateX(-1px)" }} />
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider" style={{ color: blocked ? "#C0552F" : "#4E8C5F" }}>
+                    <div className={`flex items-center gap-1 mono-eyebrow ${blocked ? "text-clay" : "text-ink-2"}`}>
                       {blocked ? <ShieldAlert className="h-3 w-3" /> : <ShieldCheck className="h-3 w-3" />}
                       {blocked ? "publication interdite — données non exploitables en l'état" : "conforme au seuil k-anonymat"}
                     </div>
@@ -118,8 +126,8 @@ function View() {
                   <div className="text-xs">
                     Valeur agrégée : <code className="bg-muted px-1 rounded text-[10px]">{JSON.stringify(r.valeur_agrege)}</code>
                   </div>
-                  <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t">
-                    <span className="text-[10px] font-mono uppercase tracking-wider rounded border px-1.5 py-0.5">{r.statut}</span>
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-line">
+                    <span className="mono-eyebrow text-mute rounded-sm border border-line px-1.5 py-0.5">{r.statut}</span>
                     {r.statut === "a_examiner" && (
                       <div className="flex gap-1">
                         <Button size="sm" disabled={blocked || !!accepting} onClick={() => acceptToProposition(r)}>
