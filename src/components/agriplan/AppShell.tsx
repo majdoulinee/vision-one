@@ -1,17 +1,19 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Sprout, LayoutDashboard, Settings, LogOut } from "lucide-react";
+import { Sprout, LayoutDashboard, Settings, LogOut, PlusCircle, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { OrgSwitcher } from "./OrgSwitcher";
+import { usePlatformRole } from "@/hooks/use-platform-role";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { data: platformRole } = usePlatformRole();
 
   async function signOut() {
     await qc.cancelQueries();
@@ -20,10 +22,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     navigate({ to: "/auth", replace: true });
   }
 
-  const nav = [
+  const nav: Array<{ to: string; label: string; Icon: typeof LayoutDashboard }> = [
     { to: "/dashboard", label: t("nav.dashboard"), Icon: LayoutDashboard },
+    { to: "/app/projects/new", label: t("nav2.newProject"), Icon: PlusCircle },
     { to: "/settings", label: t("nav.settings"), Icon: Settings },
   ];
+  if (platformRole === "admin" || platformRole === "comite") {
+    nav.push({ to: "/app/referentiel", label: t("nav2.referentiel"), Icon: Database });
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -34,11 +40,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {nav.map(({ to, label, Icon }) => {
-            const active = location.pathname === to;
+            const active = location.pathname === to || location.pathname.startsWith(to + "/");
             return (
               <Link
                 key={to}
-                to={to}
+                to={to as any}
                 className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
                   active
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
