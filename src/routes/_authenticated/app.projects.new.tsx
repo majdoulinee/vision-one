@@ -349,6 +349,7 @@ function RecoCard({
             <Link
               to="/app/projects/$id/prefaisabilite/$profilCode"
               params={{ id: projectId, profilCode: p.code }}
+              search={{ generate: 0 }}
             >
               {t("wizard.seePrefaisa")}
             </Link>

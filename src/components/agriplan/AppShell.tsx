@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Settings, LogOut, PlusCircle, Database } from "lucide-react";
+import { LayoutDashboard, Settings, LogOut, PlusCircle, Database, Coins, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,6 +8,7 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 import { OrgSwitcher } from "./OrgSwitcher";
 import { usePlatformRole } from "@/hooks/use-platform-role";
 import { BrandLogo } from "./BrandLogo";
+import { CreditBadge } from "./CreditBadge";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
@@ -26,10 +27,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const nav: Array<{ to: string; label: string; Icon: typeof LayoutDashboard }> = [
     { to: "/dashboard", label: t("nav.dashboard"), Icon: LayoutDashboard },
     { to: "/app/projects/new", label: t("nav2.newProject"), Icon: PlusCircle },
+    { to: "/app/credits", label: t("nav2.credits") || "Mes crédits", Icon: Coins },
     { to: "/settings", label: t("nav.settings"), Icon: Settings },
   ];
   if (platformRole === "admin" || platformRole === "comite") {
     nav.push({ to: "/app/referentiel", label: t("nav2.referentiel"), Icon: Database });
+  }
+  if (platformRole === "admin") {
+    nav.push({ to: "/app/admin/credits", label: t("nav2.adminCredits") || "Admin crédits", Icon: ShieldCheck });
   }
 
   return (
@@ -72,6 +77,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <header className="flex h-16 items-center justify-between border-b bg-card px-4 md:px-6">
           <OrgSwitcher />
           <div className="flex items-center gap-2">
+            <CreditBadge />
             <LanguageSwitcher />
           </div>
         </header>

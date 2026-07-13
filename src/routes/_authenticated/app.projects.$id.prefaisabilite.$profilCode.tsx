@@ -60,6 +60,20 @@ function Prefaisabilite() {
     },
   });
 
+  const pricing = useQuery({
+    queryKey: ["credit_pricing"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("credit_pricing").select("action,cout,actif");
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+
+  const bpCost = pricing.data?.find((p) => p.action === "bp_complet")?.cout ?? 3;
+  const budgetCost = pricing.data?.find((p) => p.action === "budget_campagne")?.cout ?? 1;
+  const totalCost = bpCost + budgetCost;
+
   const profil = useMemo(
     () => ref.data?.profils.find((p) => p.code === profilCode),
     [ref.data, profilCode],
@@ -85,26 +99,33 @@ function Prefaisabilite() {
 
   if (!profil || !project.data || !current) return <div>{t("common.loading")}</div>;
 
-  const insufficient = (wallet.data?.credits ?? 0) < 1;
+  const insufficient = (wallet.data?.credits ?? 0) < totalCost;
 
   async function doGenerate() {
     if (!profil || !current || !project.data) return;
     setBusy(true);
+    let bpLedgerId: string | null = null;
+    let budgetLedgerId: string | null = null;
     try {
-      // Atomic decrement: update only when credits>0
-      const { data: dec, error: decErr } = await supabase
-        .from("wallets")
-        .update({ credits: (wallet.data!.credits ?? 0) - 1 })
-        .eq("org_id", current.org_id)
-        .gt("credits", 0)
-        .select("credits")
-        .maybeSingle();
-      if (decErr) throw decErr;
-      if (!dec) {
-        toast.error(t("wallet.insufficient"));
-        setDlgOpen(true);
-        return;
+      // Reserve credits BEFORE generation via atomic RPC (writes to credit_ledger)
+      const { data: bpEntry, error: bpErr } = await supabase.rpc("consume_credits", {
+        p_org_id: current.org_id, p_action: "bp_complet",
+      });
+      if (bpErr) {
+        if (String(bpErr.message).includes("insufficient_credits")) {
+          toast.error(t("wallet.insufficient"));
+          setDlgOpen(true);
+          return;
+        }
+        throw bpErr;
       }
+      bpLedgerId = (bpEntry as string | null) ?? null;
+      const { data: budgetEntry, error: bErr } = await supabase.rpc("consume_credits", {
+        p_org_id: current.org_id, p_action: "budget_campagne",
+      });
+      if (bErr) throw bErr;
+      budgetLedgerId = (budgetEntry as string | null) ?? null;
+
       const horizon = Number(projData.horizon ?? 7);
       const refVersion = version.data?.version ?? "2026.2";
       const budgetDoc = computeBudget({
@@ -164,6 +185,13 @@ function Prefaisabilite() {
       toast.success("Budget & BP");
       nav({ to: "/app/budgets/$id", params: { id: bIns.data.id } });
     } catch (e) {
+      // Refund any reserved credits on failure
+      if (bpLedgerId) {
+        await supabase.rpc("refund_credits", { p_ledger_id: bpLedgerId, p_motif: "Échec génération BP" });
+      }
+      if (budgetLedgerId) {
+        await supabase.rpc("refund_credits", { p_ledger_id: budgetLedgerId, p_motif: "Échec génération budget" });
+      }
       toast.error(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
@@ -171,17 +199,7 @@ function Prefaisabilite() {
     }
   }
 
-  async function recharge() {
-    if (!current) return;
-    if (current.role !== "owner") return;
-    const { error } = await supabase
-      .from("wallets")
-      .update({ credits: (wallet.data?.credits ?? 0) + 5 })
-      .eq("org_id", current.org_id);
-    if (error) return toast.error(error.message);
-    toast.success(t("wallet.recharged"));
-    qc.invalidateQueries({ queryKey: ["wallet", current.org_id] });
-  }
+  // recharge removed — users now request credits via /app/credits
 
   return (
     <div className="space-y-6">
@@ -241,15 +259,15 @@ function Prefaisabilite() {
       <Dialog open={dlgOpen} onOpenChange={setDlgOpen}>
         <DialogContent>
           {insufficient ? (
-            <>
+          <>
               <DialogHeader>
                 <DialogTitle>{t("wallet.insufficient")}</DialogTitle>
                 <DialogDescription>{t("wallet.insufficientDesc")}</DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                {current.role === "owner" && (
-                  <Button onClick={recharge}>{t("wallet.recharge")}</Button>
-                )}
+                <Button asChild>
+                  <Link to="/app/credits">Demander des crédits</Link>
+                </Button>
               </DialogFooter>
             </>
           ) : (
@@ -257,7 +275,7 @@ function Prefaisabilite() {
               <DialogHeader>
                 <DialogTitle>{t("prefa.generate")}</DialogTitle>
                 <DialogDescription>
-                  {t("wallet.credits")}: {wallet.data?.credits ?? 0} → {(wallet.data?.credits ?? 0) - 1}
+                  Consommera <strong>{totalCost} crédit{totalCost > 1 ? "s" : ""}</strong> · Solde&nbsp;{wallet.data?.credits ?? 0} → {(wallet.data?.credits ?? 0) - totalCost}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
