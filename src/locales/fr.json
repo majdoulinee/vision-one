@@ -285,7 +285,12 @@
     "rowsCount": "{{n}} ligne(s) chargée(s)",
     "validationOk": "Aucune erreur de validation",
     "line": "Ligne",
-    "column": "Colonne"
+    "column": "Colonne",
+    "sharedVersionHint": "Saisissez une nouvelle version puis importez chaque type de donnée.",
+    "importDisabled": "Corrigez les erreurs avant d'importer.",
+    "missingVersion": "Renseignez la version.",
+    "noFile": "Chargez un fichier.",
+    "importsCount": "{{n}} import(s) sur cette version"
   },
   "misc": {
     "perennial": "Pérenne · {{n}} ans avant production",

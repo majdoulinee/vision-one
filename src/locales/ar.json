@@ -152,7 +152,14 @@
     "dropFile": "انقر لتحميل ملف .xlsx",
     "preview": "معاينة", "errors": "أخطاء التحقق", "import": "استيراد",
     "versionLabel": "إصدار مرجعية جديد", "versionPlaceholder": "مثال 2026.3",
-    "importSuccess": "نجح الاستيراد: {{n}} سطر", "importFailed": "فشل الاستيراد", "denied": "الوصول مرفوض"
+    "importSuccess": "نجح الاستيراد: {{n}} سطر", "importFailed": "فشل الاستيراد", "denied": "الوصول مرفوض",
+    "expectedCols": "الأعمدة المتوقعة", "loadFile": "تحميل ملف", "rowsCount": "{{n}} سطر محمّل",
+    "validationOk": "لا توجد أخطاء", "line": "السطر", "column": "العمود",
+    "sharedVersionHint": "أدخل إصدارًا جديدًا ثم استورد كل نوع من البيانات.",
+    "importDisabled": "صحّح الأخطاء قبل الاستيراد.",
+    "missingVersion": "أدخل الإصدار.", "noFile": "حمّل ملفًا.",
+    "importsCount": "{{n}} استيراد على هذا الإصدار",
+    "askVersion": "الإصدار المراد نشره (مثال 2026.3)", "publish": "نشر هذا الإصدار"
   },
   "misc": { "perennial": "دائمة · {{n}} سنوات قبل الإنتاج", "annual": "محصول سنوي", "sample": "عينة" }
   ,
