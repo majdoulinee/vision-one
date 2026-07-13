@@ -138,7 +138,7 @@ function AssignPlanDialog({ orgId, orgName, plans, onDone }: { orgId: string; or
     if (motif.trim().length < 10) return toast.error("Motif requis (min. 10 caractères).");
     setBusy(true);
     try {
-      const { error } = await supabase.rpc("admin_assign_plan", { p_org_id: orgId, p_plan_code: code, p_facture_ref: facture || null, p_motif: motif });
+      const { error } = await supabase.rpc("admin_assign_plan", { p_org_id: orgId, p_plan_code: code, p_facture_ref: facture || "", p_motif: motif });
       if (error) throw error;
       toast.success(`Plan ${code} assigné à ${orgName}.`);
       setOpen(false); setFacture(""); setMotif("");
