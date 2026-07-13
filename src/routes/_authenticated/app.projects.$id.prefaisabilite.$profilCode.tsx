@@ -65,7 +65,8 @@ function Prefaisabilite() {
     [ref.data, profilCode],
   );
 
-  const orientation = (project.data?.data?.orientation ?? "export") as "export" | "local";
+  const projData = (project.data?.data ?? {}) as Record<string, any>;
+  const orientation = (projData.orientation ?? "export") as "export" | "local";
   const superficieHa =
     project.data?.surface_ha ??
     (project.data?.capital && profil ? Math.floor((project.data.capital / profil.min_capital_mad_ha) * 10) / 10 : 0);
@@ -104,7 +105,7 @@ function Prefaisabilite() {
         setDlgOpen(true);
         return;
       }
-      const horizon = Number(project.data.data?.horizon ?? 7);
+      const horizon = Number(projData.horizon ?? 7);
       const refVersion = version.data?.version ?? "2026.2";
       const budgetDoc = computeBudget({
         profil,
@@ -127,7 +128,7 @@ function Prefaisabilite() {
             org_id: current.org_id,
             project_id: id,
             ref_version: refVersion,
-            data: budgetDoc,
+            data: budgetDoc as any,
             overrides: [],
           })
           .select("id")
@@ -138,7 +139,7 @@ function Prefaisabilite() {
             org_id: current.org_id,
             project_id: id,
             ref_version: refVersion,
-            scenarios: bpDoc,
+            scenarios: bpDoc as any,
             hypotheses: { orientation, horizon, superficieHa },
           })
           .select("id")

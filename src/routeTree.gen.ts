@@ -16,6 +16,8 @@ import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppEngineTestRouteImport } from './routes/_authenticated/app.engine-test'
+import { Route as AuthenticatedAppProjectsNewRouteImport } from './routes/_authenticated/app.projects.new'
+import { Route as AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRouteImport } from './routes/_authenticated/app.projects.$id.prefaisabilite.$profilCode'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -52,6 +54,18 @@ const AuthenticatedAppEngineTestRoute =
     path: '/app/engine-test',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAppProjectsNewRoute =
+  AuthenticatedAppProjectsNewRouteImport.update({
+    id: '/app/projects/new',
+    path: '/app/projects/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute =
+  AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRouteImport.update({
+    id: '/app/projects/$id/prefaisabilite/$profilCode',
+    path: '/app/projects/$id/prefaisabilite/$profilCode',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,6 +74,8 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/app/engine-test': typeof AuthenticatedAppEngineTestRoute
+  '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
+  '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -68,6 +84,8 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/app/engine-test': typeof AuthenticatedAppEngineTestRoute
+  '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
+  '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -78,6 +96,8 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/_authenticated/app/engine-test': typeof AuthenticatedAppEngineTestRoute
+  '/_authenticated/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
+  '/_authenticated/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -88,6 +108,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/invite/$token'
     | '/app/engine-test'
+    | '/app/projects/new'
+    | '/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -96,6 +118,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/invite/$token'
     | '/app/engine-test'
+    | '/app/projects/new'
+    | '/app/projects/$id/prefaisabilite/$profilCode'
   id:
     | '__root__'
     | '/'
@@ -105,6 +129,8 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/invite/$token'
     | '/_authenticated/app/engine-test'
+    | '/_authenticated/app/projects/new'
+    | '/_authenticated/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -165,6 +191,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppEngineTestRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/projects/new': {
+      id: '/_authenticated/app/projects/new'
+      path: '/app/projects/new'
+      fullPath: '/app/projects/new'
+      preLoaderRoute: typeof AuthenticatedAppProjectsNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/projects/$id/prefaisabilite/$profilCode': {
+      id: '/_authenticated/app/projects/$id/prefaisabilite/$profilCode'
+      path: '/app/projects/$id/prefaisabilite/$profilCode'
+      fullPath: '/app/projects/$id/prefaisabilite/$profilCode'
+      preLoaderRoute: typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -172,12 +212,17 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedAppEngineTestRoute: typeof AuthenticatedAppEngineTestRoute
+  AuthenticatedAppProjectsNewRoute: typeof AuthenticatedAppProjectsNewRoute
+  AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute: typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedAppEngineTestRoute: AuthenticatedAppEngineTestRoute,
+  AuthenticatedAppProjectsNewRoute: AuthenticatedAppProjectsNewRoute,
+  AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute:
+    AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
