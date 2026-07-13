@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Settings, LogOut, PlusCircle, Database, Coins, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Settings, LogOut, PlusCircle, Database, Coins, ShieldCheck, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import { usePlatformRole } from "@/hooks/use-platform-role";
 import { BrandLogo } from "./BrandLogo";
 import { CreditBadge } from "./CreditBadge";
 import { useLowCreditAlert } from "@/hooks/use-low-credit-alert";
+import { NotificationBell } from "./NotificationBell";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
@@ -30,6 +31,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { to: "/dashboard", label: t("nav.dashboard"), Icon: LayoutDashboard },
     { to: "/app/projects/new", label: t("nav2.newProject"), Icon: PlusCircle },
     { to: "/app/credits", label: t("nav2.credits") || "Mes crédits", Icon: Coins },
+    { to: "/app/inbox", label: "Notifications", Icon: Inbox },
     { to: "/settings", label: t("nav.settings"), Icon: Settings },
   ];
   if (platformRole === "admin" || platformRole === "comite") {
@@ -80,6 +82,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <OrgSwitcher />
           <div className="flex items-center gap-2">
             <CreditBadge />
+            <NotificationBell />
             <LanguageSwitcher />
           </div>
         </header>
