@@ -5,6 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { ComiteShell } from "@/components/agriplan/ComiteShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PropositionStatusBadge } from "@/components/agriplan/StatusBadge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -140,34 +144,38 @@ function PropView() {
           </div>
           <div className="flex gap-2">
             <NewLotDialog onDone={() => qc.invalidateQueries()} />
-            <Button size="sm" onClick={() => openEditor(null)}><Sparkles className="h-3.5 w-3.5 mr-1" /> Nouvelle proposition</Button>
+            <Button size="sm" variant="ink" onClick={() => openEditor(null)}><Sparkles className="h-3.5 w-3.5 mr-1" /> Nouvelle proposition</Button>
           </div>
         </CardHeader>
         <div className="px-6 pb-3 flex flex-wrap gap-1">
           {(["all","gt10","bee_one","comite_experts"] as Filter[]).map((f) => (
-            <button key={f}
+            <Button
+              key={f}
+              size="sm"
+              variant={filter === f ? "ink" : "outline-ink"}
               onClick={() => setFilter(f)}
-              className={`mono-eyebrow px-2 py-1 rounded-sm border transition-colors ${filter === f ? "bg-ink text-parch border-ink" : "border-line hover:bg-muted"}`}>
+              className="mono-eyebrow"
+            >
               {f === "all" ? "Toutes" : f === "gt10" ? "Écarts > 10 %" : f === "bee_one" ? "Bee One" : "Comité"}
               <span className="ml-1 opacity-70 tabular-nums">{counts[f]}</span>
-            </button>
+            </Button>
           ))}
         </div>
-        <CardContent className="p-0 overflow-x-auto">
-          <table className="w-full text-sm min-w-[900px]">
-            <thead className="bg-muted/50 mono-eyebrow text-mute">
-              <tr>
-                <th className="p-2 w-6"></th>
-                <th className="p-2 text-start">Norme</th>
-                <th className="p-2 text-start">Courbe hebdo</th>
-                <th className="p-2 text-end">v courante → v proposée</th>
-                <th className="p-2 text-end">Δ %</th>
-                <th className="p-2 text-start">Provenance</th>
-                <th className="p-2 text-start">Statut</th>
-                <th className="p-2 text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
+        <CardContent className="p-0">
+          <Table className="min-w-[900px]">
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead className="w-6" />
+                <TableHead className="mono-eyebrow">Norme</TableHead>
+                <TableHead className="mono-eyebrow">Courbe hebdo</TableHead>
+                <TableHead className="mono-eyebrow text-end">v courante → v proposée</TableHead>
+                <TableHead className="mono-eyebrow text-end">Δ %</TableHead>
+                <TableHead className="mono-eyebrow">Provenance</TableHead>
+                <TableHead className="mono-eyebrow">Statut</TableHead>
+                <TableHead className="mono-eyebrow text-end">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {filtered.map((p: any) => {
                 const d = pctDelta(p.ancienne_valeur, p.nouvelle_valeur);
                 const hasCurve = isArrayOf52(p.ancienne_valeur) || isArrayOf52(p.nouvelle_valeur);
@@ -176,58 +184,54 @@ function PropView() {
                 const editable = p.statut === "brouillon" || p.statut === "renvoyee_comite";
                 return (
                   <Fragment key={p.id}>
-                    <tr className={strong ? "bg-clay/5" : undefined}>
-                      <td className="p-2 align-top">
+                    <TableRow className={strong ? "bg-clay/5" : undefined}>
+                      <TableCell className="align-top">
                         <button onClick={() => setExpanded((s) => { const n = new Set(s); n.has(p.id) ? n.delete(p.id) : n.add(p.id); return n; })}>
                           {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                         </button>
-                      </td>
-                      <td className="p-2 align-top">
+                      </TableCell>
+                      <TableCell className="align-top">
                         <div className="font-medium text-sm">{p.cle_norme}</div>
                         <div className="mono-eyebrow text-mute">{p.profil_code ?? "—"} · {p.zone_code ?? "—"} · v.{p.ref_lots?.version_cible}</div>
-                      </td>
-                      <td className="p-2 align-top">
+                      </TableCell>
+                      <TableCell className="align-top">
                         {hasCurve ? (
                           <Sparkline old={isArrayOf52(p.ancienne_valeur) ? p.ancienne_valeur as number[] : undefined}
                                      next={isArrayOf52(p.nouvelle_valeur) ? p.nouvelle_valeur as number[] : undefined} />
                         ) : (
                           <span className="mono-eyebrow text-mute">— scalaire —</span>
                         )}
-                      </td>
-                      <td className="p-2 align-top text-end text-xs">
+                      </TableCell>
+                      <TableCell className="align-top text-end text-xs">
                         <div className="line-through text-muted-foreground">{fmtValue(p.ancienne_valeur)}</div>
                         <div className="font-semibold">{fmtValue(p.nouvelle_valeur)}</div>
-                      </td>
-                      <td className="p-2 align-top text-end tabular-nums text-xs">
+                      </TableCell>
+                      <TableCell className="align-top text-end tabular-nums text-xs">
                         {d != null ? (
                           <span className={`font-semibold ${d > 0 ? "text-clay" : "text-sky"}`}>
                             {d > 0 ? "+" : ""}{d.toFixed(1)}%
                           </span>
                         ) : "—"}
-                      </td>
-                      <td className="p-2 align-top">
+                      </TableCell>
+                      <TableCell className="align-top">
                         {p.provenance === "bee_one" ? (
-                          <span className="mono-eyebrow bg-sky text-parch rounded-sm px-1.5 py-0.5">
-                            BEE ONE · N={p.bee_one_n ?? "?"}
-                          </span>
+                          <Badge variant="sky">BEE ONE · N={p.bee_one_n ?? "?"}</Badge>
                         ) : (
-                          <span className="mono-eyebrow bg-ochre text-ink rounded-sm px-1.5 py-0.5">
-                            COMITÉ
-                          </span>
+                          <Badge variant="ochre">COMITÉ</Badge>
                         )}
-                      </td>
-                      <td className="p-2 align-top">
-                        <span className="mono-eyebrow rounded-sm border border-line text-mute px-1.5 py-0.5">{p.statut}</span>
-                      </td>
-                      <td className="p-2 align-top text-end space-x-1">
-                        {editable && <Button size="sm" variant="outline" onClick={() => openEditor(p)}>Éditer</Button>}
-                        {editable && <Button size="sm" onClick={() => submit(p.id)}>Valider</Button>}
+                      </TableCell>
+                      <TableCell className="align-top">
+                        <PropositionStatusBadge statut={p.statut} />
+                      </TableCell>
+                      <TableCell className="align-top text-end space-x-1">
+                        {editable && <Button size="sm" variant="outline-ink" onClick={() => openEditor(p)}>Éditer</Button>}
+                        {editable && <Button size="sm" variant="ink" onClick={() => submit(p.id)}>Valider</Button>}
                         {!editable && <Button size="sm" variant="ghost" onClick={() => setExpanded((s) => new Set(s).add(p.id))}>Détail</Button>}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                     {isOpen && (
-                      <tr className="bg-muted/20">
-                        <td colSpan={8} className="p-4">
+                      <TableRow className="bg-muted/20 hover:bg-muted/20">
+                        <TableCell colSpan={8} className="p-4">
                           <div className="grid gap-4 md:grid-cols-3 text-xs">
                             <div>
                               <div className="mono-eyebrow text-mute mb-1">Justification (signée, datée)</div>
@@ -251,17 +255,19 @@ function PropView() {
                               <ImpactCount profilCode={p.profil_code} />
                             </div>
                           </div>
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     )}
                   </Fragment>
                 );
               })}
               {filtered.length === 0 && (
-                <tr><td colSpan={8} className="p-6 text-center text-sm text-muted-foreground">Aucune proposition dans ce filtre.</td></tr>
+                <TableRow className="hover:bg-transparent">
+                  <TableCell colSpan={8} className="p-6 text-center text-sm text-muted-foreground">Aucune proposition dans ce filtre.</TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 
