@@ -39,9 +39,11 @@ function PendingBadge({ kind }: { kind: string }) {
 }
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
-  const { data: role, isLoading } = usePlatformRole();
   const loc = useLocation();
-  if (isLoading) return <div className="p-6 text-sm text-muted-foreground">Chargement…</div>;
+  const { data: role, isPending, isFetching } = usePlatformRole();
+  if (isPending || isFetching || role === undefined) {
+    return <div className="p-6 text-sm text-muted-foreground">Chargement…</div>;
+  }
   if (role !== "admin") return <Navigate to="/dashboard" />;
 
   return (
