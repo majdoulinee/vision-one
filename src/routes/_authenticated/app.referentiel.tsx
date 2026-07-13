@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -92,6 +92,10 @@ function RefConsole() {
   const { current } = useCurrentOrg();
   const [newVersion, setNewVersion] = useState("");
   const [importsCount, setImportsCount] = useState(0);
+
+  useEffect(() => {
+    if (!newVersion && published.data?.version) setNewVersion(published.data.version);
+  }, [published.data?.version, newVersion]);
 
   const counts = useQuery({
     queryKey: ["ref-counts", published.data?.version],
