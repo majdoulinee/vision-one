@@ -43,7 +43,7 @@ export function hydrateProfil(row: { code: string; name: string; data: any }): P
   const recolte = t.recolte_conditionnement ?? 0;
   const autres = t.autres_charges ?? 0;
 
-  const charges: Record<Poste, number[]> = {
+  const modeledCharges: Record<Poste, number[]> = {
     main_oeuvre: addArr(front(n, 6, Math.round(mo * 0.25)), bell(n, pic, largeur, Math.round(mo * 0.75))),
     intrants: addArr(front(n, 8, Math.round(intrants * 0.45)), flat(n, Math.round(intrants * 0.55))),
     irrigation_eau: flat(n, irrigation),
@@ -51,8 +51,31 @@ export function hydrateProfil(row: { code: string; name: string; data: any }): P
     recolte_conditionnement: bell(n, pic + 2, largeur, recolte),
     autres_charges: flat(n, autres),
   } as Record<Poste, number[]>;
+  const modeledProduction = bell(n, pic + 2, largeur, 1000).map((x) => x / 1000);
 
-  const production = bell(n, pic + 2, largeur, 1000).map((x) => x / 1000);
+  // Prefer real weekly arrays from the referential when present and well-sized.
+  const isNumArrN = (a: unknown): a is number[] =>
+    Array.isArray(a) && a.length === n && a.every((x) => typeof x === "number" && Number.isFinite(x));
+  const ch = d.charges_hebdo;
+  const chargesReal =
+    ch &&
+    (Object.keys(modeledCharges) as Poste[]).every((k) => isNumArrN(ch[k]));
+  const charges: Record<Poste, number[]> = chargesReal
+    ? {
+        main_oeuvre: ch.main_oeuvre,
+        intrants: ch.intrants,
+        irrigation_eau: ch.irrigation_eau,
+        energie: ch.energie,
+        recolte_conditionnement: ch.recolte_conditionnement,
+        autres_charges: ch.autres_charges,
+      }
+    : modeledCharges;
+
+  const prodReal = isNumArrN(d.production_hebdo);
+  const production: number[] = prodReal ? d.production_hebdo : modeledProduction;
+
+  const norms_source: "real" | "modeled" | "mixed" =
+    chargesReal && prodReal ? "real" : !chargesReal && !prodReal ? "modeled" : "mixed";
 
   const inv = d.invest ?? {};
   return {
@@ -82,6 +105,7 @@ export function hydrateProfil(row: { code: string; name: string; data: any }): P
     charges,
     production,
     provenance: d.provenance,
+    norms_source,
   };
 }
 
