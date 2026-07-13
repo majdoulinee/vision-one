@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { LanguageSwitcher } from "@/components/agriplan/LanguageSwitcher";
 import { BrandLogo } from "@/components/agriplan/BrandLogo";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
+import { formatError } from "@/lib/format-error";
 
 const searchSchema = z.object({ mode: z.enum(["signin", "signup"]).optional() });
 
@@ -58,7 +60,7 @@ function AuthPage() {
         navigate({ to: "/dashboard" });
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
+      toast.error(formatError(err));
     } finally {
       setBusy(false);
     }
@@ -70,7 +72,7 @@ function AuthPage() {
       redirect_uri: window.location.origin,
     });
     if (result.error) {
-      toast.error(result.error.message ?? "OAuth error");
+      toast.error(formatError(result.error) || "OAuth error");
       setBusy(false);
       return;
     }
@@ -80,6 +82,15 @@ function AuthPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="absolute left-4 top-4">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 rounded-md border border-line bg-parch-2/60 px-3 py-2 text-sm font-medium text-ink transition hover:bg-parch-2 hover:border-ink/30"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>{t("common.backHome")}</span>
+        </Link>
+      </div>
       <div className="absolute right-4 top-4">
         <LanguageSwitcher />
       </div>
