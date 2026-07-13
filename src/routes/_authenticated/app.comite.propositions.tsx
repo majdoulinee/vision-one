@@ -318,14 +318,14 @@ function NewLotDialog({ onDone }: { onDone: () => void }) {
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button size="sm" variant="outline" onClick={() => setOpen(true)}>+ Lot</Button>
+      <Button size="sm" variant="outline-ink" onClick={() => setOpen(true)}>+ Lot</Button>
       <DialogContent>
         <DialogHeader><DialogTitle>Créer un lot (future version)</DialogTitle></DialogHeader>
         <Label>Version cible</Label>
         <Input value={v} onChange={(e) => setV(e.target.value)} placeholder="2026.3" />
         <DialogFooter>
           <Button variant="ghost" onClick={() => setOpen(false)}>Annuler</Button>
-          <Button onClick={submit} disabled={!v.trim()}>Créer</Button>
+          <Button variant="ink" onClick={submit} disabled={!v.trim()}>Créer</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -423,24 +423,36 @@ function PropositionEditor({
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label>Lot</Label>
-              <select value={lotId} onChange={(e) => setLotId(e.target.value)} className="w-full rounded border bg-background px-2 py-1.5">
-                <option value="">—</option>
-                {lots.map((l: any) => <option key={l.id} value={l.id}>v{l.version_cible} · {l.statut}</option>)}
-              </select>
+              <Select value={lotId || undefined} onValueChange={setLotId}>
+                <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                <SelectContent>
+                  {lots.map((l: any) => (
+                    <SelectItem key={l.id} value={l.id}>v{l.version_cible} · {l.statut}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Profil</Label>
-              <select value={profil} onChange={(e) => setProfil(e.target.value)} className="w-full rounded border bg-background px-2 py-1.5">
-                <option value="">—</option>
-                {profils.map((p: any) => <option key={p.code} value={p.code}>{p.code} · {p.name}</option>)}
-              </select>
+              <Select value={profil || undefined} onValueChange={setProfil}>
+                <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                <SelectContent>
+                  {profils.map((p: any) => (
+                    <SelectItem key={p.code} value={p.code}>{p.code} · {p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Zone</Label>
-              <select value={zone} onChange={(e) => setZone(e.target.value)} className="w-full rounded border bg-background px-2 py-1.5">
-                <option value="">—</option>
-                {zones.map((z: any) => <option key={z.code} value={z.code}>{z.code} · {z.name}</option>)}
-              </select>
+              <Select value={zone || undefined} onValueChange={setZone}>
+                <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+                <SelectContent>
+                  {zones.map((z: any) => (
+                    <SelectItem key={z.code} value={z.code}>{z.code} · {z.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div>
@@ -450,9 +462,9 @@ function PropositionEditor({
 
           <div className="flex items-center gap-2">
             <Label className="mb-0">Type de valeur :</Label>
-            <div className="flex rounded-sm border border-line overflow-hidden mono-eyebrow">
-              <button type="button" onClick={() => setMode("scalar")} className={`px-3 py-1 transition-colors ${mode === "scalar" ? "bg-ink text-parch" : "hover:bg-muted"}`}>Scalaire</button>
-              <button type="button" onClick={() => setMode("weekly")} className={`px-3 py-1 transition-colors ${mode === "weekly" ? "bg-ink text-parch" : "hover:bg-muted"}`}>Hebdo (52)</button>
+            <div className="flex gap-1">
+              <Button type="button" size="sm" variant={mode === "scalar" ? "ink" : "outline-ink"} onClick={() => setMode("scalar")}>Scalaire</Button>
+              <Button type="button" size="sm" variant={mode === "weekly" ? "ink" : "outline-ink"} onClick={() => setMode("weekly")}>Hebdo (52)</Button>
             </div>
           </div>
 
@@ -494,10 +506,13 @@ function PropositionEditor({
 
           <div>
             <Label>Provenance</Label>
-            <select value={provenance} onChange={(e) => setProvenance(e.target.value as any)} className="w-full rounded border bg-background px-2 py-1.5">
-              <option value="comite_experts">Comité d'experts</option>
-              <option value="bee_one">Bee One (ingestion)</option>
-            </select>
+            <Select value={provenance} onValueChange={(v) => setProvenance(v as any)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="comite_experts">Comité d'experts</SelectItem>
+                <SelectItem value="bee_one">Bee One (ingestion)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
@@ -508,8 +523,8 @@ function PropositionEditor({
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Annuler</Button>
-          <Button variant="outline" onClick={() => save(false)}>Enregistrer brouillon</Button>
-          <Button onClick={() => save(true)}>Soumettre au comité</Button>
+          <Button variant="outline-ink" onClick={() => save(false)}>Enregistrer brouillon</Button>
+          <Button variant="ink" onClick={() => save(true)}>Soumettre au comité</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
