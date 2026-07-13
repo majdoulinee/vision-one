@@ -1,0 +1,286 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { supabase } from "@/integrations/supabase/client";
+import { usePublishedVersion, useReferentiel } from "@/hooks/use-referentiel";
+import { useCurrentOrg } from "@/hooks/use-current-org";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { margeNormativeHa } from "@/engines/recommendation";
+import { computeBudget } from "@/engines/budget";
+import { computeBusinessPlan } from "@/engines/businessplan";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { ArrowLeft, Sparkles } from "lucide-react";
+import { fmtHa, fmtMAD } from "@/lib/format";
+
+export const Route = createFileRoute("/_authenticated/app/projects/$id/prefaisabilite/$profilCode")({
+  ssr: false,
+  component: Prefaisabilite,
+  validateSearch: (s: Record<string, unknown>) => ({ generate: s.generate ? 1 : 0 }),
+});
+
+function Prefaisabilite() {
+  const { id, profilCode } = Route.useParams();
+  const { generate } = Route.useSearch() as { generate: 0 | 1 };
+  const { t } = useTranslation();
+  const nav = useNavigate();
+  const qc = useQueryClient();
+  const { current } = useCurrentOrg();
+  const version = usePublishedVersion();
+  const ref = useReferentiel(version.data?.version);
+  const [autoOpen, setAutoOpen] = useState<boolean>(generate === 1);
+  const [dlgOpen, setDlgOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const project = useQuery({
+    queryKey: ["project", id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("projects").select("*").eq("id", id).single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const wallet = useQuery({
+    queryKey: ["wallet", current?.org_id],
+    enabled: !!current,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("wallets")
+        .select("credits")
+        .eq("org_id", current!.org_id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const profil = useMemo(
+    () => ref.data?.profils.find((p) => p.code === profilCode),
+    [ref.data, profilCode],
+  );
+
+  const orientation = (project.data?.data?.orientation ?? "export") as "export" | "local";
+  const superficieHa =
+    project.data?.surface_ha ??
+    (project.data?.capital && profil ? Math.floor((project.data.capital / profil.min_capital_mad_ha) * 10) / 10 : 0);
+
+  const eco = useMemo(() => {
+    if (!profil) return null;
+    return margeNormativeHa(profil, profil.orientation === "local" ? "local" : (orientation === "local" ? "local" : "export"));
+  }, [profil, orientation]);
+
+  useEffect(() => {
+    if (autoOpen && profil && project.data && !busy) {
+      setDlgOpen(true);
+      setAutoOpen(false);
+    }
+  }, [autoOpen, profil, project.data, busy]);
+
+  if (!profil || !project.data || !current) return <div>{t("common.loading")}</div>;
+
+  const insufficient = (wallet.data?.credits ?? 0) < 1;
+
+  async function doGenerate() {
+    if (!profil || !current || !project.data) return;
+    setBusy(true);
+    try {
+      // Atomic decrement: update only when credits>0
+      const { data: dec, error: decErr } = await supabase
+        .from("wallets")
+        .update({ credits: (wallet.data!.credits ?? 0) - 1 })
+        .eq("org_id", current.org_id)
+        .gt("credits", 0)
+        .select("credits")
+        .maybeSingle();
+      if (decErr) throw decErr;
+      if (!dec) {
+        toast.error(t("wallet.insufficient"));
+        setDlgOpen(true);
+        return;
+      }
+      const horizon = Number(project.data.data?.horizon ?? 7);
+      const refVersion = version.data?.version ?? "2026.2";
+      const budgetDoc = computeBudget({
+        profil,
+        superficieHa,
+        campagne: `${new Date().getFullYear()}-${(new Date().getFullYear() + 1) % 100}`,
+        orientation: orientation as any,
+        anneeProduction: profil.perenne ? profil.annees_avant_production + 1 : null,
+      });
+      const bpDoc = computeBusinessPlan({
+        profil,
+        superficieHa,
+        horizonAns: horizon,
+        orientation: orientation as any,
+      });
+
+      const [bIns, pIns, upd] = await Promise.all([
+        supabase
+          .from("budgets")
+          .insert({
+            org_id: current.org_id,
+            project_id: id,
+            ref_version: refVersion,
+            data: budgetDoc,
+            overrides: [],
+          })
+          .select("id")
+          .single(),
+        supabase
+          .from("business_plans")
+          .insert({
+            org_id: current.org_id,
+            project_id: id,
+            ref_version: refVersion,
+            scenarios: bpDoc,
+            hypotheses: { orientation, horizon, superficieHa },
+          })
+          .select("id")
+          .single(),
+        supabase
+          .from("projects")
+          .update({ profile_code: profil.code, status: "genere" })
+          .eq("id", id),
+      ]);
+      if (bIns.error) throw bIns.error;
+      if (pIns.error) throw pIns.error;
+      if (upd.error) throw upd.error;
+
+      await supabase.from("audit_log").insert({
+        org_id: current.org_id,
+        action: "generate_budget_bp",
+        entity_type: "project",
+        entity_id: id,
+        meta: { profil: profil.code, ref_version: refVersion },
+      });
+      qc.invalidateQueries();
+      toast.success("Budget & BP");
+      nav({ to: "/app/budgets/$id", params: { id: bIns.data.id } });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+      setDlgOpen(false);
+    }
+  }
+
+  async function recharge() {
+    if (!current) return;
+    if (current.role !== "owner") return;
+    const { error } = await supabase
+      .from("wallets")
+      .update({ credits: (wallet.data?.credits ?? 0) + 5 })
+      .eq("org_id", current.org_id);
+    if (error) return toast.error(error.message);
+    toast.success(t("wallet.recharged"));
+    qc.invalidateQueries({ queryKey: ["wallet", current.org_id] });
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{t("prefa.title")}</h1>
+          <p className="text-muted-foreground">{profil.label} · {profil.culture}</p>
+          <div className="mt-2 flex flex-wrap gap-1">
+            {profil.perenne && (
+              <Badge variant="outline">
+                {t("misc.perennial", { n: profil.annees_avant_production })}
+              </Badge>
+            )}
+            <Badge variant="outline">
+              {t(`provenance.${(profil.provenance as any)?.source ?? "comite_experts"}`)}
+            </Badge>
+          </div>
+        </div>
+        <Button asChild variant="ghost" size="sm">
+          <Link to="/app/projects/new">
+            <ArrowLeft className="mr-2 h-4 w-4" /> {t("prefa.backToWizard")}
+          </Link>
+        </Button>
+      </div>
+
+      <div className="rounded-lg border border-accent bg-accent/10 p-4 text-sm">
+        {t("prefa.banner")}
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("prefa.econTable")}</CardTitle>
+          <CardDescription>
+            {fmtHa(superficieHa)} · {t(`orient.${orientation}`)}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <table className="w-full text-sm">
+            <tbody className="divide-y">
+              <TR l={t("prefa.ca")} v={fmtMAD(eco?.ca)} />
+              <TR l={t("prefa.opex")} v={fmtMAD(-Math.abs(eco?.opex ?? 0))} />
+              <TR l={t("prefa.amort")} v={fmtMAD(-Math.abs(eco?.amort ?? 0))} />
+              <TR l={t("prefa.ebitda")} v={fmtMAD(eco?.ebitda)} bold />
+              <TR l={t("prefa.marge")} v={fmtMAD(eco?.marge)} bold />
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-end">
+        <Button size="lg" onClick={() => setDlgOpen(true)} disabled={busy}>
+          <Sparkles className="mr-2 h-4 w-4" />
+          {t("prefa.generate")}
+        </Button>
+      </div>
+
+      <Dialog open={dlgOpen} onOpenChange={setDlgOpen}>
+        <DialogContent>
+          {insufficient ? (
+            <>
+              <DialogHeader>
+                <DialogTitle>{t("wallet.insufficient")}</DialogTitle>
+                <DialogDescription>{t("wallet.insufficientDesc")}</DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                {current.role === "owner" && (
+                  <Button onClick={recharge}>{t("wallet.recharge")}</Button>
+                )}
+              </DialogFooter>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle>{t("prefa.generate")}</DialogTitle>
+                <DialogDescription>
+                  {t("wallet.credits")}: {wallet.data?.credits ?? 0} → {(wallet.data?.credits ?? 0) - 1}
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="ghost" onClick={() => setDlgOpen(false)}>
+                  {t("common.cancel")}
+                </Button>
+                <Button onClick={doGenerate} disabled={busy}>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  {t("prefa.generate")}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function TR({ l, v, bold }: { l: string; v: string; bold?: boolean }) {
+  return (
+    <tr className={bold ? "font-semibold" : ""}>
+      <td className="py-2">{l}</td>
+      <td className="py-2 text-end">{v}</td>
+    </tr>
+  );
+}
