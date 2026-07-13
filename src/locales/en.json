@@ -33,7 +33,10 @@
     "assureur": "Insurer",
     "organisme_public": "Public institution",
     "groupe": "Group / Consulting",
-    "autre": "Other"
+    "autre": "Other",
+    "investisseur": "Investor",
+    "agriculteur": "Farmer",
+    "consultant": "Consultant"
   },
   "settings": {
     "title": "Settings",
@@ -47,7 +50,7 @@
     "pending": "Pending",
     "revoke": "Revoke"
   },
-  "role": { "owner": "Owner", "admin": "Admin", "editor": "Editor", "viewer": "Viewer" },
+  "role": { "owner": "Owner", "admin": "Admin", "editor": "Editor", "member": "Member", "viewer": "Viewer" },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
@@ -60,7 +63,36 @@
     "hero": "From seasonal budget to bankable Business Plan — verifiable.",
     "sub": "AGRIPLAN structures agricultural financial planning with deterministic calculations and a QR-verifiable PDF.",
     "cta": "Get started",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "ctaFree": "Free pre-feasibility",
+    "howTitle": "How it works",
+    "step1Title": "1. Describe your project",
+    "step1Desc": "Zone, capital, surface, orientation, risk appetite.",
+    "step2Title": "2. Get a scored recommendation",
+    "step2Desc": "Matching profiles + weekly campaign budget.",
+    "step3Title": "3. Export a bankable PDF",
+    "step3Desc": "Verifiable via QR code and SHA-256 fingerprint.",
+    "refTitle": "The reference set — our moat",
+    "refDesc": "Dual provenance: real Bee One data (aggregated and anonymized) + expert committee. Every norm cites source, region, period, sample. Versioned, k-anonymous (≥ 5).",
+    "refBeeOne": "Bee One — real data",
+    "refBeeOneDesc": "Aggregated and anonymized from operational farms.",
+    "refCom": "Expert committee",
+    "refComDesc": "Norm completeness and calibration by an independent panel.",
+    "refVersion": "Versioned and traceable",
+    "refVersionDesc": "Every document cites the exact reference version used.",
+    "pdfTitle": "Bankable verifiable PDF",
+    "pdfDesc": "Every generated document carries a QR code linking to a public AGRIPLAN proof page. The SHA-256 fingerprint detects any tampering. Forced assumptions are listed publicly.",
+    "pricing": "Pricing",
+    "pricingIntro": "We charge for depth and traceability, not edits.",
+    "planFreeTitle": "Pre-feasibility", "planFreePrice": "Free",
+    "planFreeDesc": "Scored recommendation + normative margin per ha.",
+    "planActTitle": "Per document", "planActPrice": "1 credit",
+    "planActDesc": "Full campaign budget or full business plan.",
+    "planSubTitle": "Campaign subscription", "planSubPrice": "per ha / campaign",
+    "planSubDesc": "Unlimited re-forecasting during the campaign.",
+    "planEnterpriseTitle": "Consultant / Group / Institutional", "planEnterprisePrice": "On request",
+    "planEnterpriseDesc": "Multi-project, benchmark, counter-expertise (V2).",
+    "footerLegal": "AGRIPLAN — Verifiable agricultural financial planning."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -200,6 +232,10 @@
     "fingerprintShort": "Fingerprint {{prefix}}…",
     "proofPage": "Proof page",
     "copyLink": "Copy link",
-    "linkCopied": "Link copied"
+    "linkCopied": "Link copied",
+    "listTitle": "Exported documents",
+    "listEmpty": "No exported document yet.",
+    "download": "Download",
+    "proof": "Proof"
   }
 }

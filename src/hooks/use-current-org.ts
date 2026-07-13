@@ -16,6 +16,10 @@ export type OrgMembership = {
   };
 };
 
+export function canWriteRole(role: OrgMembership["role"] | undefined): boolean {
+  return role === "owner" || role === "admin" || role === "editor" || role === "member";
+}
+
 export function useMyOrganizations() {
   const { user } = useSession();
   return useQuery({
