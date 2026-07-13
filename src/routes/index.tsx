@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/agriplan/LanguageSwitcher";
-import { Sprout, ShieldCheck, QrCode, Database, Users, GitBranch, FileCheck2 } from "lucide-react";
+import { BrandLogo } from "@/components/agriplan/BrandLogo";
+import { ShieldCheck, QrCode, Database, Users, GitBranch, FileCheck2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -14,10 +15,7 @@ function Landing() {
     <div className="min-h-screen bg-background">
       <header className="border-b">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <Sprout className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold tracking-tight">{t("app.name")}</span>
-          </div>
+          <BrandLogo size="sm" />
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
             <Button asChild variant="ghost" size="sm">

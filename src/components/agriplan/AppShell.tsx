@@ -1,12 +1,13 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Sprout, LayoutDashboard, Settings, LogOut, PlusCircle, Database } from "lucide-react";
+import { LayoutDashboard, Settings, LogOut, PlusCircle, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { OrgSwitcher } from "./OrgSwitcher";
 import { usePlatformRole } from "@/hooks/use-platform-role";
+import { BrandLogo } from "./BrandLogo";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
@@ -34,9 +35,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="hidden w-60 flex-col bg-sidebar text-sidebar-foreground md:flex">
-        <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-4">
-          <Sprout className="h-6 w-6 text-sidebar-primary" />
-          <span className="text-lg font-bold">Vision One</span>
+        <div className="flex h-16 items-center border-b border-sidebar-border px-4">
+          <BrandLogo size="sm" wordmarkClassName="text-lg font-bold" />
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {nav.map(({ to, label, Icon }) => {
