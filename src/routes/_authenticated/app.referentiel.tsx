@@ -272,7 +272,11 @@ function RefConsole() {
                 const { data: prev, error: e1 } = await supabase
                   .from("profils_production").select("data").eq("code", u.code).eq("ref_version", newVersion).maybeSingle();
                 if (e1) throw e1;
-                const merged = { ...((prev?.data as object) ?? {}), charges: u.charges, production: u.production };
+                const merged = {
+                  ...((prev?.data as object) ?? {}),
+                  charges_hebdo: u.charges,
+                  production_hebdo: u.production,
+                };
                 const { error: e2 } = await supabase.from("profils_production")
                   .update({ data: merged } as any).eq("code", u.code).eq("ref_version", newVersion);
                 if (e2) throw e2;
