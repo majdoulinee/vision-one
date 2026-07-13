@@ -1,75 +1,62 @@
+# Refonte UI Comité — Design System Vision One
+
 ## Objectif
+Aligner les 4 pages Comité + `ComiteShell` sur le design system almanach (parchemin, encre, ocre, argile, ciel) déjà défini dans `src/styles.css`. Aujourd'hui ces écrans utilisent des couleurs codées en dur (`#12211A`, `#D9A521`, `#C0552F`, `#2E6E8E`, `#F3EFE3`, `rgba(...)`) et un mélange de styles inline qui ne suivent pas les tokens.
 
-Faire du référentiel la source de vérité pour les normes hebdomadaires **réelles** (52/duree_semaines valeurs par poste), tout en gardant la génération par courbes comme fallback pour les profils historiques (TOM-SERRE-EXP / AVO-TEST). Aucune formule de calcul (budget, BP, reco) n'est modifiée — seule la **source** des tableaux hebdomadaires change.
+## Principes design (repris de la landing / dashboard)
+- Palette via tokens uniquement : `ink`, `ink-2`, `parch`, `parch-2`, `line`, `mute`, `clay`, `ochre`, `sky`
+- Typo : `font-serif` (Fraunces) pour titres/versions, `mono-eyebrow` pour tags/statuts, sans par défaut
+- Coins nets (`rounded-sm` max, jamais `rounded-xl`), bordures `border-line`
+- Ombres dures (`hard-shadow`, `hard-shadow-ink`) sur cartes clés
+- Aucune couleur en `style={{}}` — tout passe par classes Tailwind + tokens
 
-## Changements
+## Périmètre (fichiers touchés — UI uniquement)
 
-### 1. Stockage (aucune migration)
+### 1. `src/components/agriplan/ComiteShell.tsx`
+- Header ink → `bg-ink text-parch` (au lieu de `#12211A/#F3EFE3` inline)
+- Badge « Comité d'experts » → `bg-ochre text-ink mono-eyebrow`
+- Onglets actifs → `bg-parch/15 text-parch`, inactifs → `text-parch/70`
+- Pipeline (BROUILLON → PUBLIÉE) : chips `bg-ochre/15 text-parch mono-eyebrow`, séparateurs `→` en `text-parch/40`
+- Devise italique en `font-serif italic text-parch/70`
 
-`profils_production.data` (jsonb) accepte deux clés optionnelles supplémentaires :
+### 2. `src/routes/_authenticated/app.comite.propositions.tsx`
+- Filtres statuts : bouton actif `bg-ink text-parch`, inactif `border-line hover:bg-muted`
+- Table header : `bg-muted/50 mono-eyebrow text-mute`
+- Ligne « strong » : `bg-clay/5` (remplace `bg-[hsl(15,60%,95%)]`)
+- Sparklines : barres old = `fill-line`, new = `fill-sky`
+- Delta ± : `text-clay` (positif = alerte) / `text-sky` (négatif = économie)
+- Badges décision : APPROUVER `bg-sky text-parch mono-eyebrow`, RENVOYER `bg-ochre text-ink mono-eyebrow`
+- Statut brut : chip `border-line mono-eyebrow`
+- Motif renvoi : `text-clay`
+- Éditeur proposition (grille 13 semaines/mois) : bordures `border-line`, delta% `text-clay/text-sky`
 
-- `charges_hebdo`: `{ main_oeuvre, intrants, irrigation_eau, energie, recolte_conditionnement, autres_charges }` — chacun `number[]` de longueur `duree_semaines`, en MAD/ha/semaine.
-- `production_hebdo`: `number[]` de longueur `duree_semaines`, parts de production (Σ ≈ 1.0).
+### 3. `src/routes/_authenticated/app.comite.bee-one.tsx`
+- Carte bloquée (k-anonymat < seuil) : `border-clay bg-clay/5`, bandeau coin `bg-clay text-parch mono-eyebrow`
+- Barre k-anonymat : track `bg-ink/10`, fill `bg-clay` (bloqué) ou `bg-ink-2` (ok), marqueur seuil `bg-ink`
+- Labels ratio : `text-clay` / `text-ink-2` selon état, en `mono-eyebrow`
+- Chips seuil / statut : `mono-eyebrow text-mute border-line`
 
-Rétrocompatible : les profils existants sans ces clés continuent d'utiliser `curves` + `charges_totaux`.
+### 4. `src/routes/_authenticated/app.comite.publish.tsx`
+- Barre sticky d'action : `bg-ink text-parch hard-shadow-ink`
+- Icône Lock : `text-ochre`
+- Compteurs : Approuvée `text-ink-2` (vert forêt), Renvoyée `text-clay`
+- Bouton « Publier » : `bg-ochre text-ink` si actif, `bg-parch/15 text-parch/50` sinon
+- Encart avertissement immuable : `bg-ochre/15 border-ochre text-ink`
+- Bouton confirmation final : `bg-clay text-parch`
+- Devise italique : `font-serif italic`
 
-### 2. Moteurs — `src/engines/curves.ts` (`hydrateProfil`)
+### 5. `src/routes/_authenticated/app.comite.versions.tsx`
+- Numéro version : `font-serif text-ink`
+- Badge « publiée · immuable » : `bg-ochre text-ink mono-eyebrow`
+- Cartes versions : `border-line hard-shadow` sur hover
 
-Ajouter un chemin prioritaire :
+## Hors périmètre
+- Aucun changement de logique métier, RPC, requêtes, ou schéma
+- Aucun changement de routing / hooks / permissions
+- Aucun texte / copie modifié (uniquement styles)
 
-```text
-si data.charges_hebdo présent et longueurs correctes:
-    charges = data.charges_hebdo          (source: "real")
-sinon:
-    charges = génération bell/flat/front  (source: "modeled")
-
-si data.production_hebdo présent et longueur correcte:
-    production = data.production_hebdo    (source: "real")
-sinon:
-    production = bell(...) normalisé      (source: "modeled")
-```
-
-Ajouter `norms_source: "real" | "modeled" | "mixed"` sur `Profil` (dans `src/engines/types.ts`) — champ optionnel, non lu par les formules ; utilisé uniquement par l'UI.
-
-Aucune modification à `budget.ts`, `businessplan.ts`, `recommendation.ts` — ils consomment `profil.charges` et `profil.production` déjà hydratés.
-
-### 3. Import Excel — `NormesTab` dans `src/routes/_authenticated/app.referentiel.tsx`
-
-Point d'écriture (ligne ~275) : au lieu de fusionner sous les clés `charges` / `production` (qui n'étaient pas relues), écrire :
-
-```ts
-const merged = {
-  ...prev.data,
-  charges_hebdo: u.charges,
-  production_hebdo: u.production,
-};
-```
-
-Les validations existantes (nb lignes = `duree_semaines`, semaines 1..N contiguës, Σ `part_production` ∈ [0.99, 1.01], numériques ≥ 0) restent en place — elles s'appliquent naturellement au nouveau format.
-
-### 4. Affichage — `src/routes/_authenticated/app.budgets.$id.tsx`
-
-Ajouter un badge dans l'en-tête, aligné sur les autres badges existants :
-
-- **`Normes réelles`** (variant `default`, ton primary) si `profil.norms_source === "real"`.
-- **`Normes modélisées`** (variant `outline`, ton muted) si `"modeled"`.
-- **`Normes partielles`** (variant `secondary`) si `"mixed"` (charges réelles mais production modélisée, ou l'inverse).
-
-Le badge lit `norms_source` depuis le profil hydraté déjà présent dans le composant — aucun fetch supplémentaire.
-
-### 5. Rien à toucher
-
-- BP page : même profil hydraté, badge non demandé (peut être ajouté plus tard si besoin).
-- PDF vérifiable : les tableaux exportés reflètent déjà les valeurs hydratées, donc automatiquement les valeurs réelles après import.
-- Seed existant TOM-SERRE-EXP / AVO-TEST : intact, continue en mode "modélisé".
-
-## Critère d'acceptation
-
-1. Après import d'un fichier Normes hebdomadaires valide pour un profil, un re-chargement du budget associé affiche **exactement** les valeurs importées (Σ semaines = totaux du fichier au MAD près).
-2. Le badge **`Normes réelles`** apparaît dans l'en-tête du budget de ce profil.
-3. Les profils seed non ré-importés continuent d'afficher **`Normes modélisées`** et leurs valeurs sont inchangées.
-4. `tsgo --noEmit` passe.
-
-## Suite
-
-Une fois ce correctif livré, le script SQL "normes réelles" (22 profils × ~52 semaines = ~1 088 lignes de tableaux) pourra être exécuté par simple `UPDATE profils_production SET data = data || jsonb_build_object('charges_hebdo', ..., 'production_hebdo', ...) WHERE code = ...` sans autre changement applicatif.
+## Vérification
+- Build passe (typecheck strict)
+- Navigation `/app/comite/*` : header + pipeline lisibles clair et dark
+- Cohérence visuelle avec dashboard client et landing (même palette, mêmes chips mono)
+- Aucun `style={{ background:'#...' }}` ni classe `bg-[#...]` restant dans les 5 fichiers
