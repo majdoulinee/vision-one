@@ -217,7 +217,7 @@ function RequestsTab() {
 
   async function decide(id: string, decision: "accordee" | "refusee", motif?: string) {
     try {
-      const { error } = await supabase.rpc("decide_credit_request", { p_request_id: id, p_decision: decision, p_motif: motif ?? null });
+      const { error } = await supabase.rpc("decide_credit_request", { p_request_id: id, p_decision: decision, p_motif: motif });
       if (error) throw error;
       toast.success(decision === "accordee" ? "Crédits octroyés." : "Demande refusée.");
       setRefuseId(null); setRefuseMotif("");
