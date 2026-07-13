@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ComiteShell } from "@/components/agriplan/ComiteShell";
@@ -175,8 +175,8 @@ function PropView() {
                 const isOpen = expanded.has(p.id);
                 const editable = p.statut === "brouillon" || p.statut === "renvoyee_comite";
                 return (
-                  <>
-                    <tr key={p.id} className={strong ? "bg-[hsl(15,60%,95%)]" : undefined}>
+                  <Fragment key={p.id}>
+                    <tr className={strong ? "bg-[hsl(15,60%,95%)]" : undefined}>
                       <td className="p-2 align-top">
                         <button onClick={() => setExpanded((s) => { const n = new Set(s); n.has(p.id) ? n.delete(p.id) : n.add(p.id); return n; })}>
                           {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -254,7 +254,7 @@ function PropView() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 );
               })}
               {filtered.length === 0 && (
@@ -352,7 +352,7 @@ function PropositionEditor({
   const [justification, setJustification] = useState(initial?.justification ?? "");
 
   // Reset when initial changes
-  useMemo(() => {
+  useEffect(() => {
     if (!open) return;
     setLotId(initial?.lot_id ?? lots[0]?.id ?? "");
     setCle(initial?.cle_norme ?? "");
