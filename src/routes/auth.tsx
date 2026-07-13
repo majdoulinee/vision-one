@@ -14,14 +14,28 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { formatError } from "@/lib/format-error";
 
-const searchSchema = z.object({ mode: z.enum(["signin", "signup"]).optional() });
+const searchSchema = z.object({
+  mode: z.enum(["signin", "signup"]).optional(),
+  next: z.string().optional(),
+});
+
+function safeNext(next: string | undefined): string | null {
+  if (!next) return null;
+  // Only allow same-origin relative paths.
+  if (!next.startsWith("/") || next.startsWith("//")) return null;
+  return next;
+}
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s) => searchSchema.parse(s),
   ssr: false,
-  beforeLoad: async () => {
+  beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/dashboard" });
+    if (data.session) {
+      const next = safeNext(search.next);
+      if (next) throw redirect({ href: next });
+      throw redirect({ to: "/dashboard" });
+    }
   },
   component: AuthPage,
 });
@@ -35,6 +49,14 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
+  const next = safeNext(search.next);
+  const postAuthNavigate = () => {
+    if (next) {
+      window.location.href = next;
+    } else {
+      navigate({ to: "/dashboard" });
+    }
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -45,7 +67,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin + "/dashboard",
+            emailRedirectTo: window.location.origin + (next ?? "/dashboard"),
             data: { full_name: fullName },
           },
         });
@@ -53,11 +75,11 @@ function AuthPage() {
         toast.success(t("auth.checkEmail"));
         // With auto-confirm enabled, session is set immediately.
         const { data } = await supabase.auth.getSession();
-        if (data.session) navigate({ to: "/dashboard" });
+        if (data.session) postAuthNavigate();
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate({ to: "/dashboard" });
+        postAuthNavigate();
       }
     } catch (err) {
       toast.error(formatError(err));
@@ -69,7 +91,7 @@ function AuthPage() {
   async function handleGoogle() {
     setBusy(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: next ? window.location.origin + next : window.location.origin,
     });
     if (result.error) {
       toast.error(formatError(result.error) || "OAuth error");
@@ -77,7 +99,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/dashboard" });
+    postAuthNavigate();
   }
 
   return (
