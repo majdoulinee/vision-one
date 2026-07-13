@@ -20,6 +20,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedAppReferentielRouteImport } from './routes/_authenticated/app.referentiel'
+import { Route as AuthenticatedAppCreditsRouteImport } from './routes/_authenticated/app.credits'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicVerifyDocIdRouteImport } from './routes/api/public/verify.$docId'
@@ -85,6 +86,11 @@ const AuthenticatedAppReferentielRoute =
     path: '/app/referentiel',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAppCreditsRoute = AuthenticatedAppCreditsRouteImport.update({
+  id: '/app/credits',
+  path: '/app/credits',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/verify/$docId': typeof VerifyDocIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/app/credits': typeof AuthenticatedAppCreditsRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/verify/$docId': typeof VerifyDocIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/app/credits': typeof AuthenticatedAppCreditsRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
@@ -178,6 +186,7 @@ export interface FileRoutesById {
   '/verify/$docId': typeof VerifyDocIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/_authenticated/app/credits': typeof AuthenticatedAppCreditsRoute
   '/_authenticated/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/_authenticated/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/_authenticated/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/verify/$docId'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/app/credits'
     | '/app/referentiel'
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
     | '/verify/$docId'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/app/credits'
     | '/app/referentiel'
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/verify/$docId'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/_authenticated/app/credits'
     | '/_authenticated/app/referentiel'
     | '/_authenticated/app/budgets/$id'
     | '/_authenticated/app/business-plans/$id'
@@ -339,6 +351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppReferentielRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/credits': {
+      id: '/_authenticated/app/credits'
+      path: '/app/credits'
+      fullPath: '/app/credits'
+      preLoaderRoute: typeof AuthenticatedAppCreditsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -394,6 +413,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedAppCreditsRoute: typeof AuthenticatedAppCreditsRoute
   AuthenticatedAppReferentielRoute: typeof AuthenticatedAppReferentielRoute
   AuthenticatedAppBudgetsIdRoute: typeof AuthenticatedAppBudgetsIdRoute
   AuthenticatedAppBusinessPlansIdRoute: typeof AuthenticatedAppBusinessPlansIdRoute
@@ -404,6 +424,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedAppCreditsRoute: AuthenticatedAppCreditsRoute,
   AuthenticatedAppReferentielRoute: AuthenticatedAppReferentielRoute,
   AuthenticatedAppBudgetsIdRoute: AuthenticatedAppBudgetsIdRoute,
   AuthenticatedAppBusinessPlansIdRoute: AuthenticatedAppBusinessPlansIdRoute,
