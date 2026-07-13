@@ -3,38 +3,33 @@
 export type ZoneKey = "Souss-Massa" | "Loukkos" | "Gharb" | "Saïss";
 
 export type Profile = {
-  code: string;
   name: string;
-  investPerHa: number; // MAD/ha
-  marginPerHa: number; // MAD/ha/an marge normative
-  payback: number; // années
+  inv: number;    // MAD/ha
+  marge: number;  // marge normative en %
+  pb: number;     // payback en années
   zones: ZoneKey[];
-  tag?: string;
 };
 
 export const ZONES: ZoneKey[] = ["Souss-Massa", "Loukkos", "Gharb", "Saïss"];
 
+// Catalogue littéral du HTML de référence (mode inversé).
 export const PROFILES: Profile[] = [
-  { code: "AVO-HASS", name: "Avocatier Hass — 4×2 m", investPerHa: 320_000, marginPerHa: 78_000, payback: 6.2, zones: ["Souss-Massa", "Loukkos"] },
-  { code: "AVO-LAMB", name: "Avocatier Lamb Hass", investPerHa: 305_000, marginPerHa: 71_000, payback: 6.8, zones: ["Souss-Massa", "Loukkos", "Gharb"] },
-  { code: "MYR-BIL",  name: "Myrtille en substrat", investPerHa: 780_000, marginPerHa: 210_000, payback: 4.7, zones: ["Loukkos", "Gharb"] },
-  { code: "FRA-TUN",  name: "Fraise sous tunnel", investPerHa: 240_000, marginPerHa: 96_000, payback: 3.1, zones: ["Loukkos", "Gharb"] },
-  { code: "AGR-VAL",  name: "Agrumes Valencia", investPerHa: 145_000, marginPerHa: 38_000, payback: 5.9, zones: ["Souss-Massa", "Gharb", "Saïss"] },
-  { code: "TOM-SER",  name: "Tomate cerise sous serre", investPerHa: 620_000, marginPerHa: 185_000, payback: 4.2, zones: ["Souss-Massa"] },
-  { code: "POM-GAL",  name: "Pommier Gala", investPerHa: 210_000, marginPerHa: 54_000, payback: 6.4, zones: ["Saïss"] },
-  { code: "OLI-INT",  name: "Olivier intensif", investPerHa: 95_000, marginPerHa: 22_000, payback: 7.1, zones: ["Saïss", "Gharb"] },
+  { name: "Myrtille sous serre",  inv: 820_000, marge: 38, pb: 4.1, zones: ["Souss-Massa", "Loukkos", "Gharb"] },
+  { name: "Framboise hors-sol",   inv: 640_000, marge: 31, pb: 3.4, zones: ["Loukkos", "Gharb"] },
+  { name: "Tomate cerise serre",  inv: 410_000, marge: 24, pb: 2.8, zones: ["Souss-Massa"] },
+  { name: "Avocat Hass",          inv: 520_000, marge: 34, pb: 6.2, zones: ["Gharb", "Loukkos"] },
+  { name: "Agrume Maroc-Late",    inv: 300_000, marge: 21, pb: 5.5, zones: ["Souss-Massa", "Saïss", "Gharb"] },
+  { name: "Poivron sous serre",   inv: 355_000, marge: 19, pb: 2.4, zones: ["Souss-Massa"] },
+  { name: "Olivier intensif",     inv: 180_000, marge: 17, pb: 5.0, zones: ["Saïss"] },
+  { name: "Fraise plein champ",   inv: 240_000, marge: 22, pb: 2.1, zones: ["Loukkos", "Gharb"] },
 ];
 
 export function computeReco(capital: number, zone: ZoneKey) {
   return PROFILES
     .filter((p) => p.zones.includes(zone))
-    .map((p) => {
-      const ha = capital > 0 ? capital / p.investPerHa : 0;
-      // score: marge annuelle projetée pondérée par capital réutilisé
-      const score = Math.round(ha * p.marginPerHa);
-      return { ...p, ha, score };
-    })
-    .sort((a, b) => b.score - a.score)
+    .map((p) => ({ ...p, ha: capital > 0 ? capital / p.inv : 0 }))
+    .filter((p) => p.ha >= 0.5)
+    .sort((a, b) => b.marge / b.pb - a.marge / a.pb)
     .slice(0, 3);
 }
 
