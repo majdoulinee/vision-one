@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -90,9 +90,7 @@ function InboxPage() {
                       {n.link && (
                         <>
                           <span>·</span>
-                          <Link to={n.link as any} className="text-primary underline">
-                            Ouvrir
-                          </Link>
+                          <span className="text-primary underline">Ouvrir</span>
                         </>
                       )}
                     </div>
