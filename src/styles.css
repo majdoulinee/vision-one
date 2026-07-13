@@ -5,17 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * Vision One — « L'almanach de campagne ».
+ * Editorial parchment palette. Hard shadows, sharp corners, no soft blur.
  */
 
 @theme inline {
@@ -59,79 +50,87 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-parch: var(--parch);
+  --color-parch-2: var(--parch-2);
+  --color-line: var(--line);
+  --color-mute: var(--mute);
+  --color-clay: var(--clay);
+  --color-ochre: var(--ochre);
+  --color-sky: var(--sky);
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-sans: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 :root {
-  --radius: 0.625rem;
-  /* AGRIPLAN — Agridata design system.
-     Primary = Forest Green #1B4332, Gold accent #C9A227, warm off-white bg. */
-  --background: oklch(0.985 0.005 90);
-  --foreground: oklch(0.22 0.02 150);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.02 150);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.02 150);
-  --primary: oklch(0.32 0.06 155);
-  --primary-foreground: oklch(0.985 0.005 90);
-  --secondary: oklch(0.94 0.02 135);
-  --secondary-foreground: oklch(0.28 0.05 155);
-  --muted: oklch(0.95 0.01 100);
-  --muted-foreground: oklch(0.48 0.02 150);
-  --accent: oklch(0.75 0.14 85);
-  --accent-foreground: oklch(0.22 0.05 90);
-  --destructive: oklch(0.55 0.22 27);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.9 0.015 130);
-  --input: oklch(0.9 0.015 130);
-  --ring: oklch(0.32 0.06 155);
-  --chart-1: oklch(0.32 0.06 155);
-  --chart-2: oklch(0.75 0.14 85);
-  --chart-3: oklch(0.55 0.09 200);
-  --chart-4: oklch(0.65 0.15 40);
-  --chart-5: oklch(0.5 0.05 300);
-  --sidebar: oklch(0.28 0.05 155);
-  --sidebar-foreground: oklch(0.97 0.01 90);
-  --sidebar-primary: oklch(0.75 0.14 85);
-  --sidebar-primary-foreground: oklch(0.22 0.05 90);
-  --sidebar-accent: oklch(0.35 0.06 155);
-  --sidebar-accent-foreground: oklch(0.97 0.01 90);
-  --sidebar-border: oklch(0.4 0.05 155);
-  --sidebar-ring: oklch(0.75 0.14 85);
+  --radius: 4px;
+  /* Vision One — L'almanach de campagne */
+  --ink: #12211A;
+  --ink-2: #1E3A2C;
+  --parch: #F3EFE3;
+  --parch-2: #E9E3D2;
+  --line: #D2C9B2;
+  --mute: #6B7367;
+  --clay: #C0552F;
+  --ochre: #D9A521;
+  --sky: #2E6E8E;
+
+  --background: #F3EFE3;
+  --foreground: #12211A;
+  --card: #FBF9F2;
+  --card-foreground: #12211A;
+  --popover: #FBF9F2;
+  --popover-foreground: #12211A;
+  --primary: #C0552F;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E9E3D2;
+  --secondary-foreground: #12211A;
+  --muted: #E9E3D2;
+  --muted-foreground: #6B7367;
+  --accent: #D9A521;
+  --accent-foreground: #12211A;
+  --destructive: #B23A1F;
+  --destructive-foreground: #FFFFFF;
+  --border: #D2C9B2;
+  --input: #D2C9B2;
+  --ring: #C0552F;
+  --chart-1: #C0552F;
+  --chart-2: #D9A521;
+  --chart-3: #2E6E8E;
+  --chart-4: #1E3A2C;
+  --chart-5: #6B7367;
+  --sidebar: #12211A;
+  --sidebar-foreground: #F3EFE3;
+  --sidebar-primary: #C0552F;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1E3A2C;
+  --sidebar-accent-foreground: #F3EFE3;
+  --sidebar-border: #1E3A2C;
+  --sidebar-ring: #D9A521;
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --background: #12211A;
+  --foreground: #F3EFE3;
+  --card: #1E3A2C;
+  --card-foreground: #F3EFE3;
+  --popover: #1E3A2C;
+  --popover-foreground: #F3EFE3;
+  --primary: #C0552F;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1E3A2C;
+  --secondary-foreground: #F3EFE3;
+  --muted: #1E3A2C;
+  --muted-foreground: #A9B8A7;
+  --accent: #D9A521;
+  --accent-foreground: #12211A;
+  --destructive: #E2705A;
+  --destructive-foreground: #12211A;
+  --border: rgba(255,255,255,0.14);
+  --input: rgba(255,255,255,0.14);
+  --ring: #D9A521;
 }
 
 @layer base {
@@ -142,5 +141,59 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, .font-display {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.06;
+  }
+}
+
+/* ---------- Utilities: L'almanach ---------- */
+
+@utility mono-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@utility hard-shadow {
+  box-shadow: 10px 10px 0 var(--parch-2);
+}
+
+@utility hard-shadow-ink {
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+@utility grain-overlay {
+  position: relative;
+  &::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.45;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E");
+  }
+}
+
+@keyframes bar-grow {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
   }
 }
