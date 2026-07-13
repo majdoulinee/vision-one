@@ -26,7 +26,9 @@ import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicVerifyDocIdRouteImport } from './routes/api/public/verify.$docId'
 import { Route as AuthenticatedAppProjectsNewRouteImport } from './routes/_authenticated/app.projects.new'
+import { Route as AuthenticatedAppComitePublishRouteImport } from './routes/_authenticated/app.comite.publish'
 import { Route as AuthenticatedAppComitePropositionsRouteImport } from './routes/_authenticated/app.comite.propositions'
+import { Route as AuthenticatedAppComiteBeeOneRouteImport } from './routes/_authenticated/app.comite.bee-one'
 import { Route as AuthenticatedAppBusinessPlansIdRouteImport } from './routes/_authenticated/app.business-plans.$id'
 import { Route as AuthenticatedAppBudgetsIdRouteImport } from './routes/_authenticated/app.budgets.$id'
 import { Route as AuthenticatedAppAdminUsersRouteImport } from './routes/_authenticated/app.admin.users'
@@ -128,10 +130,22 @@ const AuthenticatedAppProjectsNewRoute =
     path: '/app/projects/new',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAppComitePublishRoute =
+  AuthenticatedAppComitePublishRouteImport.update({
+    id: '/app/comite/publish',
+    path: '/app/comite/publish',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAppComitePropositionsRoute =
   AuthenticatedAppComitePropositionsRouteImport.update({
     id: '/app/comite/propositions',
     path: '/app/comite/propositions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAppComiteBeeOneRoute =
+  AuthenticatedAppComiteBeeOneRouteImport.update({
+    id: '/app/comite/bee-one',
+    path: '/app/comite/bee-one',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppBusinessPlansIdRoute =
@@ -225,7 +239,9 @@ export interface FileRoutesByFullPath {
   '/app/admin/users': typeof AuthenticatedAppAdminUsersRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
+  '/app/comite/bee-one': typeof AuthenticatedAppComiteBeeOneRoute
   '/app/comite/propositions': typeof AuthenticatedAppComitePropositionsRoute
+  '/app/comite/publish': typeof AuthenticatedAppComitePublishRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
@@ -255,7 +271,9 @@ export interface FileRoutesByTo {
   '/app/admin/users': typeof AuthenticatedAppAdminUsersRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
+  '/app/comite/bee-one': typeof AuthenticatedAppComiteBeeOneRoute
   '/app/comite/propositions': typeof AuthenticatedAppComitePropositionsRoute
+  '/app/comite/publish': typeof AuthenticatedAppComitePublishRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
@@ -287,7 +305,9 @@ export interface FileRoutesById {
   '/_authenticated/app/admin/users': typeof AuthenticatedAppAdminUsersRoute
   '/_authenticated/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/_authenticated/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
+  '/_authenticated/app/comite/bee-one': typeof AuthenticatedAppComiteBeeOneRoute
   '/_authenticated/app/comite/propositions': typeof AuthenticatedAppComitePropositionsRoute
+  '/_authenticated/app/comite/publish': typeof AuthenticatedAppComitePublishRoute
   '/_authenticated/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/_authenticated/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
@@ -319,7 +339,9 @@ export interface FileRouteTypes {
     | '/app/admin/users'
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
+    | '/app/comite/bee-one'
     | '/app/comite/propositions'
+    | '/app/comite/publish'
     | '/app/projects/new'
     | '/api/public/verify/$docId'
     | '/app/credits/requests/$id'
@@ -349,7 +371,9 @@ export interface FileRouteTypes {
     | '/app/admin/users'
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
+    | '/app/comite/bee-one'
     | '/app/comite/propositions'
+    | '/app/comite/publish'
     | '/app/projects/new'
     | '/api/public/verify/$docId'
     | '/app/credits/requests/$id'
@@ -380,7 +404,9 @@ export interface FileRouteTypes {
     | '/_authenticated/app/admin/users'
     | '/_authenticated/app/budgets/$id'
     | '/_authenticated/app/business-plans/$id'
+    | '/_authenticated/app/comite/bee-one'
     | '/_authenticated/app/comite/propositions'
+    | '/_authenticated/app/comite/publish'
     | '/_authenticated/app/projects/new'
     | '/api/public/verify/$docId'
     | '/_authenticated/app/credits/requests/$id'
@@ -522,11 +548,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppProjectsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/comite/publish': {
+      id: '/_authenticated/app/comite/publish'
+      path: '/app/comite/publish'
+      fullPath: '/app/comite/publish'
+      preLoaderRoute: typeof AuthenticatedAppComitePublishRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/app/comite/propositions': {
       id: '/_authenticated/app/comite/propositions'
       path: '/app/comite/propositions'
       fullPath: '/app/comite/propositions'
       preLoaderRoute: typeof AuthenticatedAppComitePropositionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/comite/bee-one': {
+      id: '/_authenticated/app/comite/bee-one'
+      path: '/app/comite/bee-one'
+      fullPath: '/app/comite/bee-one'
+      preLoaderRoute: typeof AuthenticatedAppComiteBeeOneRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/app/business-plans/$id': {
@@ -639,7 +679,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppAdminUsersRoute: typeof AuthenticatedAppAdminUsersRoute
   AuthenticatedAppBudgetsIdRoute: typeof AuthenticatedAppBudgetsIdRoute
   AuthenticatedAppBusinessPlansIdRoute: typeof AuthenticatedAppBusinessPlansIdRoute
+  AuthenticatedAppComiteBeeOneRoute: typeof AuthenticatedAppComiteBeeOneRoute
   AuthenticatedAppComitePropositionsRoute: typeof AuthenticatedAppComitePropositionsRoute
+  AuthenticatedAppComitePublishRoute: typeof AuthenticatedAppComitePublishRoute
   AuthenticatedAppProjectsNewRoute: typeof AuthenticatedAppProjectsNewRoute
   AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute: typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
@@ -660,8 +702,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppAdminUsersRoute: AuthenticatedAppAdminUsersRoute,
   AuthenticatedAppBudgetsIdRoute: AuthenticatedAppBudgetsIdRoute,
   AuthenticatedAppBusinessPlansIdRoute: AuthenticatedAppBusinessPlansIdRoute,
+  AuthenticatedAppComiteBeeOneRoute: AuthenticatedAppComiteBeeOneRoute,
   AuthenticatedAppComitePropositionsRoute:
     AuthenticatedAppComitePropositionsRoute,
+  AuthenticatedAppComitePublishRoute: AuthenticatedAppComitePublishRoute,
   AuthenticatedAppProjectsNewRoute: AuthenticatedAppProjectsNewRoute,
   AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute:
     AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute,
