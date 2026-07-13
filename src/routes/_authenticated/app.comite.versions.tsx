@@ -17,7 +17,7 @@ function View() {
       const { data, error } = await supabase
         .from("ref_versions")
         .select("*")
-        .eq("publiee", true)
+        .not("publiee_le", "is", null)
         .order("publiee_le", { ascending: false });
       if (error) throw error;
       return data ?? [];
