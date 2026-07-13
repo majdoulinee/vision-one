@@ -60,7 +60,7 @@ function RefConsole() {
     try {
       const { error } = await supabase
         .from("ref_versions")
-        .insert({ version: newVersion, status: "draft", notes: null });
+        .insert({ version: newVersion, status: "draft", notes: null } as any);
       if (error) throw error;
       toast.success("OK");
       setNewVersion("");

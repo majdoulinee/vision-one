@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAppReferentielRouteImport } from './routes/_authenticated/app.referentiel'
 import { Route as AuthenticatedAppEngineTestRouteImport } from './routes/_authenticated/app.engine-test'
 import { Route as AuthenticatedAppProjectsNewRouteImport } from './routes/_authenticated/app.projects.new'
 import { Route as AuthenticatedAppBusinessPlansIdRouteImport } from './routes/_authenticated/app.business-plans.$id'
@@ -50,6 +51,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppReferentielRoute =
+  AuthenticatedAppReferentielRouteImport.update({
+    id: '/app/referentiel',
+    path: '/app/referentiel',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAppEngineTestRoute =
   AuthenticatedAppEngineTestRouteImport.update({
     id: '/app/engine-test',
@@ -88,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/app/engine-test': typeof AuthenticatedAppEngineTestRoute
+  '/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
@@ -100,6 +108,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/app/engine-test': typeof AuthenticatedAppEngineTestRoute
+  '/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
@@ -114,6 +123,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/_authenticated/app/engine-test': typeof AuthenticatedAppEngineTestRoute
+  '/_authenticated/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/_authenticated/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/_authenticated/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/_authenticated/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/invite/$token'
     | '/app/engine-test'
+    | '/app/referentiel'
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
     | '/app/projects/new'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/invite/$token'
     | '/app/engine-test'
+    | '/app/referentiel'
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
     | '/app/projects/new'
@@ -153,6 +165,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/invite/$token'
     | '/_authenticated/app/engine-test'
+    | '/_authenticated/app/referentiel'
     | '/_authenticated/app/budgets/$id'
     | '/_authenticated/app/business-plans/$id'
     | '/_authenticated/app/projects/new'
@@ -210,6 +223,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/referentiel': {
+      id: '/_authenticated/app/referentiel'
+      path: '/app/referentiel'
+      fullPath: '/app/referentiel'
+      preLoaderRoute: typeof AuthenticatedAppReferentielRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/app/engine-test': {
       id: '/_authenticated/app/engine-test'
       path: '/app/engine-test'
@@ -252,6 +272,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedAppEngineTestRoute: typeof AuthenticatedAppEngineTestRoute
+  AuthenticatedAppReferentielRoute: typeof AuthenticatedAppReferentielRoute
   AuthenticatedAppBudgetsIdRoute: typeof AuthenticatedAppBudgetsIdRoute
   AuthenticatedAppBusinessPlansIdRoute: typeof AuthenticatedAppBusinessPlansIdRoute
   AuthenticatedAppProjectsNewRoute: typeof AuthenticatedAppProjectsNewRoute
@@ -262,6 +283,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedAppEngineTestRoute: AuthenticatedAppEngineTestRoute,
+  AuthenticatedAppReferentielRoute: AuthenticatedAppReferentielRoute,
   AuthenticatedAppBudgetsIdRoute: AuthenticatedAppBudgetsIdRoute,
   AuthenticatedAppBusinessPlansIdRoute: AuthenticatedAppBusinessPlansIdRoute,
   AuthenticatedAppProjectsNewRoute: AuthenticatedAppProjectsNewRoute,
