@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ComiteShell } from "@/components/agriplan/ComiteShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Lock } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/comite/versions")({
@@ -66,7 +67,7 @@ function View() {
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="font-serif font-semibold text-lg text-ink">v{v.version}</span>
-                  <span className="mono-eyebrow bg-ochre text-ink rounded-sm px-1.5 py-0.5">publiée · immuable</span>
+                  <Badge variant="ochre">publiée · immuable</Badge>
                 </div>
                 {v.note_publication && <p className="text-sm text-muted-foreground italic max-w-2xl">« {v.note_publication} »</p>}
                 <div className="text-xs text-muted-foreground">
