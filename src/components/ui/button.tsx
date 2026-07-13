@@ -16,6 +16,12 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        ink: "rounded-sm bg-ink text-parch hover:bg-ink-2",
+        ochre: "rounded-sm bg-ochre text-ink hover:bg-ochre/90",
+        clay: "rounded-sm bg-clay text-parch hover:bg-clay/90",
+        sky: "rounded-sm bg-sky text-parch hover:bg-sky/90",
+        "outline-ink":
+          "rounded-sm border border-line bg-parch text-ink hover:bg-parch-2",
       },
       size: {
         default: "h-9 px-4 py-2",
