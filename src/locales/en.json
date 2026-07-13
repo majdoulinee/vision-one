@@ -65,5 +65,99 @@
   "dashboard": {
     "title": "Dashboard",
     "empty": "No project yet. Create your first project to get started."
-  }
+  },
+  "nav2": { "newProject": "New project", "referentiel": "Reference data" },
+  "wizard": {
+    "title": "New project",
+    "modeClassique": "I have a project",
+    "modeClassiqueDesc": "You know the zone and surface. We recommend profiles.",
+    "modeInverse": "I have capital",
+    "modeInverseDesc": "You know your capital. We compute reachable surfaces.",
+    "name": "Project name",
+    "zone": "Zone",
+    "surface": "Surface (ha)",
+    "capital": "Available capital (MAD)",
+    "capitalOpt": "Available capital (MAD, optional)",
+    "horizon": "Horizon (years)",
+    "orientation": "Orientation",
+    "risk": "Risk appetite",
+    "next": "Continue",
+    "back": "Back",
+    "results": "Recommendations",
+    "reachableSurface": "Reachable surface",
+    "totalBudget": "Indicative total budget",
+    "score": "Score",
+    "seePrefaisa": "Pre-feasibility (free)",
+    "generate": "Generate budget & BP (1 credit)",
+    "noResults": "No profile matches the criteria."
+  },
+  "orient": { "export": "Export", "local": "Local", "mixte": "Mixed" },
+  "risk": { "faible": "Low", "moyen": "Medium", "eleve": "High" },
+  "mappingStatus": { "optimal": "Optimal zone", "possible": "Eligible zone", "eligible": "Eligible zone", "exclu": "Excluded" },
+  "provenance": { "bee_one": "Bee One (real data)", "comite_experts": "Expert committee" },
+  "prefa": {
+    "title": "Pre-feasibility",
+    "banner": "Indicative pre-feasibility — generate the full budget and business plan for a bankable document.",
+    "econTable": "Normative margin per ha",
+    "ca": "Revenue", "opex": "Costs (OPEX)", "amort": "Depreciation", "ebitda": "EBITDA", "marge": "Net margin",
+    "generate": "Generate budget & BP (1 credit)",
+    "backToWizard": "Back to recommendations"
+  },
+  "budget": {
+    "title": "Campaign budget",
+    "recettes": "Revenue", "charges": "Costs", "marge": "Campaign margin", "production": "Production",
+    "coutHa": "Cost / ha", "coutKg": "Cost / kg", "besoinTreso": "Max cash need",
+    "cashChart": "Weekly cash flow", "weeklyTable": "Weekly breakdown",
+    "week": "Wk", "weekCal": "Cal. wk", "totalCharges": "Total costs",
+    "productionKg": "Production (kg)", "netFlux": "Net flow", "cumul": "Cumulative cash",
+    "totalRow": "Total", "hypAndReforecast": "Assumptions & re-forecast",
+    "yield": "Yield (kg/ha)", "price": "Sale price (MAD/kg)", "startWeek": "Start week", "coef": "Coefficient",
+    "reforecast": "Re-forecast", "overridesActive": "Active overrides", "restore": "Restore",
+    "originalValue": "Original value", "byOn": "by {{author}} on {{date}}",
+    "forcedBadge": "{{count}} forced assumption(s)",
+    "exportPdf": "Export verifiable PDF", "exportPdfTip": "Available in Part D",
+    "readonly": "Read-only", "campagne": "Campaign", "surface": "Surface", "profile": "Profile", "refVersion": "Reference version"
+  },
+  "bp": {
+    "title": "Business plan",
+    "scenario": { "conservateur": "Conservative", "base": "Base", "optimiste": "Optimistic" },
+    "van": "NPV", "tri": "IRR", "payback": "Payback", "years": "years",
+    "coutHaAvg": "Avg cost / ha", "coutKgAvg": "Avg cost / kg", "pointMort": "Break-even (kg/yr)",
+    "yearTable": "Yearly detail",
+    "colYear": "Year", "colCa": "Revenue", "colOpex": "OPEX", "colCap": "Capitalized",
+    "colEbitda": "EBITDA", "colAmort": "Depreciation", "colDette": "Debt service",
+    "colResultat": "Net income", "colBfr": "WC", "colCf": "Cash flow", "colCumul": "Cumulative cash",
+    "peryearChart": "Annual cash flow",
+    "invest": "Investment plan (per ha)",
+    "greenhouses": "Greenhouses", "irrigation": "Irrigation", "plantation": "Plantation", "machinery": "Machinery",
+    "totalInvest": "Total investment", "financing": "Financing", "equity": "Equity", "debt": "Debt",
+    "debtRate": "Rate", "debtDuration": "Duration", "annuity": "Annuity",
+    "finHyp": "Financial assumptions", "discountRate": "Discount rate", "debtShare": "Debt share", "recompute": "Recompute",
+    "perennialBanner": "Years 1–{{n}}: development phase — costs capitalized as biological asset ({{amount}}), amortized thereafter."
+  },
+  "wallet": {
+    "credits": "Credits", "insufficient": "Insufficient balance",
+    "insufficientDesc": "You need at least 1 credit to generate a budget and business plan.",
+    "recharge": "Recharge (demo)", "recharged": "5 credits added"
+  },
+  "projects": {
+    "list": "Your projects", "new": "New project",
+    "budgetOk": "Budget ✓", "bpOk": "BP ✓", "created": "Created",
+    "contreExpertise": "Counter-expertise",
+    "contreExpertiseDesc": "Analyze submitted business plans against the reference norms. Available in V2.",
+    "empty": "No project yet.", "refPublished": "Published version"
+  },
+  "referentiel": {
+    "title": "Reference console", "subtitle": "For platform admins and expert committee only.",
+    "published": "Published version",
+    "counts": "{{zones}} zones · {{profils}} profiles · {{mappings}} mappings",
+    "downloadTemplates": "Download Excel templates",
+    "importZones": "Zones", "importProfils": "Profiles",
+    "importNormes": "Weekly norms", "importMappings": "Mappings",
+    "dropFile": "Click to upload a .xlsx file",
+    "preview": "Preview", "errors": "Validation errors", "import": "Import",
+    "versionLabel": "New reference version", "versionPlaceholder": "e.g. 2026.3",
+    "importSuccess": "Import succeeded: {{n}} rows", "importFailed": "Import failed", "denied": "Access denied"
+  },
+  "misc": { "perennial": "Perennial · {{n}} years before production", "annual": "Annual crop", "sample": "Sample" }
 }

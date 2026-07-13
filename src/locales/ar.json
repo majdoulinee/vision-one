@@ -65,5 +65,91 @@
   "dashboard": {
     "title": "لوحة التحكم",
     "empty": "لا يوجد مشروع بعد. أنشئ مشروعك الأول للبدء."
-  }
+  },
+  "nav2": { "newProject": "مشروع جديد", "referentiel": "المرجعية" },
+  "wizard": {
+    "title": "مشروع جديد",
+    "modeClassique": "لدي مشروع",
+    "modeClassiqueDesc": "تعرف المنطقة والمساحة. نوصي بالملفات المناسبة.",
+    "modeInverse": "لدي رأس مال",
+    "modeInverseDesc": "تعرف رأس مالك. نحسب المساحات الممكنة.",
+    "name": "اسم المشروع", "zone": "المنطقة", "surface": "المساحة (هكتار)",
+    "capital": "رأس المال المتاح (درهم)", "capitalOpt": "رأس المال (درهم، اختياري)",
+    "horizon": "الأفق (سنوات)", "orientation": "الوجهة", "risk": "درجة المخاطرة",
+    "next": "متابعة", "back": "رجوع", "results": "التوصيات",
+    "reachableSurface": "المساحة القابلة للتحقيق", "totalBudget": "الميزانية الإجمالية التقديرية",
+    "score": "النتيجة", "seePrefaisa": "دراسة أولية (مجانية)",
+    "generate": "إنشاء الميزانية وخطة العمل (رصيد واحد)",
+    "noResults": "لا يوجد ملف يطابق المعايير."
+  },
+  "orient": { "export": "تصدير", "local": "محلي", "mixte": "مختلط" },
+  "risk": { "faible": "منخفضة", "moyen": "متوسطة", "eleve": "مرتفعة" },
+  "mappingStatus": { "optimal": "منطقة مثلى", "possible": "منطقة مؤهلة", "eligible": "منطقة مؤهلة", "exclu": "مستبعدة" },
+  "provenance": { "bee_one": "Bee One (بيانات حقيقية)", "comite_experts": "لجنة الخبراء" },
+  "prefa": {
+    "title": "الدراسة الأولية",
+    "banner": "دراسة أولية تقديرية — أنشئ الميزانية الكاملة وخطة العمل للحصول على وثيقة قابلة للتمويل.",
+    "econTable": "الهامش المعياري لكل هكتار",
+    "ca": "رقم المعاملات", "opex": "التكاليف", "amort": "الاستهلاك", "ebitda": "الفائض التشغيلي", "marge": "الهامش الصافي",
+    "generate": "إنشاء الميزانية وخطة العمل (رصيد واحد)",
+    "backToWizard": "العودة إلى التوصيات"
+  },
+  "budget": {
+    "title": "ميزانية الموسم",
+    "recettes": "المداخيل", "charges": "التكاليف", "marge": "هامش الموسم", "production": "الإنتاج",
+    "coutHa": "التكلفة/هكتار", "coutKg": "التكلفة/كغ", "besoinTreso": "الحاجة القصوى للسيولة",
+    "cashChart": "التدفق الأسبوعي", "weeklyTable": "التفصيل الأسبوعي",
+    "week": "أسبوع", "weekCal": "أسبوع تقويمي", "totalCharges": "مجموع التكاليف",
+    "productionKg": "الإنتاج (كغ)", "netFlux": "التدفق الصافي", "cumul": "الرصيد التراكمي",
+    "totalRow": "المجموع", "hypAndReforecast": "الفرضيات وإعادة التوقع",
+    "yield": "المردودية (كغ/هكتار)", "price": "سعر البيع (درهم/كغ)",
+    "startWeek": "أسبوع البدء", "coef": "معامل", "reforecast": "إعادة التوقع",
+    "overridesActive": "الفرضيات المفروضة", "restore": "استعادة",
+    "originalValue": "القيمة الأصلية", "byOn": "من طرف {{author}} في {{date}}",
+    "forcedBadge": "{{count}} فرضية مفروضة",
+    "exportPdf": "تصدير PDF قابل للتحقق", "exportPdfTip": "متاح في الجزء D",
+    "readonly": "قراءة فقط", "campagne": "الموسم", "surface": "المساحة", "profile": "الملف", "refVersion": "إصدار المرجعية"
+  },
+  "bp": {
+    "title": "خطة العمل",
+    "scenario": { "conservateur": "متحفظ", "base": "أساسي", "optimiste": "متفائل" },
+    "van": "ق.ح.ص", "tri": "م.ع.د", "payback": "الاسترداد", "years": "سنوات",
+    "coutHaAvg": "متوسط التكلفة/هكتار", "coutKgAvg": "متوسط التكلفة/كغ", "pointMort": "نقطة التعادل (كغ/سنة)",
+    "yearTable": "التفصيل السنوي",
+    "colYear": "السنة", "colCa": "المداخيل", "colOpex": "التكاليف", "colCap": "مرسمل",
+    "colEbitda": "EBITDA", "colAmort": "استهلاك", "colDette": "خدمة الدين",
+    "colResultat": "النتيجة", "colBfr": "احتياج التشغيل", "colCf": "التدفق النقدي", "colCumul": "التراكم النقدي",
+    "peryearChart": "التدفق النقدي السنوي",
+    "invest": "خطة الاستثمار (لكل هكتار)",
+    "greenhouses": "بيوت زراعية", "irrigation": "الري", "plantation": "الغراسة", "machinery": "المعدات",
+    "totalInvest": "إجمالي الاستثمار", "financing": "التمويل", "equity": "الأموال الذاتية", "debt": "الدين",
+    "debtRate": "المعدل", "debtDuration": "المدة", "annuity": "القسط",
+    "finHyp": "الفرضيات المالية", "discountRate": "معدل الخصم", "debtShare": "نسبة الدين", "recompute": "إعادة الحساب",
+    "perennialBanner": "السنوات 1–{{n}}: مرحلة التهيئة — التكاليف مرسملة كأصل بيولوجي ({{amount}})، مستهلكة لاحقاً."
+  },
+  "wallet": {
+    "credits": "الأرصدة", "insufficient": "رصيد غير كاف",
+    "insufficientDesc": "تحتاج إلى رصيد واحد على الأقل لإنشاء ميزانية وخطة عمل.",
+    "recharge": "شحن (تجريبي)", "recharged": "تمت إضافة 5 أرصدة"
+  },
+  "projects": {
+    "list": "مشاريعك", "new": "مشروع جديد",
+    "budgetOk": "الميزانية ✓", "bpOk": "خ.ع. ✓", "created": "أُنشئ",
+    "contreExpertise": "الخبرة المضادة",
+    "contreExpertiseDesc": "حلل خطط الأعمال المقدمة مقارنة بالمعايير المرجعية. متاح في V2.",
+    "empty": "لا يوجد مشروع بعد.", "refPublished": "الإصدار المنشور"
+  },
+  "referentiel": {
+    "title": "وحدة تحكم المرجعية", "subtitle": "مخصصة لمسؤولي المنصة ولجنة الخبراء.",
+    "published": "الإصدار المنشور",
+    "counts": "{{zones}} مناطق · {{profils}} ملفات · {{mappings}} تخصيصات",
+    "downloadTemplates": "تنزيل قوالب Excel",
+    "importZones": "المناطق", "importProfils": "الملفات",
+    "importNormes": "المعايير الأسبوعية", "importMappings": "التخصيصات",
+    "dropFile": "انقر لتحميل ملف .xlsx",
+    "preview": "معاينة", "errors": "أخطاء التحقق", "import": "استيراد",
+    "versionLabel": "إصدار مرجعية جديد", "versionPlaceholder": "مثال 2026.3",
+    "importSuccess": "نجح الاستيراد: {{n}} سطر", "importFailed": "فشل الاستيراد", "denied": "الوصول مرفوض"
+  },
+  "misc": { "perennial": "دائمة · {{n}} سنوات قبل الإنتاج", "annual": "محصول سنوي", "sample": "عينة" }
 }
