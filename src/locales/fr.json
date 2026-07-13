@@ -119,7 +119,9 @@
   },
   "nav2": {
     "newProject": "Nouveau projet",
-    "referentiel": "Référentiel"
+    "referentiel": "Référentiel",
+    "credits": "Mes crédits",
+    "adminCredits": "Admin crédits"
   },
   "wizard": {
     "title": "Nouveau projet",

@@ -104,7 +104,7 @@
     "title": "Dashboard",
     "empty": "No project yet. Create your first project to get started."
   },
-  "nav2": { "newProject": "New project", "referentiel": "Reference data" },
+  "nav2": { "newProject": "New project", "referentiel": "Reference data", "credits": "My credits", "adminCredits": "Admin credits" },
   "wizard": {
     "title": "New project",
     "modeClassique": "I have a project",

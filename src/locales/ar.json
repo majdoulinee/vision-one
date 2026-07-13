@@ -108,7 +108,7 @@
     "title": "لوحة التحكم",
     "empty": "لا يوجد مشروع بعد. أنشئ مشروعك الأول للبدء."
   },
-  "nav2": { "newProject": "مشروع جديد", "referentiel": "المرجعية" },
+  "nav2": { "newProject": "مشروع جديد", "referentiel": "المرجعية", "credits": "أرصدتي", "adminCredits": "إدارة الأرصدة" },
   "wizard": {
     "title": "مشروع جديد",
     "modeClassique": "لدي مشروع",
