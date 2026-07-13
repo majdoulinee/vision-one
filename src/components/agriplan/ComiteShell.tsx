@@ -27,32 +27,40 @@ export function ComiteShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border overflow-hidden" style={{ background: "#12211A", color: "#F3EFE3" }}>
+      <div className="rounded-sm border border-ink bg-ink text-parch overflow-hidden hard-shadow-ink">
         <div className="flex flex-wrap items-center gap-4 px-4 py-3">
-          <div className="flex items-center gap-2 font-semibold">
-            <Landmark className="h-4 w-4" />
-            <span>VISION ONE</span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.15em] rounded px-2 py-0.5" style={{ background: "#D9A521", color: "#12211A" }}>Comité d'experts</span>
+          <div className="flex items-center gap-2 font-serif text-base">
+            <Landmark className="h-4 w-4 text-ochre" />
+            <span className="tracking-tight">Vision One</span>
+            <span className="mono-eyebrow bg-ochre text-ink rounded-sm px-2 py-0.5">Comité d'experts</span>
           </div>
           <nav className="flex flex-wrap items-center gap-1 ml-auto">
             {TABS.map((t) => {
               const active = loc.pathname.startsWith(t.to);
               return (
-                <Link key={t.to} to={t.to as any} className={`px-3 py-1.5 text-xs font-medium rounded-sm transition-colors ${active ? "bg-white/15 text-white" : "text-white/70 hover:bg-white/10 hover:text-white"}`}>
+                <Link
+                  key={t.to}
+                  to={t.to as any}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-sm transition-colors ${
+                    active
+                      ? "bg-parch/15 text-parch"
+                      : "text-parch/70 hover:bg-parch/10 hover:text-parch"
+                  }`}
+                >
                   {t.label}
                 </Link>
               );
             })}
           </nav>
         </div>
-        <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-t border-white/10 text-[10px] font-mono uppercase tracking-[0.12em]" style={{ background: "rgba(255,255,255,0.03)" }}>
+        <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-t border-parch/10 bg-parch/5">
           {PIPELINE.map((s, i) => (
             <span key={s} className="flex items-center gap-2">
-              <span className="px-1.5 py-0.5 rounded-sm" style={{ background: "rgba(217,165,33,0.15)", color: "#F3EFE3" }}>{s}</span>
-              {i < PIPELINE.length - 1 && <span className="opacity-40">→</span>}
+              <span className="mono-eyebrow bg-ochre/15 text-parch rounded-sm px-1.5 py-0.5">{s}</span>
+              {i < PIPELINE.length - 1 && <span className="text-parch/40">→</span>}
             </span>
           ))}
-          <span className="ml-auto normal-case tracking-normal text-[11px] italic opacity-70">
+          <span className="ml-auto font-serif italic text-parch/70 text-[12px]">
             Double validation : le comité valide le fond, l'admin approuve la gouvernance. Personne ne publie seul.
           </span>
         </div>
