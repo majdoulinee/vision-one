@@ -30,13 +30,13 @@
     "signingUp": "Inscription..."
   },
   "orgType": {
-    "farm": "Exploitation agricole",
+    "ferme": "Exploitation agricole",
     "cooperative": "Coopérative",
-    "consulting": "Bureau de conseil",
-    "bank": "Banque / IMF",
-    "ngo": "ONG / Bailleur",
-    "public": "Institution publique",
-    "academic": "Académique / Recherche"
+    "banque": "Banque / IMF",
+    "assureur": "Assureur",
+    "organisme_public": "Institution publique",
+    "groupe": "Groupe / Bureau conseil",
+    "autre": "Autre"
   },
   "settings": {
     "title": "Paramètres",

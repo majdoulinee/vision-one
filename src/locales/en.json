@@ -27,13 +27,13 @@
     "signingUp": "Signing up..."
   },
   "orgType": {
-    "farm": "Farm",
+    "ferme": "Farm",
     "cooperative": "Cooperative",
-    "consulting": "Consulting firm",
-    "bank": "Bank / MFI",
-    "ngo": "NGO / Donor",
-    "public": "Public institution",
-    "academic": "Academic / Research"
+    "banque": "Bank / MFI",
+    "assureur": "Insurer",
+    "organisme_public": "Public institution",
+    "groupe": "Group / Consulting",
+    "autre": "Other"
   },
   "settings": {
     "title": "Settings",
