@@ -9,6 +9,7 @@ import { OrgSwitcher } from "./OrgSwitcher";
 import { usePlatformRole } from "@/hooks/use-platform-role";
 import { BrandLogo } from "./BrandLogo";
 import { CreditBadge } from "./CreditBadge";
+import { useLowCreditAlert } from "@/hooks/use-low-credit-alert";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
@@ -16,6 +17,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: platformRole } = usePlatformRole();
+  useLowCreditAlert();
 
   async function signOut() {
     await qc.cancelQueries();

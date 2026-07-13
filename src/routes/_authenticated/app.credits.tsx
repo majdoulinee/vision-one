@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { Coins, ArrowLeft, Info } from "lucide-react";
 import { BackButton } from "@/components/agriplan/BackButton";
+import { CreditStatusBadge } from "@/components/agriplan/CreditStatusBadge";
 
 export const Route = createFileRoute("/_authenticated/app/credits")({
   ssr: false,
@@ -148,16 +149,35 @@ function CreditsPage() {
               </thead>
               <tbody className="divide-y">
                 {requests.data!.map((r) => (
-                  <tr key={r.id}>
-                    <td className="p-2">{new Date(r.created_at).toLocaleDateString()}</td>
-                    <td className="p-2">{r.pack}</td>
-                    <td className="p-2 text-end tabular-nums">{r.credits}</td>
-                    <td className="p-2 text-end tabular-nums">{r.montant_mad ? `${r.montant_mad} MAD` : "—"}</td>
+                  <tr key={r.id} className="hover:bg-muted/40 cursor-pointer">
+                    <td className="p-0">
+                      <Link to="/app/credits/requests/$id" params={{ id: r.id }} className="block p-2">
+                        {new Date(r.created_at).toLocaleDateString()}
+                      </Link>
+                    </td>
+                    <td className="p-0">
+                      <Link to="/app/credits/requests/$id" params={{ id: r.id }} className="block p-2 capitalize">
+                        {r.pack}
+                      </Link>
+                    </td>
+                    <td className="p-0 text-end tabular-nums">
+                      <Link to="/app/credits/requests/$id" params={{ id: r.id }} className="block p-2">
+                        {r.credits}
+                      </Link>
+                    </td>
+                    <td className="p-0 text-end tabular-nums">
+                      <Link to="/app/credits/requests/$id" params={{ id: r.id }} className="block p-2">
+                        {r.montant_mad ? `${r.montant_mad} MAD` : "—"}
+                      </Link>
+                    </td>
                     <td className="p-2">
-                      <StatutBadge s={r.statut} />
-                      {r.statut === "refusee" && r.motif_refus && (
-                        <div className="text-xs text-muted-foreground mt-0.5">{r.motif_refus}</div>
-                      )}
+                      <Link to="/app/credits/requests/$id" params={{ id: r.id }} className="inline-flex flex-col gap-0.5">
+                        <CreditStatusBadge s={r.statut} />
+                        {r.statut === "refusee" && r.motif_refus && (
+                          <span className="text-xs text-muted-foreground">{r.motif_refus}</span>
+                        )}
+                        <span className="text-[10px] uppercase tracking-wide text-primary/70">Détails →</span>
+                      </Link>
                     </td>
                   </tr>
                 ))}
