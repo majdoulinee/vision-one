@@ -13,7 +13,7 @@ export type Poste = (typeof POSTES)[number];
 
 export type Orientation = "export" | "local" | "mixte";
 export type Risque = "faible" | "moyen" | "eleve";
-export type MappingStatut = "optimal" | "possible" | "exclu";
+export type MappingStatut = "optimal" | "eligible" | "exclu";
 
 export interface Profil {
   code: string;
