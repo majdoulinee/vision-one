@@ -303,6 +303,7 @@ export type Database = {
       }
       organizations: {
         Row: {
+          country: string | null
           created_at: string
           created_by: string
           id: string
@@ -311,6 +312,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          country?: string | null
           created_at?: string
           created_by: string
           id?: string
@@ -319,6 +321,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          country?: string | null
           created_at?: string
           created_by?: string
           id?: string
@@ -377,6 +380,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          email: string | null
           full_name: string | null
           id: string
           locale: Database["public"]["Enums"]["locale_code"]
@@ -385,6 +389,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id: string
           locale?: Database["public"]["Enums"]["locale_code"]
@@ -393,6 +398,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
           locale?: Database["public"]["Enums"]["locale_code"]
