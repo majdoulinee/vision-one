@@ -41,7 +41,14 @@ export function recommend(
     const map = mappings.find(
       (m) => m.profil_code === p.code && m.zone_code === zoneCode,
     );
-    const statut = map ? map.statut : "exclu";
+    // Compat : anciennes valeurs 'possible' / 'deconseille' + valeurs spec 'eligible' / 'exclu'
+    const rawStatut = (map?.statut ?? "exclu") as string;
+    const statut =
+      rawStatut === "deconseille" || rawStatut === "exclu"
+        ? "exclu"
+        : rawStatut === "optimal"
+          ? "optimal"
+          : "eligible";
     if (statut === "exclu") continue;
     const eco = margeNormativeHa(
       p,

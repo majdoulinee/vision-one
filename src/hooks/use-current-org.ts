@@ -7,7 +7,7 @@ const LS_KEY = "agriplan.currentOrgId";
 
 export type OrgMembership = {
   org_id: string;
-  role: "owner" | "admin" | "editor" | "viewer";
+  role: "owner" | "admin" | "editor" | "member" | "viewer";
   org: {
     id: string;
     name: string;
