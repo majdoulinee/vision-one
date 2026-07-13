@@ -32,6 +32,7 @@ import { Route as AuthenticatedAppAdminUsersRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppAdminPlansRouteImport } from './routes/_authenticated/app.admin.plans'
 import { Route as AuthenticatedAppAdminOrganizationsRouteImport } from './routes/_authenticated/app.admin.organizations'
 import { Route as AuthenticatedAppAdminCreditsRouteImport } from './routes/_authenticated/app.admin.credits'
+import { Route as AuthenticatedAppAdminConsultantsRouteImport } from './routes/_authenticated/app.admin.consultants'
 import { Route as AuthenticatedAppCreditsRequestsIdRouteImport } from './routes/_authenticated/app.credits.requests.$id'
 import { Route as AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRouteImport } from './routes/_authenticated/app.projects.$id.prefaisabilite.$profilCode'
 
@@ -160,6 +161,12 @@ const AuthenticatedAppAdminCreditsRoute =
     path: '/app/admin/credits',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAppAdminConsultantsRoute =
+  AuthenticatedAppAdminConsultantsRouteImport.update({
+    id: '/app/admin/consultants',
+    path: '/app/admin/consultants',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAppCreditsRequestsIdRoute =
   AuthenticatedAppCreditsRequestsIdRouteImport.update({
     id: '/requests/$id',
@@ -188,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/app/inbox': typeof AuthenticatedAppInboxRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
+  '/app/admin/consultants': typeof AuthenticatedAppAdminConsultantsRoute
   '/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
   '/app/admin/organizations': typeof AuthenticatedAppAdminOrganizationsRoute
   '/app/admin/plans': typeof AuthenticatedAppAdminPlansRoute
@@ -214,6 +222,7 @@ export interface FileRoutesByTo {
   '/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/app/inbox': typeof AuthenticatedAppInboxRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
+  '/app/admin/consultants': typeof AuthenticatedAppAdminConsultantsRoute
   '/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
   '/app/admin/organizations': typeof AuthenticatedAppAdminOrganizationsRoute
   '/app/admin/plans': typeof AuthenticatedAppAdminPlansRoute
@@ -242,6 +251,7 @@ export interface FileRoutesById {
   '/_authenticated/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/_authenticated/app/inbox': typeof AuthenticatedAppInboxRoute
   '/_authenticated/app/referentiel': typeof AuthenticatedAppReferentielRoute
+  '/_authenticated/app/admin/consultants': typeof AuthenticatedAppAdminConsultantsRoute
   '/_authenticated/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
   '/_authenticated/app/admin/organizations': typeof AuthenticatedAppAdminOrganizationsRoute
   '/_authenticated/app/admin/plans': typeof AuthenticatedAppAdminPlansRoute
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/app/credits'
     | '/app/inbox'
     | '/app/referentiel'
+    | '/app/admin/consultants'
     | '/app/admin/credits'
     | '/app/admin/organizations'
     | '/app/admin/plans'
@@ -296,6 +307,7 @@ export interface FileRouteTypes {
     | '/app/credits'
     | '/app/inbox'
     | '/app/referentiel'
+    | '/app/admin/consultants'
     | '/app/admin/credits'
     | '/app/admin/organizations'
     | '/app/admin/plans'
@@ -323,6 +335,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/credits'
     | '/_authenticated/app/inbox'
     | '/_authenticated/app/referentiel'
+    | '/_authenticated/app/admin/consultants'
     | '/_authenticated/app/admin/credits'
     | '/_authenticated/app/admin/organizations'
     | '/_authenticated/app/admin/plans'
@@ -512,6 +525,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppAdminCreditsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/admin/consultants': {
+      id: '/_authenticated/app/admin/consultants'
+      path: '/app/admin/consultants'
+      fullPath: '/app/admin/consultants'
+      preLoaderRoute: typeof AuthenticatedAppAdminConsultantsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/app/credits/requests/$id': {
       id: '/_authenticated/app/credits/requests/$id'
       path: '/requests/$id'
@@ -550,6 +570,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppCreditsRoute: typeof AuthenticatedAppCreditsRouteWithChildren
   AuthenticatedAppInboxRoute: typeof AuthenticatedAppInboxRoute
   AuthenticatedAppReferentielRoute: typeof AuthenticatedAppReferentielRoute
+  AuthenticatedAppAdminConsultantsRoute: typeof AuthenticatedAppAdminConsultantsRoute
   AuthenticatedAppAdminCreditsRoute: typeof AuthenticatedAppAdminCreditsRoute
   AuthenticatedAppAdminOrganizationsRoute: typeof AuthenticatedAppAdminOrganizationsRoute
   AuthenticatedAppAdminPlansRoute: typeof AuthenticatedAppAdminPlansRoute
@@ -566,6 +587,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppCreditsRoute: AuthenticatedAppCreditsRouteWithChildren,
   AuthenticatedAppInboxRoute: AuthenticatedAppInboxRoute,
   AuthenticatedAppReferentielRoute: AuthenticatedAppReferentielRoute,
+  AuthenticatedAppAdminConsultantsRoute: AuthenticatedAppAdminConsultantsRoute,
   AuthenticatedAppAdminCreditsRoute: AuthenticatedAppAdminCreditsRoute,
   AuthenticatedAppAdminOrganizationsRoute:
     AuthenticatedAppAdminOrganizationsRoute,
