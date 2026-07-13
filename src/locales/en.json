@@ -189,7 +189,14 @@
     "dropFile": "Click to upload a .xlsx file",
     "preview": "Preview", "errors": "Validation errors", "import": "Import",
     "versionLabel": "New reference version", "versionPlaceholder": "e.g. 2026.3",
-    "importSuccess": "Import succeeded: {{n}} rows", "importFailed": "Import failed", "denied": "Access denied"
+    "importSuccess": "Import succeeded: {{n}} rows", "importFailed": "Import failed", "denied": "Access denied",
+    "expectedCols": "Expected columns", "loadFile": "Load file", "rowsCount": "{{n}} row(s) loaded",
+    "validationOk": "No validation errors", "line": "Line", "column": "Column",
+    "sharedVersionHint": "Enter a new version then import each data type.",
+    "importDisabled": "Fix errors before importing.",
+    "missingVersion": "Set the version.", "noFile": "Load a file.",
+    "importsCount": "{{n}} import(s) on this version",
+    "askVersion": "Version to publish (e.g. 2026.3)", "publish": "Publish this version"
   },
   "misc": { "perennial": "Perennial · {{n}} years before production", "annual": "Annual crop", "sample": "Sample" }
   ,
