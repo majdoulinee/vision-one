@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Settings, LogOut, PlusCircle, Database, Coins, ShieldCheck, Inbox, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { LayoutDashboard, Settings, LogOut, PlusCircle, Database, Coins, ShieldCheck, Inbox, PanelLeftClose, PanelLeftOpen, Landmark } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,8 +60,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (platformRole === "admin" || platformRole === "comite") {
     nav.push({ to: "/app/referentiel", label: t("nav2.referentiel"), Icon: Database });
   }
+  if (platformRole === "comite" || platformRole === "admin") {
+    nav.push({ to: "/app/comite/propositions", label: "Comité", Icon: Landmark });
+  }
   if (platformRole === "admin") {
-    nav.push({ to: "/app/admin/credits", label: t("nav2.adminCredits") || "Admin crédits", Icon: ShieldCheck });
+    nav.push({ to: "/app/admin/organizations", label: "Admin plateforme", Icon: ShieldCheck });
   }
 
   return (
