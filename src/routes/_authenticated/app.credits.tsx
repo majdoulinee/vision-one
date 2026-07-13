@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrg } from "@/hooks/use-current-org";
@@ -14,7 +14,7 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Coins, ArrowLeft, Info } from "lucide-react";
+import { Coins, ArrowLeft, Info, Search } from "lucide-react";
 import { BackButton } from "@/components/agriplan/BackButton";
 import { CreditStatusBadge } from "@/components/agriplan/CreditStatusBadge";
 
@@ -34,6 +34,8 @@ function CreditsPage() {
   const wallet = useWallet();
   const pricing = usePricing();
   const qc = useQueryClient();
+  const [statusFilter, setStatusFilter] = useState<"all" | "en_attente" | "accordee" | "refusee">("all");
+  const [searchId, setSearchId] = useState("");
 
   const ledger = useQuery({
     queryKey: ["credit_ledger", current?.org_id],
@@ -64,6 +66,16 @@ function CreditsPage() {
       return data ?? [];
     },
   });
+
+  const filteredRequests = useMemo(() => {
+    const list = requests.data ?? [];
+    const q = searchId.trim().toLowerCase();
+    return list.filter((r) => {
+      if (statusFilter !== "all" && r.statut !== statusFilter) return false;
+      if (q && !r.id.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [requests.data, statusFilter, searchId]);
 
   if (!current) return <div>—</div>;
 
@@ -135,11 +147,36 @@ function CreditsPage() {
 
       {(requests.data ?? []).length > 0 && (
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base">Mes demandes</CardTitle></CardHeader>
+          <CardHeader className="pb-2 space-y-3">
+            <CardTitle className="text-base">Mes demandes</CardTitle>
+            <div className="flex flex-wrap items-center gap-2">
+              {(["all", "en_attente", "accordee", "refusee"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  className={`rounded-md border px-2.5 py-1 text-xs ${
+                    statusFilter === s ? "border-primary bg-primary/5 font-medium" : "border-border"
+                  }`}
+                >
+                  {s === "all" ? "Toutes" : s === "en_attente" ? "En attente" : s === "accordee" ? "Accordées" : "Refusées"}
+                </button>
+              ))}
+              <div className="ms-auto relative">
+                <Search className="pointer-events-none absolute start-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={searchId}
+                  onChange={(e) => setSearchId(e.target.value)}
+                  placeholder="Rechercher par ID…"
+                  className="h-8 ps-7 text-xs w-56"
+                />
+              </div>
+            </div>
+          </CardHeader>
           <CardContent className="p-0">
             <table className="w-full text-sm">
               <thead className="bg-muted/50 text-xs uppercase">
                 <tr>
+                  <th className="p-2 text-start">ID</th>
                   <th className="p-2 text-start">Date</th>
                   <th className="p-2 text-start">Pack</th>
                   <th className="p-2 text-end">Crédits</th>
@@ -148,8 +185,16 @@ function CreditsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {requests.data!.map((r) => (
+                {filteredRequests.length === 0 && (
+                  <tr><td colSpan={6} className="p-6 text-center text-muted-foreground text-sm">Aucune demande ne correspond aux filtres.</td></tr>
+                )}
+                {filteredRequests.map((r) => (
                   <tr key={r.id} className="hover:bg-muted/40 cursor-pointer">
+                    <td className="p-0">
+                      <Link to="/app/credits/requests/$id" params={{ id: r.id }} className="block p-2 font-mono text-[11px] text-muted-foreground">
+                        {r.id.slice(0, 8)}
+                      </Link>
+                    </td>
                     <td className="p-0">
                       <Link to="/app/credits/requests/$id" params={{ id: r.id }} className="block p-2">
                         {new Date(r.created_at).toLocaleDateString()}

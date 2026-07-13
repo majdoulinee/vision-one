@@ -1,55 +1,50 @@
-# Plan — Suivi des demandes & Alertes solde bas
+# Plan — Inbox notifications, fix Admin crédits, filtres demandes
 
-## 1. Page de suivi d'une demande de crédits
+## 1. Inbox notifications internes
 
-**Route** : `src/routes/_authenticated/app.credits.requests.$id.tsx`
+**Table `notifications`** (migration) :
+- Colonnes : `id`, `user_id` (auth.users), `org_id` (nullable), `kind` (`low_credit` | `credit_empty` | `request_accordee` | `request_refusee` | `credits_octroi`), `title`, `body`, `link` (ex: `/app/credits`, `/app/credits/requests/:id`), `read_at` (nullable), `meta` (jsonb), `created_at`.
+- RLS : `select/update/delete` réservés à `user_id = auth.uid()` ; `insert` via triggers `SECURITY DEFINER` uniquement.
+- GRANT `SELECT, UPDATE` à `authenticated` (marquer lu, supprimer optionnel).
 
-Contenu :
-- En-tête : pack, crédits, montant MAD, date de création, `BackButton` vers `/app/credits`.
-- Badge de statut (`en_attente` / `accordee` / `refusee`) réutilisant `StatutBadge` extrait de `app.credits.tsx` vers `src/components/agriplan/CreditStatusBadge.tsx`.
-- Timeline des décisions :
-  - Créée le … par le demandeur (jointure `profiles`).
-  - Traitée le … par `traitee_par` (si présent).
-  - Motif de refus affiché en clair si `refusee`.
-- Bloc « Écriture au grand livre liée » :
-  - Si `accordee`, retrouver l'entrée `credit_ledger` correspondante via `motif ILIKE '%req <id-court>%'` (motif déjà écrit par la RPC `decide_credit_request` → `grant_credits`) et afficher `id`, `delta`, `solde_apres`, `at`, avec lien copier-ID.
-  - Si `en_attente` / `refusee` : afficher « Aucune écriture liée ».
-- Message informatif : rappel du mode « virement / facture AGRIDATA ».
+**Génération auto (triggers SECURITY DEFINER)** :
+- `after insert on credit_ledger` : si `type in ('octroi_admin','remboursement')` → notif à tous les membres de l'org.
+- `after update on credit_requests` : quand `statut` passe à `accordee`/`refusee` → notif au `demandeur_id` avec `link` vers la page de suivi.
+- Seuil bas : quand `wallets.credits` passe ≤ `credits_alerte` (trigger `after update on wallets`) → 1 notif par bascule par membre (dédup via `meta.bucket`).
 
-Liste dans `app.credits.tsx` : rendre chaque ligne du tableau « Mes demandes » cliquable (`<Link>` vers la nouvelle route). Aucune autre logique modifiée.
+**Frontend** :
+- `src/hooks/use-notifications.ts` : query + realtime subscribe sur la table, expose `unreadCount`, `markAsRead`, `markAllAsRead`.
+- `src/components/agriplan/NotificationBell.tsx` : cloche dans `AppShell` header (à côté de `CreditBadge`) avec badge `unreadCount`, popover listant les 10 dernières (titre/date/état lu). Clic sur item → `markAsRead` + navigation vers `link`.
+- Page `/app/inbox` (`src/routes/_authenticated/app.inbox.tsx`) : liste complète paginée, filtres lu/non lu, bouton « Tout marquer comme lu ». Entrée dans la nav sidebar.
+- `use-low-credit-alert` : conserver le toast, mais l'insertion en base est faite par le trigger (source de vérité unique).
 
-RLS : les policies existantes sur `credit_requests` et `credit_ledger` couvrent déjà la lecture par membre d'org — pas de migration.
+## 2. Fix bouton « Admin crédits »
 
-## 2. Alertes automatiques sur solde bas
+Le lien de la sidebar (`AppShell.tsx`) pointe vers `/app/admin/credits` mais la route générée par `app.admin.credits.tsx` sous `_authenticated` peut ne pas matcher — vérifier `routeTree.gen.ts` et corriger :
+- Soit renommer le fichier en `app.admin.credits.tsx` avec `createFileRoute("/_authenticated/app/admin/credits")` (déjà le cas).
+- Investiguer runtime : possible cause = `Navigate to="/dashboard"` renvoyé pendant que `usePlatformRole` cache stale, ou lien inactif. Reproduire via Playwright + logs, puis :
+  - garantir `isLoading` géré,
+  - vérifier que l'entrée sidebar utilise `to="/app/admin/credits"` typé (pas `as any` qui masque un mismatch),
+  - corriger éventuelle collision de fichier (`app.admin.credits.tsx` vs dossier).
 
-Déclencheur : `wallet.credits <= wallet.credits_alerte` (seuil déjà en base, défaut 3), niveau « ocre » = badge accent déjà utilisé dans `CreditBadge`.
+## 3. Filtres & recherche sur `/app/credits`
 
-### a. Toast + bannière in-app (client)
-
-Nouveau hook `src/hooks/use-low-credit-alert.ts` :
-- Lit `useWallet()`.
-- Quand `credits <= credits_alerte` et `credits > 0` : émet un `toast.warning` une fois par session (clé `sessionStorage: vision-one.lowCreditToast.<orgId>.<credits>`) avec action « Voir mes crédits » → navigate `/app/credits`.
-- Quand `credits === 0` : `toast.error` équivalent (« Solde épuisé »), même déduplication.
-
-Montage : appelé dans `AppShell.tsx` (une seule instance côté layout authentifié).
-
-Bannière persistante : dans `src/routes/_authenticated/dashboard.tsx`, afficher un encart ocre (`border-accent/50 bg-accent/10`) au-dessus du contenu quand seuil atteint, avec `<Link to="/app/credits">` en CTA. Masquée si `credits > credits_alerte`.
-
-### b. Renforcement visuel
-
-`CreditBadge` gère déjà les 3 tons (ok / ocre / rouge) — aucun changement.
+Dans la section « Mes demandes » de `app.credits.tsx` :
+- Barre d'outils : `Select` statut (`Tous | en_attente | accordee | refusee`), `Input` recherche par ID (préfixe court, ex: `a1b2c3d4`).
+- Filtrage client-side sur `requests.data` (liste bornée à 20 déjà) + option « voir plus » qui augmente la limite à 100.
+- Persist filtres dans l'URL via `Route.useSearch` (`search: { statut?, q? }`) pour partage/bookmark.
+- Highlight de l'ID court dans le tableau, lien inchangé vers `/app/credits/requests/$id`.
 
 ## Détails techniques
 
-- Nouveaux fichiers :
-  - `src/routes/_authenticated/app.credits.requests.$id.tsx`
-  - `src/components/agriplan/CreditStatusBadge.tsx` (extraction)
-  - `src/components/agriplan/LowCreditBanner.tsx`
-  - `src/hooks/use-low-credit-alert.ts`
-- Fichiers modifiés :
-  - `src/routes/_authenticated/app.credits.tsx` — lignes cliquables, import du badge extrait.
-  - `src/components/agriplan/AppShell.tsx` — appel du hook d'alerte.
-  - `src/routes/_authenticated/dashboard.tsx` — insertion de la bannière.
-  - `src/locales/{fr,en,ar}.json` — clés `credits.low`, `credits.empty`, `credits.viewLink`, libellés timeline.
-- Pas de migration SQL : toutes les données existent déjà (`credit_requests`, `credit_ledger`, `wallets.credits_alerte`).
-- Lookup ledger côté client : `supabase.from('credit_ledger').select().eq('org_id', ...).eq('type','octroi_admin').ilike('motif', '%req <short>%').maybeSingle()`.
+- Migration unique : `notifications` + 3 triggers + policies + GRANT.
+- Realtime : `supabase.channel('notifications:'+userId).on('postgres_changes', …)` pour push instantané.
+- i18n FR/EN/AR : clés `nav2.inbox`, `notifications.*`, `filters.status`, `filters.searchId`.
+- Aucune modif backend crédits existante ; les triggers sont additifs.
+
+## Ordre d'exécution
+1. Reproduire le bug « Admin crédits » (Playwright + console) et fixer.
+2. Migration `notifications` + triggers.
+3. Hook + cloche + page `/app/inbox` + entrée sidebar.
+4. Filtres + recherche + search params sur `/app/credits`.
+5. i18n + vérif build.
