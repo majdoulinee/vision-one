@@ -16,6 +16,7 @@ import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppReferentielRouteImport } from './routes/_authenticated/app.referentiel'
+import { Route as ApiPublicVerifyDocIdRouteImport } from './routes/api/public/verify.$docId'
 import { Route as AuthenticatedAppProjectsNewRouteImport } from './routes/_authenticated/app.projects.new'
 import { Route as AuthenticatedAppBusinessPlansIdRouteImport } from './routes/_authenticated/app.business-plans.$id'
 import { Route as AuthenticatedAppBudgetsIdRouteImport } from './routes/_authenticated/app.budgets.$id'
@@ -56,6 +57,11 @@ const AuthenticatedAppReferentielRoute =
     path: '/app/referentiel',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicVerifyDocIdRoute = ApiPublicVerifyDocIdRouteImport.update({
+  id: '/api/public/verify/$docId',
+  path: '/api/public/verify/$docId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAppProjectsNewRoute =
   AuthenticatedAppProjectsNewRouteImport.update({
     id: '/app/projects/new',
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
+  '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRoutesByTo {
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
+  '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRoutesById {
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/_authenticated/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/_authenticated/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/_authenticated/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
+  '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/_authenticated/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRouteTypes {
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
     | '/app/projects/new'
+    | '/api/public/verify/$docId'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
     | '/app/projects/new'
+    | '/api/public/verify/$docId'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   id:
     | '__root__'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/budgets/$id'
     | '/_authenticated/app/business-plans/$id'
     | '/_authenticated/app/projects/new'
+    | '/api/public/verify/$docId'
     | '/_authenticated/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesById: FileRoutesById
 }
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  ApiPublicVerifyDocIdRoute: typeof ApiPublicVerifyDocIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -216,6 +229,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/referentiel'
       preLoaderRoute: typeof AuthenticatedAppReferentielRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/verify/$docId': {
+      id: '/api/public/verify/$docId'
+      path: '/api/public/verify/$docId'
+      fullPath: '/api/public/verify/$docId'
+      preLoaderRoute: typeof ApiPublicVerifyDocIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/app/projects/new': {
       id: '/_authenticated/app/projects/new'
@@ -277,6 +297,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   InviteTokenRoute: InviteTokenRoute,
+  ApiPublicVerifyDocIdRoute: ApiPublicVerifyDocIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -246,5 +246,50 @@
     "perennial": "Pérenne · {{n}} ans avant production",
     "annual": "Culture annuelle",
     "sample": "Échantillon"
+  },
+  "verify": {
+    "title": "Page de vérification de document",
+    "notFound": "Document introuvable",
+    "notFoundDesc": "Aucun document AGRIPLAN ne correspond à cet identifiant.",
+    "type": {
+      "budget": "Budget de campagne",
+      "business_plan": "Business plan",
+      "prefaisabilite": "Pré-faisabilité"
+    },
+    "issuedAt": "Émis le",
+    "hasOverrides": "{{count}} hypothèse(s) forcée(s)",
+    "noOverrides": "100% conforme aux normes",
+    "refVersion": "Version du référentiel",
+    "provenance": "Provenance des normes utilisées",
+    "source": "Source",
+    "region": "Région",
+    "period": "Période",
+    "overrides": "Hypothèses forcées par le porteur de projet",
+    "noOverridesDesc": "Aucune — document 100% conforme aux normes de référence.",
+    "key": "Clé",
+    "original": "Valeur d'origine",
+    "forced": "Valeur forcée",
+    "date": "Date",
+    "resume": "Résumé des indicateurs",
+    "hash": "Empreinte SHA-256 du document",
+    "hashDesc": "Cette empreinte identifie de manière unique le contenu du PDF émis.",
+    "checkBlock": "Vérifier mon fichier",
+    "checkBlockDesc": "Déposez votre PDF. Le fichier ne quitte jamais votre navigateur — l'empreinte est calculée localement.",
+    "drop": "Cliquer ou déposer un fichier PDF",
+    "checking": "Calcul de l'empreinte…",
+    "match": "✓ Document authentique",
+    "matchDesc": "Identique à l'original émis par AGRIPLAN.",
+    "mismatch": "✗ Empreinte différente",
+    "mismatchDesc": "Ce fichier a été modifié ou n'est pas le document original.",
+    "uploadedHash": "Empreinte du fichier déposé",
+    "reset": "Recommencer",
+    "footer": "AGRIPLAN garantit que les chiffres de ce document proviennent d'un calcul déterministe sur le référentiel indiqué. Toute hypothèse forcée par le porteur de projet est listée ci-dessus."
+  },
+  "export": {
+    "success": "Document exporté",
+    "fingerprintShort": "Empreinte {{prefix}}…",
+    "proofPage": "Page de preuve",
+    "copyLink": "Copier le lien",
+    "linkCopied": "Lien copié"
   }
 }
