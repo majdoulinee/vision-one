@@ -55,6 +55,51 @@ export type Database = {
           },
         ]
       }
+      bee_one_ingestions: {
+        Row: {
+          cle_norme: string
+          examine_le: string | null
+          examine_par: string | null
+          id: string
+          motif: string | null
+          n_echantillon: number
+          profil_code: string | null
+          recu_le: string
+          seuil_k_anonymat: number
+          statut: string
+          valeur_agrege: Json
+          zone_code: string | null
+        }
+        Insert: {
+          cle_norme: string
+          examine_le?: string | null
+          examine_par?: string | null
+          id?: string
+          motif?: string | null
+          n_echantillon?: number
+          profil_code?: string | null
+          recu_le?: string
+          seuil_k_anonymat?: number
+          statut?: string
+          valeur_agrege: Json
+          zone_code?: string | null
+        }
+        Update: {
+          cle_norme?: string
+          examine_le?: string | null
+          examine_par?: string | null
+          id?: string
+          motif?: string | null
+          n_echantillon?: number
+          profil_code?: string | null
+          recu_le?: string
+          seuil_k_anonymat?: number
+          statut?: string
+          valeur_agrege?: Json
+          zone_code?: string | null
+        }
+        Relationships: []
+      }
       budgets: {
         Row: {
           created_at: string
@@ -162,6 +207,66 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ref_versions"
             referencedColumns: ["version"]
+          },
+        ]
+      }
+      consultant_links: {
+        Row: {
+          accorde_le: string
+          accorde_par: string | null
+          client_org_id: string
+          consultant_org_id: string
+          credits_source: string
+          id: string
+          motif_accord: string | null
+          motif_revocation: string | null
+          revoque_le: string | null
+          revoque_par: string | null
+          role: string
+          statut: string
+        }
+        Insert: {
+          accorde_le?: string
+          accorde_par?: string | null
+          client_org_id: string
+          consultant_org_id: string
+          credits_source: string
+          id?: string
+          motif_accord?: string | null
+          motif_revocation?: string | null
+          revoque_le?: string | null
+          revoque_par?: string | null
+          role: string
+          statut?: string
+        }
+        Update: {
+          accorde_le?: string
+          accorde_par?: string | null
+          client_org_id?: string
+          consultant_org_id?: string
+          credits_source?: string
+          id?: string
+          motif_accord?: string | null
+          motif_revocation?: string | null
+          revoque_le?: string | null
+          revoque_par?: string | null
+          role?: string
+          statut?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultant_links_client_org_id_fkey"
+            columns: ["client_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultant_links_consultant_org_id_fkey"
+            columns: ["consultant_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -505,6 +610,42 @@ export type Database = {
         }
         Relationships: []
       }
+      plans: {
+        Row: {
+          actif: boolean
+          code: string
+          credits_mensuels: number
+          label: string
+          marque_blanche: boolean
+          prix_mad: number
+          quota_gen_jour: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          actif?: boolean
+          code: string
+          credits_mensuels?: number
+          label: string
+          marque_blanche?: boolean
+          prix_mad?: number
+          quota_gen_jour?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          actif?: boolean
+          code?: string
+          credits_mensuels?: number
+          label?: string
+          marque_blanche?: boolean
+          prix_mad?: number
+          quota_gen_jour?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       profil_zone_mappings: {
         Row: {
           created_at: string
@@ -553,6 +694,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          actif: boolean
           created_at: string
           email: string | null
           full_name: string | null
@@ -562,6 +704,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          actif?: boolean
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -571,6 +714,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          actif?: boolean
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -689,11 +833,123 @@ export type Database = {
           },
         ]
       }
+      ref_lots: {
+        Row: {
+          cree_le: string
+          cree_par: string | null
+          id: string
+          note_version: string | null
+          publie_le: string | null
+          publie_par: string | null
+          statut: string
+          version_cible: string
+        }
+        Insert: {
+          cree_le?: string
+          cree_par?: string | null
+          id?: string
+          note_version?: string | null
+          publie_le?: string | null
+          publie_par?: string | null
+          statut?: string
+          version_cible: string
+        }
+        Update: {
+          cree_le?: string
+          cree_par?: string | null
+          id?: string
+          note_version?: string | null
+          publie_le?: string | null
+          publie_par?: string | null
+          statut?: string
+          version_cible?: string
+        }
+        Relationships: []
+      }
+      ref_propositions: {
+        Row: {
+          ancienne_valeur: Json | null
+          approuve_admin_le: string | null
+          approuve_admin_par: string | null
+          auteur: string | null
+          bee_one_n: number | null
+          bee_one_periode: string | null
+          cle_norme: string
+          cree_le: string
+          id: string
+          justification: string
+          lot_id: string
+          motif_rejet: string | null
+          motif_renvoi: string | null
+          nouvelle_valeur: Json
+          profil_code: string | null
+          provenance: string
+          statut: Database["public"]["Enums"]["proposition_statut"]
+          valide_comite_le: string | null
+          valide_comite_par: string | null
+          zone_code: string | null
+        }
+        Insert: {
+          ancienne_valeur?: Json | null
+          approuve_admin_le?: string | null
+          approuve_admin_par?: string | null
+          auteur?: string | null
+          bee_one_n?: number | null
+          bee_one_periode?: string | null
+          cle_norme: string
+          cree_le?: string
+          id?: string
+          justification: string
+          lot_id: string
+          motif_rejet?: string | null
+          motif_renvoi?: string | null
+          nouvelle_valeur: Json
+          profil_code?: string | null
+          provenance: string
+          statut?: Database["public"]["Enums"]["proposition_statut"]
+          valide_comite_le?: string | null
+          valide_comite_par?: string | null
+          zone_code?: string | null
+        }
+        Update: {
+          ancienne_valeur?: Json | null
+          approuve_admin_le?: string | null
+          approuve_admin_par?: string | null
+          auteur?: string | null
+          bee_one_n?: number | null
+          bee_one_periode?: string | null
+          cle_norme?: string
+          cree_le?: string
+          id?: string
+          justification?: string
+          lot_id?: string
+          motif_rejet?: string | null
+          motif_renvoi?: string | null
+          nouvelle_valeur?: Json
+          profil_code?: string | null
+          provenance?: string
+          statut?: Database["public"]["Enums"]["proposition_statut"]
+          valide_comite_le?: string | null
+          valide_comite_par?: string | null
+          zone_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ref_propositions_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "ref_lots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ref_versions: {
         Row: {
           created_by: string | null
           k_anonymat: number | null
+          note_publication: string | null
           notes: string | null
+          publiee_le: string | null
           publiee_par: string | null
           published_at: string
           version: string
@@ -701,7 +957,9 @@ export type Database = {
         Insert: {
           created_by?: string | null
           k_anonymat?: number | null
+          note_publication?: string | null
           notes?: string | null
+          publiee_le?: string | null
           publiee_par?: string | null
           published_at?: string
           version: string
@@ -709,7 +967,9 @@ export type Database = {
         Update: {
           created_by?: string | null
           k_anonymat?: number | null
+          note_publication?: string | null
           notes?: string | null
+          publiee_le?: string | null
           publiee_par?: string | null
           published_at?: string
           version?: string
@@ -724,6 +984,9 @@ export type Database = {
           credits_alerte: number
           org_id: string
           plan: Database["public"]["Enums"]["wallet_plan"]
+          plan_assigne_le: string | null
+          plan_code: string | null
+          plan_facture_ref: string | null
           updated_at: string
         }
         Insert: {
@@ -733,6 +996,9 @@ export type Database = {
           credits_alerte?: number
           org_id: string
           plan?: Database["public"]["Enums"]["wallet_plan"]
+          plan_assigne_le?: string | null
+          plan_code?: string | null
+          plan_facture_ref?: string | null
           updated_at?: string
         }
         Update: {
@@ -742,6 +1008,9 @@ export type Database = {
           credits_alerte?: number
           org_id?: string
           plan?: Database["public"]["Enums"]["wallet_plan"]
+          plan_assigne_le?: string | null
+          plan_code?: string | null
+          plan_facture_ref?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -751,6 +1020,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "organizations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallets_plan_code_fkey"
+            columns: ["plan_code"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["code"]
           },
         ]
       }
@@ -797,6 +1073,55 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_approve_proposition: { Args: { p_id: string }; Returns: undefined }
+      admin_assign_plan: {
+        Args: {
+          p_facture_ref: string
+          p_motif: string
+          p_org_id: string
+          p_plan_code: string
+        }
+        Returns: undefined
+      }
+      admin_link_consultant: {
+        Args: {
+          p_client_org: string
+          p_consultant_org: string
+          p_motif: string
+          p_role: string
+          p_source: string
+        }
+        Returns: string
+      }
+      admin_return_proposition: {
+        Args: { p_id: string; p_motif: string }
+        Returns: undefined
+      }
+      admin_revoke_link: {
+        Args: { p_link_id: string; p_motif: string }
+        Returns: undefined
+      }
+      admin_set_user_platform_role: {
+        Args: {
+          p_motif: string
+          p_role: Database["public"]["Enums"]["platform_role"]
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      admin_toggle_user_active: {
+        Args: { p_actif: boolean; p_motif: string; p_user_id: string }
+        Returns: undefined
+      }
+      bee_one_examine: {
+        Args: { p_decision: string; p_id: string; p_motif: string }
+        Returns: undefined
+      }
+      comite_publish_lot: {
+        Args: { p_lot_id: string; p_note: string }
+        Returns: string
+      }
+      comite_submit_proposition: { Args: { p_id: string }; Returns: undefined }
       consume_credits: {
         Args: { p_action: string; p_org_id: string; p_ref_id?: string }
         Returns: string
@@ -855,6 +1180,14 @@ export type Database = {
         | "consultant"
       platform_role: "user" | "admin" | "comite"
       project_mode: "projet" | "capital"
+      proposition_statut:
+        | "brouillon"
+        | "soumise"
+        | "validee_comite"
+        | "approuvee_admin"
+        | "publiee"
+        | "rejetee"
+        | "renvoyee_comite"
       wallet_plan: "free" | "pro"
     }
     CompositeTypes: {
@@ -1007,6 +1340,15 @@ export const Constants = {
       ],
       platform_role: ["user", "admin", "comite"],
       project_mode: ["projet", "capital"],
+      proposition_statut: [
+        "brouillon",
+        "soumise",
+        "validee_comite",
+        "approuvee_admin",
+        "publiee",
+        "rejetee",
+        "renvoyee_comite",
+      ],
       wallet_plan: ["free", "pro"],
     },
   },
