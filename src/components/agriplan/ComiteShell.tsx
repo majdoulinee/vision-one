@@ -18,9 +18,11 @@ const PIPELINE = [
 ];
 
 export function ComiteShell({ children }: { children: React.ReactNode }) {
-  const { data: role, isLoading } = usePlatformRole();
+  const { data: role, isPending, isFetching } = usePlatformRole();
   const loc = useLocation();
-  if (isLoading) return <div className="p-6 text-sm text-muted-foreground">Chargement…</div>;
+  if (isPending || isFetching || role === undefined) {
+    return <div className="p-6 text-sm text-muted-foreground">Chargement…</div>;
+  }
   if (role !== "comite" && role !== "admin") return <Navigate to="/dashboard" />;
 
   return (
