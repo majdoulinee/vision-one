@@ -138,28 +138,31 @@ function View() {
 
       {/* Barre sticky de publication */}
       {currentLot && (
-        <div className="sticky bottom-0 -mx-4 sm:mx-0 mt-4 rounded-md border shadow-lg" style={{ background: "#12211A", color: "#F3EFE3" }}>
+        <div className="sticky bottom-0 -mx-4 sm:mx-0 mt-4 rounded-sm border border-ink bg-ink text-parch hard-shadow-ink">
           <div className="flex flex-wrap items-center gap-4 px-4 py-3">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider">
-              <Lock className="h-3.5 w-3.5" style={{ color: "#D9A521" }} />
+            <div className="flex items-center gap-2 mono-eyebrow">
+              <Lock className="h-3.5 w-3.5 text-ochre" />
               Lot v{currentLot.version_cible}
             </div>
             <div className="flex flex-wrap gap-3 text-xs">
-              <span>Brouillon: <b className="tabular-nums">{cs["brouillon"] ?? 0}</b></span>
-              <span>Soumise: <b className="tabular-nums">{cs["soumise"] ?? 0}</b></span>
-              <span>Validée: <b className="tabular-nums">{cs["validee_comite"] ?? 0}</b></span>
-              <span style={{ color: "#4E8C5F" }}>Approuvée: <b className="tabular-nums">{approved}</b></span>
-              <span style={{ color: "#C0552F" }}>Renvoyée: <b className="tabular-nums">{cs["renvoyee_comite"] ?? 0}</b></span>
+              <span className="text-parch/80">Brouillon: <b className="tabular-nums text-parch">{cs["brouillon"] ?? 0}</b></span>
+              <span className="text-parch/80">Soumise: <b className="tabular-nums text-parch">{cs["soumise"] ?? 0}</b></span>
+              <span className="text-parch/80">Validée: <b className="tabular-nums text-parch">{cs["validee_comite"] ?? 0}</b></span>
+              <span className="text-ochre">Approuvée: <b className="tabular-nums">{approved}</b></span>
+              <span className="text-clay">Renvoyée: <b className="tabular-nums">{cs["renvoyee_comite"] ?? 0}</b></span>
             </div>
-            <span className="text-[11px] italic opacity-80 hidden md:inline">
+            <span className="font-serif italic text-parch/70 text-[12px] hidden md:inline">
               {canPublishCurrent
                 ? "Toutes les propositions sont approuvées — publication possible."
                 : "Publication possible uniquement quand toutes les propositions du lot sont approuvées par l'admin."}
             </span>
             <Button
               size="sm"
-              className="ml-auto"
-              style={{ background: canPublishCurrent ? "#D9A521" : "rgba(255,255,255,0.15)", color: "#12211A" }}
+              className={`ml-auto rounded-sm ${
+                canPublishCurrent
+                  ? "bg-ochre text-ink hover:bg-ochre/90"
+                  : "bg-parch/15 text-parch/50 hover:bg-parch/15"
+              }`}
               disabled={!canPublishCurrent}
               onClick={() => openPublish(currentLot)}
             >
@@ -186,7 +189,7 @@ function View() {
               <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">Projets clients</div>
             </div>
           </div>
-          <div className="rounded border p-3 text-xs" style={{ background: "rgba(217,165,33,0.15)", borderColor: "#D9A521" }}>
+          <div className="rounded-sm border border-ochre bg-ochre/15 text-ink p-3 text-xs">
             <strong>Cette action est irréversible.</strong> La version sera figée à jamais. Toute correction exigera une nouvelle version. Les documents déjà générés restent vérifiables sur leur version d'origine.
           </div>
           <div>
@@ -195,7 +198,7 @@ function View() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setPublish(null)}>Annuler</Button>
-            <Button onClick={doPublish} disabled={busy || note.trim().length < 10} style={{ background: "#C0552F", color: "#F3EFE3" }}>
+            <Button onClick={doPublish} disabled={busy || note.trim().length < 10} className="bg-clay text-parch hover:bg-clay/90 rounded-sm">
               Publier et figer
             </Button>
           </DialogFooter>
