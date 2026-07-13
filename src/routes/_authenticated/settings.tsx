@@ -32,14 +32,14 @@ export const Route = createFileRoute("/_authenticated/settings")({
 
 type Member = {
   user_id: string;
-  role: "owner" | "admin" | "editor" | "viewer";
+  role: "owner" | "admin" | "editor" | "member" | "viewer";
   profile: { full_name: string | null; email: string | null } | null;
 };
 
 type Invitation = {
   id: string;
   email: string;
-  role: "admin" | "editor" | "viewer";
+  role: "member" | "viewer";
   accepted_at: string | null;
   expires_at: string;
 };
@@ -81,7 +81,7 @@ function Settings() {
   });
 
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"admin" | "editor" | "viewer">("editor");
+  const [role, setRole] = useState<"member" | "viewer">("member");
   const [busy, setBusy] = useState(false);
 
   async function sendInvite(e: React.FormEvent) {
@@ -199,7 +199,7 @@ function Settings() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {(["admin", "editor", "viewer"] as const).map((r) => (
+                    {(["member", "viewer"] as const).map((r) => (
                       <SelectItem key={r} value={r}>
                         {t(`role.${r}`)}
                       </SelectItem>

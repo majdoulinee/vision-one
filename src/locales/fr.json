@@ -36,7 +36,10 @@
     "assureur": "Assureur",
     "organisme_public": "Institution publique",
     "groupe": "Groupe / Bureau conseil",
-    "autre": "Autre"
+    "autre": "Autre",
+    "investisseur": "Investisseur",
+    "agriculteur": "Agriculteur",
+    "consultant": "Consultant"
   },
   "settings": {
     "title": "Paramètres",
@@ -54,6 +57,7 @@
     "owner": "Propriétaire",
     "admin": "Administrateur",
     "editor": "Éditeur",
+    "member": "Membre",
     "viewer": "Lecteur"
   },
   "common": {
@@ -68,7 +72,40 @@
     "hero": "Du budget de campagne au Business Plan bancable — vérifiable.",
     "sub": "AGRIPLAN structure la planification financière agricole avec des calculs déterministes et un PDF vérifiable via QR code.",
     "cta": "Commencer",
-    "signIn": "Se connecter"
+    "signIn": "Se connecter",
+    "ctaFree": "Pré-faisabilité gratuite",
+    "howTitle": "Comment ça marche",
+    "step1Title": "1. Décrivez votre projet",
+    "step1Desc": "Zone, capital, superficie, orientation, appétence au risque.",
+    "step2Title": "2. Recevez une recommandation scorée",
+    "step2Desc": "Profils adaptés + budget de campagne hebdomadaire.",
+    "step3Title": "3. Exportez un PDF bancable",
+    "step3Desc": "Vérifiable par QR code et empreinte SHA-256.",
+    "refTitle": "Le référentiel — notre moat",
+    "refDesc": "Double provenance : données réelles Bee One agrégées et anonymisées + comité d'experts. Chaque norme cite sa source, sa région, sa période et son échantillon. Le référentiel est versionné et anonymisé (k-anonymat ≥ 5).",
+    "refBeeOne": "Bee One — données réelles",
+    "refBeeOneDesc": "Agrégées et anonymisées à partir d'exploitations opérationnelles.",
+    "refCom": "Comité d'experts",
+    "refComDesc": "Complétude et calibration des normes par un panel indépendant.",
+    "refVersion": "Versionné et traçable",
+    "refVersionDesc": "Chaque document cite la version du référentiel utilisée.",
+    "pdfTitle": "PDF bancable vérifiable",
+    "pdfDesc": "Chaque document généré porte un QR code menant à une page de preuve publique AGRIPLAN. L'empreinte SHA-256 y détecte toute altération. La liste des hypothèses forcées est publique.",
+    "pricing": "Tarifs",
+    "pricingIntro": "Nous facturons la profondeur et la traçabilité, pas la modification.",
+    "planFreeTitle": "Pré-faisabilité",
+    "planFreePrice": "Gratuit",
+    "planFreeDesc": "Recommandation scorée + marge normative par ha.",
+    "planActTitle": "À l'acte",
+    "planActPrice": "1 crédit",
+    "planActDesc": "Budget de campagne complet ou business plan complet.",
+    "planSubTitle": "Abonnement campagne",
+    "planSubPrice": "par ha / campagne",
+    "planSubDesc": "Re-prévision illimitée pendant la campagne.",
+    "planEnterpriseTitle": "Consultant / Groupe / Institutionnel",
+    "planEnterprisePrice": "Sur devis",
+    "planEnterpriseDesc": "Multi-projets, benchmark, contre-expertise (V2).",
+    "footerLegal": "AGRIPLAN — Planification financière agricole vérifiable."
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -240,7 +277,15 @@
     "versionPlaceholder": "ex. 2026.3",
     "importSuccess": "Import réussi : {{n}} lignes",
     "importFailed": "Import échoué",
-    "denied": "Accès refusé"
+    "denied": "Accès refusé",
+    "askVersion": "Version à publier (ex. 2026.3)",
+    "publish": "Publier cette version",
+    "expectedCols": "Colonnes attendues",
+    "loadFile": "Charger un fichier",
+    "rowsCount": "{{n}} ligne(s) chargée(s)",
+    "validationOk": "Aucune erreur de validation",
+    "line": "Ligne",
+    "column": "Colonne"
   },
   "misc": {
     "perennial": "Pérenne · {{n}} ans avant production",
@@ -290,6 +335,10 @@
     "fingerprintShort": "Empreinte {{prefix}}…",
     "proofPage": "Page de preuve",
     "copyLink": "Copier le lien",
-    "linkCopied": "Lien copié"
+    "linkCopied": "Lien copié",
+    "listTitle": "Documents exportés",
+    "listEmpty": "Aucun document exporté pour l'instant.",
+    "download": "Télécharger",
+    "proof": "Preuve"
   }
 }

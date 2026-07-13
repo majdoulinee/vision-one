@@ -518,19 +518,25 @@ export type Database = {
       ref_versions: {
         Row: {
           created_by: string | null
+          k_anonymat: number | null
           notes: string | null
+          publiee_par: string | null
           published_at: string
           version: string
         }
         Insert: {
           created_by?: string | null
+          k_anonymat?: number | null
           notes?: string | null
+          publiee_par?: string | null
           published_at?: string
           version: string
         }
         Update: {
           created_by?: string | null
+          k_anonymat?: number | null
           notes?: string | null
+          publiee_par?: string | null
           published_at?: string
           version?: string
         }
@@ -628,8 +634,13 @@ export type Database = {
     Enums: {
       document_type: "budget" | "business_plan" | "prefaisabilite"
       locale_code: "fr" | "ar" | "en"
-      mapping_quality: "optimal" | "possible" | "deconseille"
-      org_role: "owner" | "admin" | "editor" | "viewer"
+      mapping_quality:
+        | "optimal"
+        | "possible"
+        | "deconseille"
+        | "eligible"
+        | "exclu"
+      org_role: "owner" | "admin" | "editor" | "viewer" | "member"
       org_type:
         | "ferme"
         | "cooperative"
@@ -638,6 +649,9 @@ export type Database = {
         | "organisme_public"
         | "groupe"
         | "autre"
+        | "investisseur"
+        | "agriculteur"
+        | "consultant"
       platform_role: "user" | "admin" | "comite"
       project_mode: "projet" | "capital"
       wallet_plan: "free" | "pro"
@@ -770,8 +784,14 @@ export const Constants = {
     Enums: {
       document_type: ["budget", "business_plan", "prefaisabilite"],
       locale_code: ["fr", "ar", "en"],
-      mapping_quality: ["optimal", "possible", "deconseille"],
-      org_role: ["owner", "admin", "editor", "viewer"],
+      mapping_quality: [
+        "optimal",
+        "possible",
+        "deconseille",
+        "eligible",
+        "exclu",
+      ],
+      org_role: ["owner", "admin", "editor", "viewer", "member"],
       org_type: [
         "ferme",
         "cooperative",
@@ -780,6 +800,9 @@ export const Constants = {
         "organisme_public",
         "groupe",
         "autre",
+        "investisseur",
+        "agriculteur",
+        "consultant",
       ],
       platform_role: ["user", "admin", "comite"],
       project_mode: ["projet", "capital"],
