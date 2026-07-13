@@ -275,7 +275,7 @@ function Prefaisabilite() {
               <DialogHeader>
                 <DialogTitle>{t("prefa.generate")}</DialogTitle>
                 <DialogDescription>
-                  {t("wallet.credits")}: {wallet.data?.credits ?? 0} → {(wallet.data?.credits ?? 0) - 1}
+                  Consommera <strong>{totalCost} crédit{totalCost > 1 ? "s" : ""}</strong> · Solde&nbsp;{wallet.data?.credits ?? 0} → {(wallet.data?.credits ?? 0) - totalCost}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
