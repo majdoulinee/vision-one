@@ -1117,6 +1117,10 @@ export type Database = {
         Args: { p_decision: string; p_id: string; p_motif: string }
         Returns: undefined
       }
+      comite_notify_ref_publication: {
+        Args: { p_lot_id: string }
+        Returns: number
+      }
       comite_publish_lot: {
         Args: { p_lot_id: string; p_note: string }
         Returns: string

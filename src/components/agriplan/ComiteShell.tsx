@@ -5,7 +5,16 @@ import { Landmark } from "lucide-react";
 const TABS = [
   { to: "/app/comite/propositions", label: "Propositions" },
   { to: "/app/comite/bee-one", label: "Bee One" },
+  { to: "/app/comite/versions", label: "Versions publiées" },
   { to: "/app/comite/publish", label: "Publication" },
+];
+
+const PIPELINE = [
+  "BROUILLON",
+  "SOUMISE",
+  "VALIDÉE COMITÉ",
+  "APPROBATION ADMIN",
+  "PUBLIÉE · IMMUABLE",
 ];
 
 export function ComiteShell({ children }: { children: React.ReactNode }) {
@@ -33,6 +42,17 @@ export function ComiteShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-t border-white/10 text-[10px] font-mono uppercase tracking-[0.12em]" style={{ background: "rgba(255,255,255,0.03)" }}>
+          {PIPELINE.map((s, i) => (
+            <span key={s} className="flex items-center gap-2">
+              <span className="px-1.5 py-0.5 rounded-sm" style={{ background: "rgba(217,165,33,0.15)", color: "#F3EFE3" }}>{s}</span>
+              {i < PIPELINE.length - 1 && <span className="opacity-40">→</span>}
+            </span>
+          ))}
+          <span className="ml-auto normal-case tracking-normal text-[11px] italic opacity-70">
+            Double validation : le comité valide le fond, l'admin approuve la gouvernance. Personne ne publie seul.
+          </span>
         </div>
       </div>
       {children}

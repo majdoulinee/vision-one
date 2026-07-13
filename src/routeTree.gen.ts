@@ -26,6 +26,7 @@ import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicVerifyDocIdRouteImport } from './routes/api/public/verify.$docId'
 import { Route as AuthenticatedAppProjectsNewRouteImport } from './routes/_authenticated/app.projects.new'
+import { Route as AuthenticatedAppComiteVersionsRouteImport } from './routes/_authenticated/app.comite.versions'
 import { Route as AuthenticatedAppComitePublishRouteImport } from './routes/_authenticated/app.comite.publish'
 import { Route as AuthenticatedAppComitePropositionsRouteImport } from './routes/_authenticated/app.comite.propositions'
 import { Route as AuthenticatedAppComiteBeeOneRouteImport } from './routes/_authenticated/app.comite.bee-one'
@@ -128,6 +129,12 @@ const AuthenticatedAppProjectsNewRoute =
   AuthenticatedAppProjectsNewRouteImport.update({
     id: '/app/projects/new',
     path: '/app/projects/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAppComiteVersionsRoute =
+  AuthenticatedAppComiteVersionsRouteImport.update({
+    id: '/app/comite/versions',
+    path: '/app/comite/versions',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppComitePublishRoute =
@@ -242,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/app/comite/bee-one': typeof AuthenticatedAppComiteBeeOneRoute
   '/app/comite/propositions': typeof AuthenticatedAppComitePropositionsRoute
   '/app/comite/publish': typeof AuthenticatedAppComitePublishRoute
+  '/app/comite/versions': typeof AuthenticatedAppComiteVersionsRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
@@ -274,6 +282,7 @@ export interface FileRoutesByTo {
   '/app/comite/bee-one': typeof AuthenticatedAppComiteBeeOneRoute
   '/app/comite/propositions': typeof AuthenticatedAppComitePropositionsRoute
   '/app/comite/publish': typeof AuthenticatedAppComitePublishRoute
+  '/app/comite/versions': typeof AuthenticatedAppComiteVersionsRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
@@ -308,6 +317,7 @@ export interface FileRoutesById {
   '/_authenticated/app/comite/bee-one': typeof AuthenticatedAppComiteBeeOneRoute
   '/_authenticated/app/comite/propositions': typeof AuthenticatedAppComitePropositionsRoute
   '/_authenticated/app/comite/publish': typeof AuthenticatedAppComitePublishRoute
+  '/_authenticated/app/comite/versions': typeof AuthenticatedAppComiteVersionsRoute
   '/_authenticated/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/_authenticated/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
@@ -342,6 +352,7 @@ export interface FileRouteTypes {
     | '/app/comite/bee-one'
     | '/app/comite/propositions'
     | '/app/comite/publish'
+    | '/app/comite/versions'
     | '/app/projects/new'
     | '/api/public/verify/$docId'
     | '/app/credits/requests/$id'
@@ -374,6 +385,7 @@ export interface FileRouteTypes {
     | '/app/comite/bee-one'
     | '/app/comite/propositions'
     | '/app/comite/publish'
+    | '/app/comite/versions'
     | '/app/projects/new'
     | '/api/public/verify/$docId'
     | '/app/credits/requests/$id'
@@ -407,6 +419,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/comite/bee-one'
     | '/_authenticated/app/comite/propositions'
     | '/_authenticated/app/comite/publish'
+    | '/_authenticated/app/comite/versions'
     | '/_authenticated/app/projects/new'
     | '/api/public/verify/$docId'
     | '/_authenticated/app/credits/requests/$id'
@@ -548,6 +561,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppProjectsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/comite/versions': {
+      id: '/_authenticated/app/comite/versions'
+      path: '/app/comite/versions'
+      fullPath: '/app/comite/versions'
+      preLoaderRoute: typeof AuthenticatedAppComiteVersionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/app/comite/publish': {
       id: '/_authenticated/app/comite/publish'
       path: '/app/comite/publish'
@@ -682,6 +702,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppComiteBeeOneRoute: typeof AuthenticatedAppComiteBeeOneRoute
   AuthenticatedAppComitePropositionsRoute: typeof AuthenticatedAppComitePropositionsRoute
   AuthenticatedAppComitePublishRoute: typeof AuthenticatedAppComitePublishRoute
+  AuthenticatedAppComiteVersionsRoute: typeof AuthenticatedAppComiteVersionsRoute
   AuthenticatedAppProjectsNewRoute: typeof AuthenticatedAppProjectsNewRoute
   AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute: typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
@@ -706,6 +727,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppComitePropositionsRoute:
     AuthenticatedAppComitePropositionsRoute,
   AuthenticatedAppComitePublishRoute: AuthenticatedAppComitePublishRoute,
+  AuthenticatedAppComiteVersionsRoute: AuthenticatedAppComiteVersionsRoute,
   AuthenticatedAppProjectsNewRoute: AuthenticatedAppProjectsNewRoute,
   AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute:
     AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute,
