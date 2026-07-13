@@ -13,9 +13,11 @@ import { Label } from "@/components/ui/label";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter,
 } from "@/components/ui/sheet";
-import { fmtMAD, fmtNum, fmtPct } from "@/lib/format";
+import { fmtMAD } from "@/lib/format";
 import { toast } from "sonner";
-import { Sliders } from "lucide-react";
+import { Sliders, FileDown, Copy } from "lucide-react";
+import { useCurrentOrg } from "@/hooks/use-current-org";
+import { exportVerifiablePdf } from "@/lib/pdf-export";
 
 export const Route = createFileRoute("/_authenticated/app/business-plans/$id")({
   ssr: false,
@@ -26,6 +28,7 @@ function BPPage() {
   const { id } = Route.useParams();
   const { t } = useTranslation();
   const qc = useQueryClient();
+  const { current } = useCurrentOrg();
 
   const bp = useQuery({
     queryKey: ["bp", id],
@@ -42,11 +45,47 @@ function BPPage() {
     [ref.data, doc?.profilCode],
   );
 
+  const project = useQuery({
+    queryKey: ["project-of-bp", bp.data?.project_id],
+    enabled: !!bp.data?.project_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("projects").select("name, zone_code")
+        .eq("id", bp.data!.project_id as string).single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const [tauxAct, setTauxAct] = useState<string>("");
   const [partDette, setPartDette] = useState<string>("");
   const [busy, setBusy] = useState(false);
+  const [exported, setExported] = useState<{ docId: string; sha256: string; verifyUrl: string } | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   if (!doc || !profil) return <div>{t("common.loading")}</div>;
+
+  async function doExport() {
+    if (!profil || !current || !bp.data || !project.data) return;
+    setExporting(true);
+    try {
+      const res = await exportVerifiablePdf({
+        kind: "business_plan",
+        orgId: current.org_id,
+        sourceId: id,
+        refVersion: bp.data.ref_version ?? "unknown",
+        profil,
+        project: { name: project.data.name, zone_code: project.data.zone_code ?? "" },
+        bp: doc,
+      });
+      setExported({ docId: res.docId, sha256: res.sha256, verifyUrl: res.verifyUrl });
+      toast.success(t("export.success"));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setExporting(false);
+    }
+  }
 
   async function recompute() {
     setBusy(true);
@@ -85,7 +124,9 @@ function BPPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" disabled title={t("budget.exportPdfTip")}>{t("budget.exportPdf")}</Button>
+          <Button variant="outline" onClick={doExport} disabled={exporting || !project.data}>
+            <FileDown className="mr-2 h-4 w-4" /> {t("budget.exportPdf")}
+          </Button>
           <Sheet>
             <SheetTrigger asChild>
               <Button><Sliders className="mr-2 h-4 w-4" />{t("bp.finHyp")}</Button>
@@ -113,6 +154,27 @@ function BPPage() {
           </Sheet>
         </div>
       </div>
+
+      {exported && (
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm">
+          <FileDown className="h-5 w-5 text-primary" />
+          <div className="flex-1 min-w-0">
+            <div className="font-medium">{t("export.success")}</div>
+            <div className="text-xs text-muted-foreground">
+              {t("export.fingerprintShort", { prefix: exported.sha256.slice(0, 8) })} · {t("export.proofPage")}: {exported.verifyUrl}
+            </div>
+          </div>
+          <Button
+            variant="outline" size="sm"
+            onClick={() => {
+              navigator.clipboard.writeText(exported.verifyUrl);
+              toast.success(t("export.linkCopied"));
+            }}
+          >
+            <Copy className="mr-2 h-4 w-4" /> {t("export.copyLink")}
+          </Button>
+        </div>
+      )}
 
       {profil.perenne && doc.scenarios.base.actifBiologique > 0 && (
         <div className="rounded-lg border border-accent bg-accent/10 p-4 text-sm">
