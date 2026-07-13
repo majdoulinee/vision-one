@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/sheet";
 import { fmtMAD, fmtNum } from "@/lib/format";
 import { toast } from "sonner";
-import { RotateCcw, Sliders } from "lucide-react";
+import { RotateCcw, Sliders, FileDown, Copy } from "lucide-react";
+import { exportVerifiablePdf } from "@/lib/pdf-export";
 
 export const Route = createFileRoute("/_authenticated/app/budgets/$id")({
   ssr: false,
@@ -40,6 +41,18 @@ function BudgetPage() {
   });
   const ref = useReferentiel(budget.data?.ref_version);
 
+  const project = useQuery({
+    queryKey: ["project-of-budget", budget.data?.project_id],
+    enabled: !!budget.data?.project_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("projects").select("name, zone_code")
+        .eq("id", budget.data!.project_id as string).single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const doc = budget.data?.data as any;
   const profil = useMemo(
     () => ref.data?.profils.find((p) => p.code === doc?.profilCode),
@@ -50,10 +63,34 @@ function BudgetPage() {
   const [prix, setPrix] = useState<string>("");
   const [swk, setSwk] = useState<string>("");
   const [busy, setBusy] = useState(false);
+  const [exported, setExported] = useState<{ docId: string; sha256: string; verifyUrl: string } | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   if (!doc || !profil) return <div>{t("common.loading")}</div>;
 
   const overrides = ((budget.data?.overrides ?? []) as any[]) as any[];
+
+  async function doExport() {
+    if (!profil || !current || !budget.data || !project.data) return;
+    setExporting(true);
+    try {
+      const res = await exportVerifiablePdf({
+        kind: "budget",
+        orgId: current.org_id,
+        sourceId: id,
+        refVersion: budget.data.ref_version ?? "unknown",
+        profil,
+        project: { name: project.data.name, zone_code: project.data.zone_code ?? "" },
+        budget: doc,
+      });
+      setExported({ docId: res.docId, sha256: res.sha256, verifyUrl: res.verifyUrl });
+      toast.success(t("export.success"));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setExporting(false);
+    }
+  }
 
   async function applyReforecast() {
     if (!profil || !current) return;
@@ -129,7 +166,8 @@ function BudgetPage() {
           )}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" disabled title={t("budget.exportPdfTip")}>
+          <Button variant="outline" onClick={doExport} disabled={exporting || !project.data}>
+            <FileDown className="mr-2 h-4 w-4" />
             {t("budget.exportPdf")}
           </Button>
           {canEdit && (
@@ -189,6 +227,10 @@ function BudgetPage() {
           )}
         </div>
       </div>
+
+      {exported && (
+        <ExportedBanner e={exported} />
+      )}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPI l={t("budget.recettes")} v={fmtMAD(T.recettes)} />
