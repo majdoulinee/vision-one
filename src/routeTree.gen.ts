@@ -28,6 +28,7 @@ import { Route as AuthenticatedAppProjectsNewRouteImport } from './routes/_authe
 import { Route as AuthenticatedAppBusinessPlansIdRouteImport } from './routes/_authenticated/app.business-plans.$id'
 import { Route as AuthenticatedAppBudgetsIdRouteImport } from './routes/_authenticated/app.budgets.$id'
 import { Route as AuthenticatedAppAdminCreditsRouteImport } from './routes/_authenticated/app.admin.credits'
+import { Route as AuthenticatedAppCreditsRequestsIdRouteImport } from './routes/_authenticated/app.credits.requests.$id'
 import { Route as AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRouteImport } from './routes/_authenticated/app.projects.$id.prefaisabilite.$profilCode'
 
 const McpRoute = McpRouteImport.update({
@@ -132,6 +133,12 @@ const AuthenticatedAppAdminCreditsRoute =
     path: '/app/admin/credits',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAppCreditsRequestsIdRoute =
+  AuthenticatedAppCreditsRequestsIdRouteImport.update({
+    id: '/requests/$id',
+    path: '/requests/$id',
+    getParentRoute: () => AuthenticatedAppCreditsRoute,
+  } as any)
 const AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute =
   AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRouteImport.update({
     id: '/app/projects/$id/prefaisabilite/$profilCode',
@@ -151,13 +158,14 @@ export interface FileRoutesByFullPath {
   '/verify/$docId': typeof VerifyDocIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/app/credits': typeof AuthenticatedAppCreditsRoute
+  '/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
+  '/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRoutesByTo {
@@ -172,13 +180,14 @@ export interface FileRoutesByTo {
   '/verify/$docId': typeof VerifyDocIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/app/credits': typeof AuthenticatedAppCreditsRoute
+  '/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
+  '/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRoutesById {
@@ -195,13 +204,14 @@ export interface FileRoutesById {
   '/verify/$docId': typeof VerifyDocIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/_authenticated/app/credits': typeof AuthenticatedAppCreditsRoute
+  '/_authenticated/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/_authenticated/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/_authenticated/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
   '/_authenticated/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/_authenticated/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/_authenticated/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
+  '/_authenticated/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
   '/_authenticated/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRouteTypes {
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/app/business-plans/$id'
     | '/app/projects/new'
     | '/api/public/verify/$docId'
+    | '/app/credits/requests/$id'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/app/business-plans/$id'
     | '/app/projects/new'
     | '/api/public/verify/$docId'
+    | '/app/credits/requests/$id'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   id:
     | '__root__'
@@ -268,6 +280,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/business-plans/$id'
     | '/_authenticated/app/projects/new'
     | '/api/public/verify/$docId'
+    | '/_authenticated/app/credits/requests/$id'
     | '/_authenticated/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesById: FileRoutesById
 }
@@ -420,6 +433,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppAdminCreditsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/credits/requests/$id': {
+      id: '/_authenticated/app/credits/requests/$id'
+      path: '/requests/$id'
+      fullPath: '/app/credits/requests/$id'
+      preLoaderRoute: typeof AuthenticatedAppCreditsRequestsIdRouteImport
+      parentRoute: typeof AuthenticatedAppCreditsRoute
+    }
     '/_authenticated/app/projects/$id/prefaisabilite/$profilCode': {
       id: '/_authenticated/app/projects/$id/prefaisabilite/$profilCode'
       path: '/app/projects/$id/prefaisabilite/$profilCode'
@@ -430,10 +450,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAppCreditsRouteChildren {
+  AuthenticatedAppCreditsRequestsIdRoute: typeof AuthenticatedAppCreditsRequestsIdRoute
+}
+
+const AuthenticatedAppCreditsRouteChildren: AuthenticatedAppCreditsRouteChildren =
+  {
+    AuthenticatedAppCreditsRequestsIdRoute:
+      AuthenticatedAppCreditsRequestsIdRoute,
+  }
+
+const AuthenticatedAppCreditsRouteWithChildren =
+  AuthenticatedAppCreditsRoute._addFileChildren(
+    AuthenticatedAppCreditsRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedAppCreditsRoute: typeof AuthenticatedAppCreditsRoute
+  AuthenticatedAppCreditsRoute: typeof AuthenticatedAppCreditsRouteWithChildren
   AuthenticatedAppReferentielRoute: typeof AuthenticatedAppReferentielRoute
   AuthenticatedAppAdminCreditsRoute: typeof AuthenticatedAppAdminCreditsRoute
   AuthenticatedAppBudgetsIdRoute: typeof AuthenticatedAppBudgetsIdRoute
@@ -445,7 +480,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedAppCreditsRoute: AuthenticatedAppCreditsRoute,
+  AuthenticatedAppCreditsRoute: AuthenticatedAppCreditsRouteWithChildren,
   AuthenticatedAppReferentielRoute: AuthenticatedAppReferentielRoute,
   AuthenticatedAppAdminCreditsRoute: AuthenticatedAppAdminCreditsRoute,
   AuthenticatedAppBudgetsIdRoute: AuthenticatedAppBudgetsIdRoute,
