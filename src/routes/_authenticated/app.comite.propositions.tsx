@@ -26,6 +26,24 @@ export const Route = createFileRoute("/_authenticated/app/comite/propositions")(
 
 type Filter = "all" | "gt10" | "bee_one" | "comite_experts";
 
+const FILTER_OPTIONS: FilterOption<Filter>[] = [
+  { value: "all", label: "Toutes" },
+  { value: "gt10", label: "Écarts > 10 %" },
+  { value: "bee_one", label: "Bee One" },
+  { value: "comite_experts", label: "Comité" },
+];
+
+const PROPOSITIONS_COLUMNS: ComiteColumn[] = [
+  { key: "toggle", header: "", width: "w-6" },
+  { key: "norme", header: "Norme", align: "start" },
+  { key: "courbe", header: "Courbe hebdo", align: "start" },
+  { key: "values", header: "v courante → v proposée", align: "end" },
+  { key: "delta", header: "Δ %", align: "end" },
+  { key: "provenance", header: "Provenance", align: "start" },
+  { key: "statut", header: "Statut", align: "start" },
+  { key: "actions", header: "Actions", align: "end" },
+];
+
 function isArrayOf52(v: any): v is number[] {
   return Array.isArray(v) && v.length === 52 && v.every((n) => typeof n === "number" && Number.isFinite(n));
 }
