@@ -71,7 +71,7 @@ function CreditsPage() {
 
   return (
     <div className="space-y-6">
-      <BackButton />
+      <BackButton to="/dashboard" />
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Mes crédits</h1>
