@@ -17,6 +17,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppEngineTestRouteImport } from './routes/_authenticated/app.engine-test'
 import { Route as AuthenticatedAppProjectsNewRouteImport } from './routes/_authenticated/app.projects.new'
+import { Route as AuthenticatedAppBusinessPlansIdRouteImport } from './routes/_authenticated/app.business-plans.$id'
 import { Route as AuthenticatedAppBudgetsIdRouteImport } from './routes/_authenticated/app.budgets.$id'
 import { Route as AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRouteImport } from './routes/_authenticated/app.projects.$id.prefaisabilite.$profilCode'
 
@@ -61,6 +62,12 @@ const AuthenticatedAppProjectsNewRoute =
     path: '/app/projects/new',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAppBusinessPlansIdRoute =
+  AuthenticatedAppBusinessPlansIdRouteImport.update({
+    id: '/app/business-plans/$id',
+    path: '/app/business-plans/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAppBudgetsIdRoute =
   AuthenticatedAppBudgetsIdRouteImport.update({
     id: '/app/budgets/$id',
@@ -82,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/invite/$token': typeof InviteTokenRoute
   '/app/engine-test': typeof AuthenticatedAppEngineTestRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
+  '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
@@ -93,6 +101,7 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/app/engine-test': typeof AuthenticatedAppEngineTestRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
+  '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
@@ -106,6 +115,7 @@ export interface FileRoutesById {
   '/invite/$token': typeof InviteTokenRoute
   '/_authenticated/app/engine-test': typeof AuthenticatedAppEngineTestRoute
   '/_authenticated/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
+  '/_authenticated/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/_authenticated/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/_authenticated/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/app/engine-test'
     | '/app/budgets/$id'
+    | '/app/business-plans/$id'
     | '/app/projects/new'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesByTo: FileRoutesByTo
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/app/engine-test'
     | '/app/budgets/$id'
+    | '/app/business-plans/$id'
     | '/app/projects/new'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   id:
@@ -142,6 +154,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/_authenticated/app/engine-test'
     | '/_authenticated/app/budgets/$id'
+    | '/_authenticated/app/business-plans/$id'
     | '/_authenticated/app/projects/new'
     | '/_authenticated/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesById: FileRoutesById
@@ -211,6 +224,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppProjectsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/business-plans/$id': {
+      id: '/_authenticated/app/business-plans/$id'
+      path: '/app/business-plans/$id'
+      fullPath: '/app/business-plans/$id'
+      preLoaderRoute: typeof AuthenticatedAppBusinessPlansIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/app/budgets/$id': {
       id: '/_authenticated/app/budgets/$id'
       path: '/app/budgets/$id'
@@ -233,6 +253,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedAppEngineTestRoute: typeof AuthenticatedAppEngineTestRoute
   AuthenticatedAppBudgetsIdRoute: typeof AuthenticatedAppBudgetsIdRoute
+  AuthenticatedAppBusinessPlansIdRoute: typeof AuthenticatedAppBusinessPlansIdRoute
   AuthenticatedAppProjectsNewRoute: typeof AuthenticatedAppProjectsNewRoute
   AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute: typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
@@ -242,6 +263,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedAppEngineTestRoute: AuthenticatedAppEngineTestRoute,
   AuthenticatedAppBudgetsIdRoute: AuthenticatedAppBudgetsIdRoute,
+  AuthenticatedAppBusinessPlansIdRoute: AuthenticatedAppBusinessPlansIdRoute,
   AuthenticatedAppProjectsNewRoute: AuthenticatedAppProjectsNewRoute,
   AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute:
     AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute,
