@@ -6,7 +6,8 @@ import { ComiteShell } from "@/components/agriplan/ComiteShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { ComiteTable, type ComiteColumn } from "@/components/agriplan/ComiteTable";
 import { LotStatusBadge } from "@/components/agriplan/StatusBadge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +20,13 @@ export const Route = createFileRoute("/_authenticated/app/comite/publish")({
   ssr: false,
   component: () => <ComiteShell><View /></ComiteShell>,
 });
+
+const PUBLISH_COLUMNS: ComiteColumn[] = [
+  { key: "version", header: "Version", align: "start" },
+  { key: "statut", header: "Statut", align: "start" },
+  { key: "props", header: "Propositions", align: "start" },
+  { key: "actions", header: "Actions", align: "end" },
+];
 
 function View() {
   const qc = useQueryClient();
@@ -103,16 +111,7 @@ function View() {
           <CardDescription>Un lot ne peut être publié que si toutes ses propositions sont « approuvée admin ». Une version publiée est immuable.</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <Table className="min-w-[700px]">
-            <TableHeader className="bg-muted/50">
-              <TableRow>
-                <TableHead className="mono-eyebrow">Version</TableHead>
-                <TableHead className="mono-eyebrow">Statut</TableHead>
-                <TableHead className="mono-eyebrow">Propositions</TableHead>
-                <TableHead className="mono-eyebrow text-end">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <ComiteTable minWidth={700} columns={PUBLISH_COLUMNS}>
               {(lots.data ?? []).map((l: any) => {
                 const s = stats.data?.[l.id]?.statuts ?? {};
                 const tot = (Object.values(s) as number[]).reduce((a, b) => a + b, 0);
@@ -135,8 +134,7 @@ function View() {
               {(lots.data ?? []).length === 0 && (
                 <TableRow className="hover:bg-transparent"><TableCell colSpan={4} className="p-6 text-center text-sm text-muted-foreground">Aucun lot.</TableCell></TableRow>
               )}
-            </TableBody>
-          </Table>
+          </ComiteTable>
         </CardContent>
       </Card>
 

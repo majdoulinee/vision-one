@@ -6,7 +6,9 @@ import { ComiteShell } from "@/components/agriplan/ComiteShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { ComiteTable, type ComiteColumn } from "@/components/agriplan/ComiteTable";
+import { FilterChips, type FilterOption } from "@/components/agriplan/FilterChips";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PropositionStatusBadge } from "@/components/agriplan/StatusBadge";
 import { Input } from "@/components/ui/input";
@@ -23,6 +25,24 @@ export const Route = createFileRoute("/_authenticated/app/comite/propositions")(
 });
 
 type Filter = "all" | "gt10" | "bee_one" | "comite_experts";
+
+const FILTER_OPTIONS: FilterOption<Filter>[] = [
+  { value: "all", label: "Toutes" },
+  { value: "gt10", label: "Écarts > 10 %" },
+  { value: "bee_one", label: "Bee One" },
+  { value: "comite_experts", label: "Comité" },
+];
+
+const PROPOSITIONS_COLUMNS: ComiteColumn[] = [
+  { key: "toggle", header: "", width: "w-6" },
+  { key: "norme", header: "Norme", align: "start" },
+  { key: "courbe", header: "Courbe hebdo", align: "start" },
+  { key: "values", header: "v courante → v proposée", align: "end" },
+  { key: "delta", header: "Δ %", align: "end" },
+  { key: "provenance", header: "Provenance", align: "start" },
+  { key: "statut", header: "Statut", align: "start" },
+  { key: "actions", header: "Actions", align: "end" },
+];
 
 function isArrayOf52(v: any): v is number[] {
   return Array.isArray(v) && v.length === 52 && v.every((n) => typeof n === "number" && Number.isFinite(n));
@@ -147,35 +167,15 @@ function PropView() {
             <Button size="sm" variant="ink" onClick={() => openEditor(null)}><Sparkles className="h-3.5 w-3.5 mr-1" /> Nouvelle proposition</Button>
           </div>
         </CardHeader>
-        <div className="px-6 pb-3 flex flex-wrap gap-1">
-          {(["all","gt10","bee_one","comite_experts"] as Filter[]).map((f) => (
-            <Button
-              key={f}
-              size="sm"
-              variant={filter === f ? "ink" : "outline-ink"}
-              onClick={() => setFilter(f)}
-              className="mono-eyebrow"
-            >
-              {f === "all" ? "Toutes" : f === "gt10" ? "Écarts > 10 %" : f === "bee_one" ? "Bee One" : "Comité"}
-              <span className="ml-1 opacity-70 tabular-nums">{counts[f]}</span>
-            </Button>
-          ))}
+        <div className="px-6 pb-3">
+          <FilterChips<Filter>
+            value={filter}
+            onChange={setFilter}
+            options={FILTER_OPTIONS.map((o) => ({ ...o, count: counts[o.value] }))}
+          />
         </div>
         <CardContent className="p-0">
-          <Table className="min-w-[900px]">
-            <TableHeader className="bg-muted/50">
-              <TableRow>
-                <TableHead className="w-6" />
-                <TableHead className="mono-eyebrow">Norme</TableHead>
-                <TableHead className="mono-eyebrow">Courbe hebdo</TableHead>
-                <TableHead className="mono-eyebrow text-end">v courante → v proposée</TableHead>
-                <TableHead className="mono-eyebrow text-end">Δ %</TableHead>
-                <TableHead className="mono-eyebrow">Provenance</TableHead>
-                <TableHead className="mono-eyebrow">Statut</TableHead>
-                <TableHead className="mono-eyebrow text-end">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <ComiteTable minWidth={900} columns={PROPOSITIONS_COLUMNS}>
               {filtered.map((p: any) => {
                 const d = pctDelta(p.ancienne_valeur, p.nouvelle_valeur);
                 const hasCurve = isArrayOf52(p.ancienne_valeur) || isArrayOf52(p.nouvelle_valeur);
@@ -266,8 +266,7 @@ function PropView() {
                   <TableCell colSpan={8} className="p-6 text-center text-sm text-muted-foreground">Aucune proposition dans ce filtre.</TableCell>
                 </TableRow>
               )}
-            </TableBody>
-          </Table>
+          </ComiteTable>
         </CardContent>
       </Card>
 
