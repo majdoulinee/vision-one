@@ -51,11 +51,11 @@ function Sparkline({ old: oldArr, next }: { old?: number[]; next?: number[] }) {
     <svg width={W} height={H} className="block">
       {oldA?.map((v, i) => {
         const h = (v / max) * (H - 2);
-        return <rect key={"o"+i} x={i * bw} y={H - h} width={bw - 0.5} height={h} fill="#c9c9c9" />;
+        return <rect key={"o"+i} x={i * bw} y={H - h} width={bw - 0.5} height={h} className="fill-line" />;
       })}
       {nxA?.map((v, i) => {
         const h = (v / max) * (H - 2);
-        return <rect key={"n"+i} x={i * bw + bw * 0.15} y={H - h} width={bw * 0.7} height={h} fill="#2E6E8E" opacity={0.85} />;
+        return <rect key={"n"+i} x={i * bw + bw * 0.15} y={H - h} width={bw * 0.7} height={h} className="fill-sky" opacity={0.85} />;
       })}
     </svg>
   );
@@ -147,7 +147,7 @@ function PropView() {
           {(["all","gt10","bee_one","comite_experts"] as Filter[]).map((f) => (
             <button key={f}
               onClick={() => setFilter(f)}
-              className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded border ${filter === f ? "bg-foreground text-background" : "hover:bg-muted"}`}>
+              className={`mono-eyebrow px-2 py-1 rounded-sm border transition-colors ${filter === f ? "bg-ink text-parch border-ink" : "border-line hover:bg-muted"}`}>
               {f === "all" ? "Toutes" : f === "gt10" ? "Écarts > 10 %" : f === "bee_one" ? "Bee One" : "Comité"}
               <span className="ml-1 opacity-70 tabular-nums">{counts[f]}</span>
             </button>
@@ -155,7 +155,7 @@ function PropView() {
         </div>
         <CardContent className="p-0 overflow-x-auto">
           <table className="w-full text-sm min-w-[900px]">
-            <thead className="bg-muted/50 text-[10px] uppercase font-mono tracking-wider">
+            <thead className="bg-muted/50 mono-eyebrow text-mute">
               <tr>
                 <th className="p-2 w-6"></th>
                 <th className="p-2 text-start">Norme</th>
@@ -176,7 +176,7 @@ function PropView() {
                 const editable = p.statut === "brouillon" || p.statut === "renvoyee_comite";
                 return (
                   <Fragment key={p.id}>
-                    <tr className={strong ? "bg-[hsl(15,60%,95%)]" : undefined}>
+                    <tr className={strong ? "bg-clay/5" : undefined}>
                       <td className="p-2 align-top">
                         <button onClick={() => setExpanded((s) => { const n = new Set(s); n.has(p.id) ? n.delete(p.id) : n.add(p.id); return n; })}>
                           {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -184,14 +184,14 @@ function PropView() {
                       </td>
                       <td className="p-2 align-top">
                         <div className="font-medium text-sm">{p.cle_norme}</div>
-                        <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{p.profil_code ?? "—"} · {p.zone_code ?? "—"} · v.{p.ref_lots?.version_cible}</div>
+                        <div className="mono-eyebrow text-mute">{p.profil_code ?? "—"} · {p.zone_code ?? "—"} · v.{p.ref_lots?.version_cible}</div>
                       </td>
                       <td className="p-2 align-top">
                         {hasCurve ? (
                           <Sparkline old={isArrayOf52(p.ancienne_valeur) ? p.ancienne_valeur as number[] : undefined}
                                      next={isArrayOf52(p.nouvelle_valeur) ? p.nouvelle_valeur as number[] : undefined} />
                         ) : (
-                          <span className="text-[10px] text-muted-foreground font-mono">— scalaire —</span>
+                          <span className="mono-eyebrow text-mute">— scalaire —</span>
                         )}
                       </td>
                       <td className="p-2 align-top text-end text-xs">
@@ -200,24 +200,24 @@ function PropView() {
                       </td>
                       <td className="p-2 align-top text-end tabular-nums text-xs">
                         {d != null ? (
-                          <span className="font-semibold" style={{ color: d > 0 ? "#C0552F" : "#2E6E8E" }}>
+                          <span className={`font-semibold ${d > 0 ? "text-clay" : "text-sky"}`}>
                             {d > 0 ? "+" : ""}{d.toFixed(1)}%
                           </span>
                         ) : "—"}
                       </td>
                       <td className="p-2 align-top">
                         {p.provenance === "bee_one" ? (
-                          <span className="text-[10px] font-mono uppercase tracking-wider rounded px-1.5 py-0.5" style={{ background: "#2E6E8E", color: "#F3EFE3" }}>
+                          <span className="mono-eyebrow bg-sky text-parch rounded-sm px-1.5 py-0.5">
                             BEE ONE · N={p.bee_one_n ?? "?"}
                           </span>
                         ) : (
-                          <span className="text-[10px] font-mono uppercase tracking-wider rounded px-1.5 py-0.5" style={{ background: "#D9A521", color: "#12211A" }}>
+                          <span className="mono-eyebrow bg-ochre text-ink rounded-sm px-1.5 py-0.5">
                             COMITÉ
                           </span>
                         )}
                       </td>
                       <td className="p-2 align-top">
-                        <span className="text-[10px] font-mono uppercase tracking-wider rounded border px-1.5 py-0.5">{p.statut}</span>
+                        <span className="mono-eyebrow rounded-sm border border-line text-mute px-1.5 py-0.5">{p.statut}</span>
                       </td>
                       <td className="p-2 align-top text-end space-x-1">
                         {editable && <Button size="sm" variant="outline" onClick={() => openEditor(p)}>Éditer</Button>}
@@ -230,13 +230,13 @@ function PropView() {
                         <td colSpan={8} className="p-4">
                           <div className="grid gap-4 md:grid-cols-3 text-xs">
                             <div>
-                              <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Justification (signée, datée)</div>
-                              <p className="italic">« {p.justification} »</p>
-                              <p className="text-muted-foreground mt-1">Créée le {new Date(p.cree_le).toLocaleString()}</p>
-                              {p.motif_renvoi && <p className="mt-1" style={{ color: "#C0552F" }}>Renvoi admin : {p.motif_renvoi}</p>}
+                              <div className="mono-eyebrow text-mute mb-1">Justification (signée, datée)</div>
+                              <p className="font-serif italic">« {p.justification} »</p>
+                              <p className="text-mute mt-1">Créée le {new Date(p.cree_le).toLocaleString()}</p>
+                              {p.motif_renvoi && <p className="mt-1 text-clay">Renvoi admin : {p.motif_renvoi}</p>}
                             </div>
                             <div>
-                              <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Échantillon</div>
+                              <div className="mono-eyebrow text-mute mb-1">Échantillon</div>
                               {p.provenance === "bee_one" ? (
                                 <>
                                   <p>N = <b>{p.bee_one_n ?? "—"}</b></p>
@@ -247,7 +247,7 @@ function PropView() {
                               )}
                             </div>
                             <div>
-                              <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Impact estimé</div>
+                              <div className="mono-eyebrow text-mute mb-1">Impact estimé</div>
                               <ImpactCount profilCode={p.profil_code} />
                             </div>
                           </div>
@@ -444,9 +444,9 @@ function PropositionEditor({
 
           <div className="flex items-center gap-2">
             <Label className="mb-0">Type de valeur :</Label>
-            <div className="flex rounded border overflow-hidden text-xs font-mono uppercase tracking-wider">
-              <button type="button" onClick={() => setMode("scalar")} className={`px-3 py-1 ${mode === "scalar" ? "bg-foreground text-background" : ""}`}>Scalaire</button>
-              <button type="button" onClick={() => setMode("weekly")} className={`px-3 py-1 ${mode === "weekly" ? "bg-foreground text-background" : ""}`}>Hebdo (52)</button>
+            <div className="flex rounded-sm border border-line overflow-hidden mono-eyebrow">
+              <button type="button" onClick={() => setMode("scalar")} className={`px-3 py-1 transition-colors ${mode === "scalar" ? "bg-ink text-parch" : "hover:bg-muted"}`}>Scalaire</button>
+              <button type="button" onClick={() => setMode("weekly")} className={`px-3 py-1 transition-colors ${mode === "weekly" ? "bg-ink text-parch" : "hover:bg-muted"}`}>Hebdo (52)</button>
             </div>
           </div>
 
@@ -458,7 +458,7 @@ function PropositionEditor({
           ) : (
             <div className="space-y-2">
               <Label>52 semaines</Label>
-              <div className="rounded border p-2 bg-muted/20">
+              <div className="rounded-sm border border-line p-2 bg-muted/20">
                 <Sparkline old={isArrayOf52(oldValue) ? oldValue as number[] : undefined} next={weekly} />
               </div>
               <div className="grid grid-cols-13 gap-1 text-[10px]" style={{ gridTemplateColumns: "repeat(13, minmax(0, 1fr))" }}>
@@ -479,9 +479,9 @@ function PropositionEditor({
             </div>
           )}
 
-          <div className="rounded border p-2 text-xs bg-muted/20 flex items-center justify-between">
-            <span>Δ vs valeur courante :</span>
-            <span className="font-semibold tabular-nums" style={{ color: deltaPct == null ? undefined : (deltaPct > 0 ? "#C0552F" : "#2E6E8E") }}>
+          <div className="rounded-sm border border-line p-2 text-xs bg-muted/20 flex items-center justify-between">
+            <span className="mono-eyebrow text-mute">Δ vs valeur courante</span>
+            <span className={`font-semibold tabular-nums ${deltaPct == null ? "" : (deltaPct > 0 ? "text-clay" : "text-sky")}`}>
               {deltaPct == null ? "— (pas de valeur courante ou incompatible)" : `${deltaPct > 0 ? "+" : ""}${deltaPct.toFixed(1)}%`}
             </span>
           </div>

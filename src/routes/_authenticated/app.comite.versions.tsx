@@ -65,8 +65,8 @@ function View() {
             <div key={v.version} className="p-4 flex flex-wrap items-start justify-between gap-3">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono font-semibold text-sm" style={{ color: "#12211A" }}>v{v.version}</span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider rounded px-1.5 py-0.5" style={{ background: "#D9A521", color: "#12211A" }}>publiée · immuable</span>
+                  <span className="font-serif font-semibold text-lg text-ink">v{v.version}</span>
+                  <span className="mono-eyebrow bg-ochre text-ink rounded-sm px-1.5 py-0.5">publiée · immuable</span>
                 </div>
                 {v.note_publication && <p className="text-sm text-muted-foreground italic max-w-2xl">« {v.note_publication} »</p>}
                 <div className="text-xs text-muted-foreground">
