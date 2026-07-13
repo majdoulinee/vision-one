@@ -160,4 +160,46 @@
     "importSuccess": "Import succeeded: {{n}} rows", "importFailed": "Import failed", "denied": "Access denied"
   },
   "misc": { "perennial": "Perennial · {{n}} years before production", "annual": "Annual crop", "sample": "Sample" }
+  ,
+  "verify": {
+    "title": "Document verification page",
+    "notFound": "Document not found",
+    "notFoundDesc": "No AGRIPLAN document matches this identifier.",
+    "type": { "budget": "Campaign budget", "business_plan": "Business plan", "prefaisabilite": "Pre-feasibility" },
+    "issuedAt": "Issued",
+    "hasOverrides": "{{count}} forced assumption(s)",
+    "noOverrides": "100% compliant with standards",
+    "refVersion": "Reference version",
+    "provenance": "Provenance of standards",
+    "source": "Source",
+    "region": "Region",
+    "period": "Period",
+    "overrides": "Assumptions forced by project owner",
+    "noOverridesDesc": "None — 100% compliant with reference standards.",
+    "key": "Key",
+    "original": "Original value",
+    "forced": "Forced value",
+    "date": "Date",
+    "resume": "Indicators summary",
+    "hash": "Document SHA-256 fingerprint",
+    "hashDesc": "This fingerprint uniquely identifies the emitted PDF content.",
+    "checkBlock": "Verify my file",
+    "checkBlockDesc": "Drop your PDF. The file never leaves your browser — fingerprint is computed locally.",
+    "drop": "Click or drop a PDF file",
+    "checking": "Computing fingerprint…",
+    "match": "✓ Authentic document",
+    "matchDesc": "Identical to the original issued by AGRIPLAN.",
+    "mismatch": "✗ Different fingerprint",
+    "mismatchDesc": "This file has been modified or is not the original document.",
+    "uploadedHash": "Uploaded file fingerprint",
+    "reset": "Reset",
+    "footer": "AGRIPLAN guarantees that the numbers in this document come from a deterministic calculation on the stated reference. Any forced assumption by the project owner is listed above."
+  },
+  "export": {
+    "success": "Document exported",
+    "fingerprintShort": "Fingerprint {{prefix}}…",
+    "proofPage": "Proof page",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied"
+  }
 }

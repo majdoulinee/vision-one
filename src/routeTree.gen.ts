@@ -12,11 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VerifyDocIdRouteImport } from './routes/verify.$docId'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppReferentielRouteImport } from './routes/_authenticated/app.referentiel'
-import { Route as AuthenticatedAppEngineTestRouteImport } from './routes/_authenticated/app.engine-test'
+import { Route as ApiPublicVerifyDocIdRouteImport } from './routes/api/public/verify.$docId'
 import { Route as AuthenticatedAppProjectsNewRouteImport } from './routes/_authenticated/app.projects.new'
 import { Route as AuthenticatedAppBusinessPlansIdRouteImport } from './routes/_authenticated/app.business-plans.$id'
 import { Route as AuthenticatedAppBudgetsIdRouteImport } from './routes/_authenticated/app.budgets.$id'
@@ -34,6 +35,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyDocIdRoute = VerifyDocIdRouteImport.update({
+  id: '/verify/$docId',
+  path: '/verify/$docId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InviteTokenRoute = InviteTokenRouteImport.update({
@@ -57,12 +63,11 @@ const AuthenticatedAppReferentielRoute =
     path: '/app/referentiel',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAppEngineTestRoute =
-  AuthenticatedAppEngineTestRouteImport.update({
-    id: '/app/engine-test',
-    path: '/app/engine-test',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
+const ApiPublicVerifyDocIdRoute = ApiPublicVerifyDocIdRouteImport.update({
+  id: '/api/public/verify/$docId',
+  path: '/api/public/verify/$docId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAppProjectsNewRoute =
   AuthenticatedAppProjectsNewRouteImport.update({
     id: '/app/projects/new',
@@ -94,11 +99,12 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
-  '/app/engine-test': typeof AuthenticatedAppEngineTestRoute
+  '/verify/$docId': typeof VerifyDocIdRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
+  '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRoutesByTo {
@@ -107,11 +113,12 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
-  '/app/engine-test': typeof AuthenticatedAppEngineTestRoute
+  '/verify/$docId': typeof VerifyDocIdRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
+  '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRoutesById {
@@ -122,11 +129,12 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
-  '/_authenticated/app/engine-test': typeof AuthenticatedAppEngineTestRoute
+  '/verify/$docId': typeof VerifyDocIdRoute
   '/_authenticated/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/_authenticated/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/_authenticated/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/_authenticated/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
+  '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/_authenticated/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRouteTypes {
@@ -137,11 +145,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/settings'
     | '/invite/$token'
-    | '/app/engine-test'
+    | '/verify/$docId'
     | '/app/referentiel'
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
     | '/app/projects/new'
+    | '/api/public/verify/$docId'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -150,11 +159,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/settings'
     | '/invite/$token'
-    | '/app/engine-test'
+    | '/verify/$docId'
     | '/app/referentiel'
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
     | '/app/projects/new'
+    | '/api/public/verify/$docId'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   id:
     | '__root__'
@@ -164,11 +174,12 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/settings'
     | '/invite/$token'
-    | '/_authenticated/app/engine-test'
+    | '/verify/$docId'
     | '/_authenticated/app/referentiel'
     | '/_authenticated/app/budgets/$id'
     | '/_authenticated/app/business-plans/$id'
     | '/_authenticated/app/projects/new'
+    | '/api/public/verify/$docId'
     | '/_authenticated/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesById: FileRoutesById
 }
@@ -177,6 +188,8 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  VerifyDocIdRoute: typeof VerifyDocIdRoute
+  ApiPublicVerifyDocIdRoute: typeof ApiPublicVerifyDocIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify/$docId': {
+      id: '/verify/$docId'
+      path: '/verify/$docId'
+      fullPath: '/verify/$docId'
+      preLoaderRoute: typeof VerifyDocIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/invite/$token': {
@@ -230,12 +250,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppReferentielRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/app/engine-test': {
-      id: '/_authenticated/app/engine-test'
-      path: '/app/engine-test'
-      fullPath: '/app/engine-test'
-      preLoaderRoute: typeof AuthenticatedAppEngineTestRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/api/public/verify/$docId': {
+      id: '/api/public/verify/$docId'
+      path: '/api/public/verify/$docId'
+      fullPath: '/api/public/verify/$docId'
+      preLoaderRoute: typeof ApiPublicVerifyDocIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/app/projects/new': {
       id: '/_authenticated/app/projects/new'
@@ -271,7 +291,6 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedAppEngineTestRoute: typeof AuthenticatedAppEngineTestRoute
   AuthenticatedAppReferentielRoute: typeof AuthenticatedAppReferentielRoute
   AuthenticatedAppBudgetsIdRoute: typeof AuthenticatedAppBudgetsIdRoute
   AuthenticatedAppBusinessPlansIdRoute: typeof AuthenticatedAppBusinessPlansIdRoute
@@ -282,7 +301,6 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedAppEngineTestRoute: AuthenticatedAppEngineTestRoute,
   AuthenticatedAppReferentielRoute: AuthenticatedAppReferentielRoute,
   AuthenticatedAppBudgetsIdRoute: AuthenticatedAppBudgetsIdRoute,
   AuthenticatedAppBusinessPlansIdRoute: AuthenticatedAppBusinessPlansIdRoute,
@@ -299,6 +317,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   InviteTokenRoute: InviteTokenRoute,
+  VerifyDocIdRoute: VerifyDocIdRoute,
+  ApiPublicVerifyDocIdRoute: ApiPublicVerifyDocIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
