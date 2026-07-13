@@ -109,7 +109,7 @@ function Prefaisabilite() {
     try {
       // Reserve credits BEFORE generation via atomic RPC (writes to credit_ledger)
       const { data: bpEntry, error: bpErr } = await supabase.rpc("consume_credits", {
-        p_org_id: current.org_id, p_action: "bp_complet", p_ref_id: null,
+        p_org_id: current.org_id, p_action: "bp_complet",
       });
       if (bpErr) {
         if (String(bpErr.message).includes("insufficient_credits")) {
@@ -121,7 +121,7 @@ function Prefaisabilite() {
       }
       bpLedgerId = (bpEntry as string | null) ?? null;
       const { data: budgetEntry, error: bErr } = await supabase.rpc("consume_credits", {
-        p_org_id: current.org_id, p_action: "budget_campagne", p_ref_id: null,
+        p_org_id: current.org_id, p_action: "budget_campagne",
       });
       if (bErr) throw bErr;
       budgetLedgerId = (budgetEntry as string | null) ?? null;
@@ -259,15 +259,15 @@ function Prefaisabilite() {
       <Dialog open={dlgOpen} onOpenChange={setDlgOpen}>
         <DialogContent>
           {insufficient ? (
-            <>
+          <>
               <DialogHeader>
                 <DialogTitle>{t("wallet.insufficient")}</DialogTitle>
                 <DialogDescription>{t("wallet.insufficientDesc")}</DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                {current.role === "owner" && (
-                  <Button onClick={recharge}>{t("wallet.recharge")}</Button>
-                )}
+                <Button asChild>
+                  <Link to="/app/credits">Demander des crédits</Link>
+                </Button>
               </DialogFooter>
             </>
           ) : (
