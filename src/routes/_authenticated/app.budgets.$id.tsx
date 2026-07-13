@@ -298,3 +298,28 @@ function KPI({ l, v, accent }: { l: string; v: string; accent?: boolean }) {
     </div>
   );
 }
+
+function ExportedBanner({ e }: { e: { docId: string; sha256: string; verifyUrl: string } }) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm">
+      <FileDown className="h-5 w-5 text-primary" />
+      <div className="flex-1 min-w-0">
+        <div className="font-medium">{t("export.success")}</div>
+        <div className="text-xs text-muted-foreground">
+          {t("export.fingerprintShort", { prefix: e.sha256.slice(0, 8) })} · {t("export.proofPage")}: {e.verifyUrl}
+        </div>
+      </div>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          navigator.clipboard.writeText(e.verifyUrl);
+          toast.success(t("export.linkCopied"));
+        }}
+      >
+        <Copy className="mr-2 h-4 w-4" /> {t("export.copyLink")}
+      </Button>
+    </div>
+  );
+}
