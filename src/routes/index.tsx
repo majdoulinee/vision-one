@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
           "Vision One génère un budget de campagne agricole semaine par semaine et un business plan bancable 5–10 ans, à partir d'un référentiel de normes versionné. Calcul 100 % déterministe : l'IA explique, ne chiffre jamais.",
       },
       { property: "og:title", content: "Vision One — Le business plan agricole que votre banque peut vérifier" },
-      { property: "og:description", content: "Budget de campagne, business plan bancable, PDF vérifiable QR + SHA-256. L'IA explique, elle ne chiffre jamais." },
+      { property: "og:description", content: "Vision One génère un budget de campagne agricole semaine par semaine et un business plan bancable 5–10 ans, à partir d'un référentiel de normes versionné. Calcul 100 % déterministe : l'IA explique, ne chiffre jamais." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
     ],

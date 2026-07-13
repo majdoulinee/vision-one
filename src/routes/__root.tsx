@@ -80,21 +80,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Vision One — Planification financière agricole vérifiable" },
+      { title: "Vision One — Le business plan agricole que votre banque peut vérifier" },
       {
         name: "description",
         content:
-          "Du budget de campagne au Business Plan bancable — Vision One structure la planification financière agricole avec des calculs déterministes et un PDF vérifiable via QR code.",
+          "Vision One génère un budget de campagne agricole semaine par semaine et un business plan bancable 5–10 ans, à partir d'un référentiel de normes versionné. Calcul 100 % déterministe : l'IA explique, ne chiffre jamais.",
       },
       { name: "author", content: "Vision One" },
-      { property: "og:title", content: "Vision One — Planification financière agricole vérifiable" },
+      { property: "og:title", content: "Vision One — Le business plan agricole que votre banque peut vérifier" },
       {
         property: "og:description",
         content:
-          "Budget de campagne, Business Plan bancable, calculs déterministes, PDF vérifiable via QR.",
+          "Vision One génère un budget de campagne agricole semaine par semaine et un business plan bancable 5–10 ans, à partir d'un référentiel de normes versionné. Calcul 100 % déterministe : l'IA explique, ne chiffre jamais.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Vision One — Le business plan agricole que votre banque peut vérifier" },
+      { name: "twitter:description", content: "Vision One génère un budget de campagne agricole semaine par semaine et un business plan bancable 5–10 ans, à partir d'un référentiel de normes versionné. Calcul 100 % déterministe : l'IA explique, ne chiffre jamais." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b6c4b018-46b1-4664-9297-623f77968f7a/id-preview-de19c6d8--15cfb34e-c704-4ccd-aae4-fa87d22b5aa8.lovable.app-1783956696935.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b6c4b018-46b1-4664-9297-623f77968f7a/id-preview-de19c6d8--15cfb34e-c704-4ccd-aae4-fa87d22b5aa8.lovable.app-1783956696935.png" },
     ],
     links: [
       {
