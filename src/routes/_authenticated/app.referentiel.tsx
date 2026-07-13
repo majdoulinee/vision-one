@@ -211,7 +211,7 @@ function RefConsole() {
                   bbox_lng_max: num(r.bbox_lng_max), bbox_lat_max: num(r.bbox_lat_max),
                 },
               }));
-              const { error } = await supabase.from("zones").upsert(payload as any, { onConflict: "code,ref_version" });
+              const { error } = await supabase.from("zones").upsert(payload as any, { onConflict: "code" });
               if (error) throw error;
               await ensureVersionAndLog("zones", payload.length);
               return payload.length;
@@ -256,7 +256,7 @@ function RefConsole() {
                   },
                 };
               });
-              const { error } = await supabase.from("profils_production").upsert(payload as any, { onConflict: "code,ref_version" });
+              const { error } = await supabase.from("profils_production").upsert(payload as any, { onConflict: "code" });
               if (error) throw error;
               await ensureVersionAndLog("profils", payload.length);
               return payload.length;
