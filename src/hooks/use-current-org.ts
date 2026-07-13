@@ -11,7 +11,7 @@ export type OrgMembership = {
   org: {
     id: string;
     name: string;
-    org_type: string;
+    type: string;
     country: string | null;
   };
 };
@@ -24,7 +24,7 @@ export function useMyOrganizations() {
     queryFn: async (): Promise<OrgMembership[]> => {
       const { data, error } = await supabase
         .from("org_members")
-        .select("org_id, role, org:organizations!inner(id,name,org_type,country)")
+        .select("org_id, role, org:organizations!inner(id,name,type,country)")
         .eq("user_id", user!.id);
       if (error) throw error;
       return (data ?? []) as unknown as OrgMembership[];

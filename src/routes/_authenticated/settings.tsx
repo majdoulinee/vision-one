@@ -138,7 +138,7 @@ function Settings() {
           </div>
           <div>
             <div className="text-xs text-muted-foreground">{t("auth.orgType")}</div>
-            <div className="font-medium">{t(`orgType.${current.org.org_type}`)}</div>
+            <div className="font-medium">{t(`orgType.${current.org.type}`)}</div>
           </div>
           <div>
             <div className="text-xs text-muted-foreground">{t("auth.country")}</div>

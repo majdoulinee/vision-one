@@ -22,13 +22,13 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 const ORG_TYPES = [
-  "farm",
+  "ferme",
   "cooperative",
-  "consulting",
-  "bank",
-  "ngo",
-  "public",
-  "academic",
+  "banque",
+  "assureur",
+  "organisme_public",
+  "groupe",
+  "autre",
 ] as const;
 
 function Dashboard() {
@@ -45,7 +45,7 @@ function Dashboard() {
         <h1 className="text-3xl font-bold tracking-tight">{t("dashboard.title")}</h1>
         {current && (
           <p className="text-muted-foreground">
-            {current.org.name} · {t(`orgType.${current.org.org_type}`)}
+            {current.org.name} · {t(`orgType.${current.org.type}`)}
           </p>
         )}
       </div>
@@ -77,7 +77,7 @@ function CreateFirstOrg() {
       if (!user) throw new Error("Not authenticated");
       const { error } = await supabase
         .from("organizations")
-        .insert({ name, org_type: type, country: country || null, created_by: user.id });
+        .insert({ name, type, country: country || null, created_by: user.id });
       if (error) throw error;
       await qc.invalidateQueries({ queryKey: ["my-orgs"] });
       toast.success("Organisation créée");
