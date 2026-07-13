@@ -113,7 +113,7 @@ export async function exportVerifiablePdf(input: ExportInput): Promise<ExportRes
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(22);
-  doc.text("AGRIPLAN", M, 42);
+  doc.text("Vision One", M, 42);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(11);
   doc.text(
@@ -337,7 +337,7 @@ export async function exportVerifiablePdf(input: ExportInput): Promise<ExportRes
     doc.setFontSize(8);
     doc.setTextColor(100);
     doc.text(
-      `Document genere par AGRIPLAN — calcul deterministe. Referentiel v${input.refVersion}. Les normes citees incluent leur provenance et leur periode.`,
+      `Document genere par Vision One — calcul deterministe. Referentiel v${input.refVersion}. Les normes citees incluent leur provenance et leur periode.`,
       M,
       ph - 28,
       { maxWidth: pw - 2 * M },
@@ -384,7 +384,7 @@ export async function exportVerifiablePdf(input: ExportInput): Promise<ExportRes
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `AGRIPLAN_${input.kind}_${docId}.pdf`;
+  a.download = `VisionOne_${input.kind}_${docId}.pdf`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

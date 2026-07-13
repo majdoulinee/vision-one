@@ -85,7 +85,7 @@ function InvitePage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Invitation</CardTitle>
-          <CardDescription>Rejoindre une organisation AGRIPLAN</CardDescription>
+          <CardDescription>Rejoindre une organisation Vision One</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {state.kind === "loading" && <div>Chargement...</div>}

@@ -36,7 +36,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <aside className="hidden w-60 flex-col bg-sidebar text-sidebar-foreground md:flex">
         <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-4">
           <Sprout className="h-6 w-6 text-sidebar-primary" />
-          <span className="text-lg font-bold">AGRIPLAN</span>
+          <span className="text-lg font-bold">Vision One</span>
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {nav.map(({ to, label, Icon }) => {

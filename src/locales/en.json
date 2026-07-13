@@ -1,5 +1,5 @@
 {
-  "app": { "name": "AGRIPLAN", "tagline": "Verifiable agricultural financial planning" },
+  "app": { "name": "Vision One", "tagline": "Verifiable agricultural financial planning" },
   "nav": {
     "dashboard": "Dashboard",
     "projects": "Projects",
@@ -61,7 +61,7 @@
   },
   "landing": {
     "hero": "From seasonal budget to bankable Business Plan — verifiable.",
-    "sub": "AGRIPLAN structures agricultural financial planning with deterministic calculations and a QR-verifiable PDF.",
+    "sub": "Vision One structures agricultural financial planning with deterministic calculations and a QR-verifiable PDF.",
     "cta": "Get started",
     "signIn": "Sign in",
     "ctaFree": "Free pre-feasibility",
@@ -81,7 +81,7 @@
     "refVersion": "Versioned and traceable",
     "refVersionDesc": "Every document cites the exact reference version used.",
     "pdfTitle": "Bankable verifiable PDF",
-    "pdfDesc": "Every generated document carries a QR code linking to a public AGRIPLAN proof page. The SHA-256 fingerprint detects any tampering. Forced assumptions are listed publicly.",
+    "pdfDesc": "Every generated document carries a QR code linking to a public Vision One proof page. The SHA-256 fingerprint detects any tampering. Forced assumptions are listed publicly.",
     "pricing": "Pricing",
     "pricingIntro": "We charge for depth and traceability, not edits.",
     "planFreeTitle": "Pre-feasibility", "planFreePrice": "Free",
@@ -92,7 +92,7 @@
     "planSubDesc": "Unlimited re-forecasting during the campaign.",
     "planEnterpriseTitle": "Consultant / Group / Institutional", "planEnterprisePrice": "On request",
     "planEnterpriseDesc": "Multi-project, benchmark, counter-expertise (V2).",
-    "footerLegal": "AGRIPLAN — Verifiable agricultural financial planning."
+    "footerLegal": "Vision One — Verifiable agricultural financial planning."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -203,7 +203,7 @@
   "verify": {
     "title": "Document verification page",
     "notFound": "Document not found",
-    "notFoundDesc": "No AGRIPLAN document matches this identifier.",
+    "notFoundDesc": "No Vision One document matches this identifier.",
     "type": { "budget": "Campaign budget", "business_plan": "Business plan", "prefaisabilite": "Pre-feasibility" },
     "issuedAt": "Issued",
     "hasOverrides": "{{count}} forced assumption(s)",
@@ -227,12 +227,12 @@
     "drop": "Click or drop a PDF file",
     "checking": "Computing fingerprint…",
     "match": "✓ Authentic document",
-    "matchDesc": "Identical to the original issued by AGRIPLAN.",
+    "matchDesc": "Identical to the original issued by Vision One.",
     "mismatch": "✗ Different fingerprint",
     "mismatchDesc": "This file has been modified or is not the original document.",
     "uploadedHash": "Uploaded file fingerprint",
     "reset": "Reset",
-    "footer": "AGRIPLAN guarantees that the numbers in this document come from a deterministic calculation on the stated reference. Any forced assumption by the project owner is listed above."
+    "footer": "Vision One guarantees that the numbers in this document come from a deterministic calculation on the stated reference. Any forced assumption by the project owner is listed above."
   },
   "export": {
     "success": "Document exported",
