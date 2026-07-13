@@ -62,20 +62,30 @@ export function InverseWidget() {
         </div>
         <div className="mt-[18px] border-t border-dashed border-line pt-[14px] min-h-[210px]">
           {results.length === 0 ? (
-            <p className="text-mute text-sm py-4">Aucun profil éligible dans cette zone pour ce capital.</p>
+            <div
+              className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 py-[11px] opacity-0"
+              style={{ animation: "rise .5s forwards" }}
+            >
+              <div style={{ fontFamily: "var(--font-serif)", fontSize: 17, fontWeight: 600 }}>
+                Capital insuffisant
+              </div>
+              <div className="col-span-2 text-mute" style={{ fontFamily: "var(--font-mono)", fontSize: 12.5 }}>
+                Aucun profil atteignable sur au moins 0,5 ha dans cette zone.
+              </div>
+            </div>
           ) : (
             results.map((r, i) => (
               <div
-                key={r.code}
+                key={r.name}
                 className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 py-[11px] border-b border-dotted border-line last:border-b-0 opacity-0"
                 style={{ animation: "rise .5s forwards", animationDelay: `${i * 70}ms` }}
               >
                 <div style={{ fontFamily: "var(--font-serif)", fontSize: 17, fontWeight: 600 }}>{r.name}</div>
                 <div className="text-clay" style={{ fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 600 }}>
-                  {r.ha < 0.1 ? "< 0,1" : r.ha.toFixed(1)} ha
+                  {r.ha.toFixed(1)} ha atteignables
                 </div>
                 <div className="col-span-2 text-mute" style={{ fontFamily: "var(--font-mono)", fontSize: 12.5 }}>
-                  {fmt(r.investPerHa)} MAD/ha · marge {fmt(r.marginPerHa)} MAD/ha/an · retour {r.payback.toFixed(1)} ans
+                  {fmt(r.inv)} MAD/ha · marge normative {r.marge}% · retour {r.pb.toString().replace(".", ",")} ans
                 </div>
               </div>
             ))
