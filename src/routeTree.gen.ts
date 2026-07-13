@@ -16,6 +16,7 @@ import { Route as VerifyDocIdRouteImport } from './routes/verify.$docId'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAppReferentielRouteImport } from './routes/_authenticated/app.referentiel'
 import { Route as ApiPublicVerifyDocIdRouteImport } from './routes/api/public/verify.$docId'
 import { Route as AuthenticatedAppProjectsNewRouteImport } from './routes/_authenticated/app.projects.new'
 import { Route as AuthenticatedAppBusinessPlansIdRouteImport } from './routes/_authenticated/app.business-plans.$id'
@@ -56,6 +57,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppReferentielRoute =
+  AuthenticatedAppReferentielRouteImport.update({
+    id: '/app/referentiel',
+    path: '/app/referentiel',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicVerifyDocIdRoute = ApiPublicVerifyDocIdRouteImport.update({
   id: '/api/public/verify/$docId',
   path: '/api/public/verify/$docId',
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/verify/$docId': typeof VerifyDocIdRoute
+  '/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/verify/$docId': typeof VerifyDocIdRoute
+  '/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
@@ -121,6 +130,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/verify/$docId': typeof VerifyDocIdRoute
+  '/_authenticated/app/referentiel': typeof AuthenticatedAppReferentielRoute
   '/_authenticated/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/_authenticated/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/_authenticated/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/invite/$token'
     | '/verify/$docId'
+    | '/app/referentiel'
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
     | '/app/projects/new'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/invite/$token'
     | '/verify/$docId'
+    | '/app/referentiel'
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
     | '/app/projects/new'
@@ -163,6 +175,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/invite/$token'
     | '/verify/$docId'
+    | '/_authenticated/app/referentiel'
     | '/_authenticated/app/budgets/$id'
     | '/_authenticated/app/business-plans/$id'
     | '/_authenticated/app/projects/new'
@@ -230,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/referentiel': {
+      id: '/_authenticated/app/referentiel'
+      path: '/app/referentiel'
+      fullPath: '/app/referentiel'
+      preLoaderRoute: typeof AuthenticatedAppReferentielRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/verify/$docId': {
       id: '/api/public/verify/$docId'
       path: '/api/public/verify/$docId'
@@ -271,6 +291,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedAppReferentielRoute: typeof AuthenticatedAppReferentielRoute
   AuthenticatedAppBudgetsIdRoute: typeof AuthenticatedAppBudgetsIdRoute
   AuthenticatedAppBusinessPlansIdRoute: typeof AuthenticatedAppBusinessPlansIdRoute
   AuthenticatedAppProjectsNewRoute: typeof AuthenticatedAppProjectsNewRoute
@@ -280,6 +301,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedAppReferentielRoute: AuthenticatedAppReferentielRoute,
   AuthenticatedAppBudgetsIdRoute: AuthenticatedAppBudgetsIdRoute,
   AuthenticatedAppBusinessPlansIdRoute: AuthenticatedAppBusinessPlansIdRoute,
   AuthenticatedAppProjectsNewRoute: AuthenticatedAppProjectsNewRoute,
