@@ -165,6 +165,133 @@ export type Database = {
           },
         ]
       }
+      credit_ledger: {
+        Row: {
+          action: string | null
+          at: string
+          auteur_id: string | null
+          delta: number
+          id: string
+          motif: string | null
+          org_id: string
+          ref_id: string | null
+          solde_apres: number
+          type: string
+        }
+        Insert: {
+          action?: string | null
+          at?: string
+          auteur_id?: string | null
+          delta: number
+          id?: string
+          motif?: string | null
+          org_id: string
+          ref_id?: string | null
+          solde_apres: number
+          type: string
+        }
+        Update: {
+          action?: string | null
+          at?: string
+          auteur_id?: string | null
+          delta?: number
+          id?: string
+          motif?: string | null
+          org_id?: string
+          ref_id?: string | null
+          solde_apres?: number
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_ledger_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_pricing: {
+        Row: {
+          actif: boolean
+          action: string
+          cout: number
+          label: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          actif?: boolean
+          action: string
+          cout: number
+          label: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          actif?: boolean
+          action?: string
+          cout?: number
+          label?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      credit_requests: {
+        Row: {
+          created_at: string
+          credits: number
+          demandeur_id: string
+          id: string
+          message: string | null
+          montant_mad: number | null
+          motif_refus: string | null
+          org_id: string
+          pack: string
+          statut: string
+          traitee_le: string | null
+          traitee_par: string | null
+        }
+        Insert: {
+          created_at?: string
+          credits: number
+          demandeur_id: string
+          id?: string
+          message?: string | null
+          montant_mad?: number | null
+          motif_refus?: string | null
+          org_id: string
+          pack: string
+          statut?: string
+          traitee_le?: string | null
+          traitee_par?: string | null
+        }
+        Update: {
+          created_at?: string
+          credits?: number
+          demandeur_id?: string
+          id?: string
+          message?: string | null
+          montant_mad?: number | null
+          motif_refus?: string | null
+          org_id?: string
+          pack?: string
+          statut?: string
+          traitee_le?: string | null
+          traitee_par?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_requests_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           created_at: string
@@ -544,22 +671,28 @@ export type Database = {
       }
       wallets: {
         Row: {
+          autorise_negatif: boolean
           created_at: string
           credits: number
+          credits_alerte: number
           org_id: string
           plan: Database["public"]["Enums"]["wallet_plan"]
           updated_at: string
         }
         Insert: {
+          autorise_negatif?: boolean
           created_at?: string
           credits?: number
+          credits_alerte?: number
           org_id: string
           plan?: Database["public"]["Enums"]["wallet_plan"]
           updated_at?: string
         }
         Update: {
+          autorise_negatif?: boolean
           created_at?: string
           credits?: number
+          credits_alerte?: number
           org_id?: string
           plan?: Database["public"]["Enums"]["wallet_plan"]
           updated_at?: string
@@ -617,6 +750,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      consume_credits: {
+        Args: { p_action: string; p_org_id: string; p_ref_id?: string }
+        Returns: string
+      }
+      decide_credit_request: {
+        Args: { p_decision: string; p_motif?: string; p_request_id: string }
+        Returns: string
+      }
+      grant_credits: {
+        Args: {
+          p_delta: number
+          p_motif: string
+          p_org_id: string
+          p_type?: string
+        }
+        Returns: string
+      }
       has_org_role: {
         Args: {
           _org_id: string
@@ -630,6 +780,10 @@ export type Database = {
       }
       is_org_member: { Args: { _org_id: string }; Returns: boolean }
       is_referentiel_editor: { Args: never; Returns: boolean }
+      refund_credits: {
+        Args: { p_ledger_id: string; p_motif: string }
+        Returns: string
+      }
     }
     Enums: {
       document_type: "budget" | "business_plan" | "prefaisabilite"
