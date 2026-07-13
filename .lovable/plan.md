@@ -1,73 +1,75 @@
-# Plan — Bannière consultant + refonte complète console Comité
+## Objectif
 
-Livraison en un seul batch. Ci-dessous les impacts sur l'architecture existante (spoiler : très limités, tout tient dans l'UI Comité + une ligne dans le dashboard).
+Faire du référentiel la source de vérité pour les normes hebdomadaires **réelles** (52/duree_semaines valeurs par poste), tout en gardant la génération par courbes comme fallback pour les profils historiques (TOM-SERRE-EXP / AVO-TEST). Aucune formule de calcul (budget, BP, reco) n'est modifiée — seule la **source** des tableaux hebdomadaires change.
 
-## 1. Bannière consultant sur le dashboard client
+## Changements
 
-Monter `<ConsultantBanner />` en tête de `src/routes/_authenticated/dashboard.tsx`, sous `<LowCreditBanner />`. Le composant, le hook `use-consultant-links.ts` et la RPC `admin_link_consultant` existent déjà — juste 2 lignes à ajouter.
+### 1. Stockage (aucune migration)
 
-## 2. Refonte console Comité selon `PROMPT_COMITE_LOVABLE.md`
+`profils_production.data` (jsonb) accepte deux clés optionnelles supplémentaires :
 
-### Skin (dans `ComiteShell.tsx`)
-- Ajouter le **bandeau pipeline permanent** sous la topbar : `BROUILLON → SOUMISE → VALIDÉE COMITÉ → APPROBATION ADMIN → PUBLIÉE · IMMUABLE` + note double validation.
-- Nouvel onglet **Versions publiées**.
-- Palette : ocre `#D9A521` déjà en place, ajouter bleu preuve `#2E6E8E` (badge BEE ONE) et vert `#4E8C5F` (validations) — en `style` inline comme aujourd'hui, pas de nouveau token global.
+- `charges_hebdo`: `{ main_oeuvre, intrants, irrigation_eau, energie, recolte_conditionnement, autres_charges }` — chacun `number[]` de longueur `duree_semaines`, en MAD/ha/semaine.
+- `production_hebdo`: `number[]` de longueur `duree_semaines`, parts de production (Σ ≈ 1.0).
 
-### Écran 1 — Diff (`app.comite.propositions.tsx`, refonte complète)
-- Table diff (une ligne par proposition) : norme + clé mono, sparkline hebdo double (grises=ancienne, bleues=nouvelle) quand la valeur est un array de 52, `av → nv` + Δ % coloré (hausse terre cuite, baisse bleu, >10 % fond rosé), badge provenance BEE ONE (bleu, N + période) / COMITÉ (ocre), statut.
-- Ligne dépliable : justification signée/datée, échantillon & k-anonymat, impact estimé (compte les projets qui référencent `profil_code`).
-- Filtres : Toutes / Écarts > 10 % / Bee One / Comité.
-- Actions par statut : Éditer + Valider (brouillon/renvoyée), Détail (validée/approuvée), Voir motif (renvoyée).
-- **Règle d'édition** : édition uniquement en `brouillon` (garde-fou UI ; côté DB, `comite_submit_proposition` bloque déjà les mauvais états).
+Rétrocompatible : les profils existants sans ces clés continuent d'utiliser `curves` + `charges_totaux`.
 
-### Écran 2 — Éditeur (dialog dans le même fichier)
-- Champs : profil (select depuis `profils_production`), zone (select depuis `zones`), clé de norme, **switch scalaire / hebdo 52 semaines** (grille 52 inputs + sparkline live), provenance (comité_experts OU rattachement à un lot Bee One), justification **min 20 car.**, aperçu Δ vs valeur courante en temps réel.
-- Boutons : Enregistrer brouillon / Soumettre au comité.
+### 2. Moteurs — `src/engines/curves.ts` (`hydrateProfil`)
 
-### Écran 3 — File Bee One (`app.comite.bee-one.tsx`, upgrade)
-Base existante conservée. Ajouts :
-- Passage en **cartes** (au lieu de la table) avec titre / id / date / période / N en gras.
-- **Jauge k-anonymat visuelle** avec trait de seuil, verte si N ≥ seuil, terre cuite sinon.
-- Bandeau rouge pour lot `bloquee_k` + message explicite. Bouton Accepter désactivé, seule action : Écarter (motif).
-- Lot conforme : **Accepter → crée une proposition en brouillon** pré-remplie (provenance `bee_one`, N, période) — nouvel insert dans `ref_propositions` côté client, la RPC `bee_one_examine` reste utilisée pour marquer l'ingestion.
+Ajouter un chemin prioritaire :
 
-### Écran 4 — Versions publiées (**nouvelle route** `app.comite.versions.tsx`)
-Liste chronologique de `ref_versions` `publiee = true` : version, date, publieur, note, nombre de normes modifiées, lien vers un diff figé lecture seule. Mention « figée à vie ».
+```text
+si data.charges_hebdo présent et longueurs correctes:
+    charges = data.charges_hebdo          (source: "real")
+sinon:
+    charges = génération bell/flat/front  (source: "modeled")
 
-### Barre de publication sticky (`app.comite.publish.tsx`, upgrade)
-- Sticky bottom fond vert encre, compteurs par statut du lot courant + cadenas, message explicite.
-- Bouton **Publier v{n}** ocre, désactivé tant que : brouillons > 0, soumises > 0, validées non approuvées > 0, ou renvoyées non résolues.
-- Modale de publication enrichie : récap (normes modifiées / profils touchés / projets clients concernés), encart d'irréversibilité fond ocre pâle, note ≥ 10 car. déjà en place, bouton terre cuite. Après publication : la RPC `comite_publish_lot` fait déjà l'immuabilité + audit ; à ajouter côté client → insertion de notifications « re-prévision gratuite v{n} » aux clients dont les projets référencent les profils touchés.
+si data.production_hebdo présent et longueur correcte:
+    production = data.production_hebdo    (source: "real")
+sinon:
+    production = bell(...) normalisé      (source: "modeled")
+```
 
-## 3. Ce qui touche à l'architecture existante
+Ajouter `norms_source: "real" | "modeled" | "mixed"` sur `Profil` (dans `src/engines/types.ts`) — champ optionnel, non lu par les formules ; utilisé uniquement par l'UI.
 
-**À signaler avant de builder** :
+Aucune modification à `budget.ts`, `businessplan.ts`, `recommendation.ts` — ils consomment `profil.charges` et `profil.production` déjà hydratés.
 
-| Zone | Impact | Risque |
-|---|---|---|
-| `dashboard.tsx` | +2 lignes (import + montage `<ConsultantBanner />`) | Nul |
-| `ComiteShell.tsx` | Ajout bandeau pipeline + 1 onglet | Nul (skin uniquement) |
-| `app.comite.propositions.tsx` | **Refonte complète** (liste JSON brute → table diff + éditeur riche) | UI actuelle disparaît. Aucun changement RPC/DB. |
-| `app.comite.bee-one.tsx` | Upgrade visuel (cartes + jauge) + création d'une proposition brouillon à l'acceptation | Nouveau `insert` dans `ref_propositions` en plus de `bee_one_examine` (2 appels séquentiels côté client) |
-| `app.comite.publish.tsx` | Ajout barre sticky + récap modale + trigger notifications clients | Nouvelles insertions dans `notifications` après publication |
-| `app.comite.versions.tsx` | **Nouveau fichier route** | Ajout automatique dans `routeTree.gen.ts` |
+### 3. Import Excel — `NormesTab` dans `src/routes/_authenticated/app.referentiel.tsx`
 
-**Ce qui ne bouge pas** :
-- Aucune migration DB. Le schéma actuel (`ref_propositions`, `ref_lots`, `ref_versions`, `bee_one_ingestions`) et toutes les RPC (`comite_submit_proposition`, `admin_approve_proposition`, `admin_return_proposition`, `bee_one_examine`, `comite_publish_lot`) supportent déjà la spec — `nouvelle_valeur jsonb` accepte scalaire ET array 52.
-- Aucun changement RLS, aucun changement crédits/consultants/admin.
-- Aucun impact hors console Comité (dashboard, budget, BP, référentiel client, admin, MCP intacts).
+Point d'écriture (ligne ~275) : au lieu de fusionner sous les clés `charges` / `production` (qui n'étaient pas relues), écrire :
 
-**Point de vigilance** : la barre de publication déclenchera des notifications « re-prévision gratuite v{n} » aux clients concernés — c'est de la simple insertion dans `notifications` avec `kind = 'ref_version_published'`, mais je passe par une RPC dédiée (`comite_notify_ref_publication(lot_id)`) plutôt que du côté client, pour éviter d'exposer les `user_id` des orgs clientes au comité.
+```ts
+const merged = {
+  ...prev.data,
+  charges_hebdo: u.charges,
+  production_hebdo: u.production,
+};
+```
 
-## Ordre de livraison (un seul batch)
+Les validations existantes (nb lignes = `duree_semaines`, semaines 1..N contiguës, Σ `part_production` ∈ [0.99, 1.01], numériques ≥ 0) restent en place — elles s'appliquent naturellement au nouveau format.
 
-1. Migration additive : RPC `comite_notify_ref_publication(lot_id)` (SECURITY DEFINER, appelée par le comité au moment de la publication).
-2. `ComiteShell.tsx` : bandeau pipeline + onglet Versions.
-3. `app.comite.propositions.tsx` : refonte diff + éditeur 52 semaines.
-4. `app.comite.bee-one.tsx` : upgrade cartes + jauge + accept → proposition brouillon.
-5. `app.comite.publish.tsx` : barre sticky + modale récap + call notif RPC.
-6. `app.comite.versions.tsx` : nouvelle page.
-7. `dashboard.tsx` : montage `<ConsultantBanner />`.
-8. i18n : clés `comite.pipeline.*`, `comite.diff.*`, `comite.editor.*`, `comite.publish.*` en FR/EN/AR.
+### 4. Affichage — `src/routes/_authenticated/app.budgets.$id.tsx`
 
-Prêt à builder dès validation.
+Ajouter un badge dans l'en-tête, aligné sur les autres badges existants :
+
+- **`Normes réelles`** (variant `default`, ton primary) si `profil.norms_source === "real"`.
+- **`Normes modélisées`** (variant `outline`, ton muted) si `"modeled"`.
+- **`Normes partielles`** (variant `secondary`) si `"mixed"` (charges réelles mais production modélisée, ou l'inverse).
+
+Le badge lit `norms_source` depuis le profil hydraté déjà présent dans le composant — aucun fetch supplémentaire.
+
+### 5. Rien à toucher
+
+- BP page : même profil hydraté, badge non demandé (peut être ajouté plus tard si besoin).
+- PDF vérifiable : les tableaux exportés reflètent déjà les valeurs hydratées, donc automatiquement les valeurs réelles après import.
+- Seed existant TOM-SERRE-EXP / AVO-TEST : intact, continue en mode "modélisé".
+
+## Critère d'acceptation
+
+1. Après import d'un fichier Normes hebdomadaires valide pour un profil, un re-chargement du budget associé affiche **exactement** les valeurs importées (Σ semaines = totaux du fichier au MAD près).
+2. Le badge **`Normes réelles`** apparaît dans l'en-tête du budget de ce profil.
+3. Les profils seed non ré-importés continuent d'afficher **`Normes modélisées`** et leurs valeurs sont inchangées.
+4. `tsgo --noEmit` passe.
+
+## Suite
+
+Une fois ce correctif livré, le script SQL "normes réelles" (22 profils × ~52 semaines = ~1 088 lignes de tableaux) pourra être exécuté par simple `UPDATE profils_production SET data = data || jsonb_build_object('charges_hebdo', ..., 'production_hebdo', ...) WHERE code = ...` sans autre changement applicatif.

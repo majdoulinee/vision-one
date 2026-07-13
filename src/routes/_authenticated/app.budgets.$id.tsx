@@ -164,6 +164,15 @@ function BudgetPage() {
               {t("budget.forcedBadge", { count: overrides.length })}
             </Badge>
           )}
+          <div className="mt-2">
+            {profil.norms_source === "real" ? (
+              <Badge className="bg-primary text-primary-foreground">Normes réelles</Badge>
+            ) : profil.norms_source === "mixed" ? (
+              <Badge variant="secondary">Normes partielles</Badge>
+            ) : (
+              <Badge variant="outline" className="text-muted-foreground">Normes modélisées</Badge>
+            )}
+          </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={doExport} disabled={exporting || !project.data}>
