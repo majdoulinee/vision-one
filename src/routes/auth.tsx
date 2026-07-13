@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { LanguageSwitcher } from "@/components/agriplan/LanguageSwitcher";
+import { BrandLogo } from "@/components/agriplan/BrandLogo";
 import { toast } from "sonner";
-import { Sprout } from "lucide-react";
 
 const searchSchema = z.object({ mode: z.enum(["signin", "signup"]).optional() });
 
@@ -86,8 +86,7 @@ function AuthPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link to="/" className="mx-auto flex items-center gap-2">
-            <Sprout className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">{t("app.name")}</span>
+            <BrandLogo size="sm" />
           </Link>
           <CardTitle>{mode === "signup" ? t("auth.signUp") : t("auth.signIn")}</CardTitle>
           <CardDescription>{t("app.tagline")}</CardDescription>

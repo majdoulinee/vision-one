@@ -80,14 +80,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "AGRIPLAN — Planification financière agricole vérifiable" },
+      { title: "Vision One — Planification financière agricole vérifiable" },
       {
         name: "description",
         content:
-          "Du budget de campagne au Business Plan bancable — AGRIPLAN structure la planification financière agricole avec des calculs déterministes et un PDF vérifiable via QR code.",
+          "Du budget de campagne au Business Plan bancable — Vision One structure la planification financière agricole avec des calculs déterministes et un PDF vérifiable via QR code.",
       },
-      { name: "author", content: "AGRIPLAN" },
-      { property: "og:title", content: "AGRIPLAN — Planification financière agricole vérifiable" },
+      { name: "author", content: "Vision One" },
+      { property: "og:title", content: "Vision One — Planification financière agricole vérifiable" },
       {
         property: "og:description",
         content:
@@ -107,7 +107,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
   }),
   shellComponent: RootShell,

@@ -11,8 +11,8 @@ import { CheckCircle2, XCircle, Upload, ShieldCheck } from "lucide-react";
 export const Route = createFileRoute("/verify/$docId")({
   head: () => ({
     meta: [
-      { title: "AGRIPLAN — Verification de document" },
-      { name: "description", content: "Verifiez l'authenticite d'un document AGRIPLAN via son empreinte SHA-256." },
+      { title: "Vision One — Verification de document" },
+      { name: "description", content: "Verifiez l'authenticite d'un document Vision One via son empreinte SHA-256." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -81,7 +81,7 @@ function VerifyPage() {
         <div className="mx-auto flex max-w-4xl items-center gap-3 px-6">
           <ShieldCheck className="h-8 w-8" />
           <div>
-            <div className="text-2xl font-bold">AGRIPLAN</div>
+            <div className="text-2xl font-bold">Vision One</div>
             <div className="text-sm opacity-90">{t("verify.title")}</div>
           </div>
         </div>

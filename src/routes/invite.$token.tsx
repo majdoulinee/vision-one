@@ -70,6 +70,8 @@ function InvitePage() {
         .update({ accepted_at: new Date().toISOString() })
         .eq("id", state.inv.id);
       if (uErr) throw uErr;
+      window.localStorage.setItem("visionone.currentOrgId", state.inv.org_id);
+      // Legacy key kept in sync for existing sessions.
       window.localStorage.setItem("agriplan.currentOrgId", state.inv.org_id);
       toast.success("Bienvenue dans " + (state.inv.org?.name ?? ""));
       navigate({ to: "/dashboard" });
@@ -85,7 +87,7 @@ function InvitePage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Invitation</CardTitle>
-          <CardDescription>Rejoindre une organisation AGRIPLAN</CardDescription>
+          <CardDescription>Rejoindre une organisation Vision One</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {state.kind === "loading" && <div>Chargement...</div>}
