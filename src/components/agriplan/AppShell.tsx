@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Settings, LogOut, PlusCircle, Database, Coins, ShieldCheck, Inbox } from "lucide-react";
+import { LayoutDashboard, Settings, LogOut, PlusCircle, Database, Coins, ShieldCheck, Inbox, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -19,6 +20,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const qc = useQueryClient();
   const { data: platformRole } = usePlatformRole();
   useLowCreditAlert();
+
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("vision-one.sidebar.collapsed") === "1";
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("vision-one.sidebar.collapsed", collapsed ? "1" : "0");
+    }
+  }, [collapsed]);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+        e.preventDefault();
+        setCollapsed((c) => !c);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   async function signOut() {
     await qc.cancelQueries();
@@ -43,9 +66,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className="hidden w-60 flex-col bg-sidebar text-sidebar-foreground md:flex">
-        <div className="flex h-16 items-center border-b border-sidebar-border px-4">
-          <BrandLogo size="sm" wordmarkClassName="text-lg font-bold" />
+      <aside
+        className={`hidden flex-col bg-sidebar text-sidebar-foreground transition-[width] duration-200 md:flex ${
+          collapsed ? "w-16" : "w-60"
+        }`}
+      >
+        <div className={`flex h-16 items-center border-b border-sidebar-border ${collapsed ? "justify-center px-2" : "justify-between px-4"}`}>
+          {!collapsed && <BrandLogo size="sm" wordmarkClassName="text-lg font-bold" />}
+          <button
+            onClick={() => setCollapsed((c) => !c)}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sidebar-foreground hover:bg-sidebar-accent/50"
+            title={`${collapsed ? "Développer" : "Réduire"} le menu (Ctrl+K)`}
+            aria-label="Toggle sidebar"
+          >
+            {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+          </button>
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {nav.map(({ to, label, Icon }) => {
@@ -54,14 +89,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={to}
                 to={to as any}
-                className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
+                title={collapsed ? label : undefined}
+                className={`flex items-center gap-2 rounded-md py-2 text-sm transition-colors ${
+                  collapsed ? "justify-center px-2" : "px-3"
+                } ${
                   active
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
                     : "hover:bg-sidebar-accent/50"
                 }`}
               >
-                <Icon className="h-4 w-4" />
-                {label}
+                <Icon className="h-4 w-4 shrink-0" />
+                {!collapsed && <span className="truncate">{label}</span>}
               </Link>
             );
           })}
@@ -69,11 +107,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="p-3">
           <Button
             variant="ghost"
-            className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+            className={`w-full text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground ${
+              collapsed ? "justify-center px-2" : "justify-start"
+            }`}
             onClick={signOut}
+            title={collapsed ? t("nav.signOut") : undefined}
           >
-            <LogOut className="mr-2 h-4 w-4" />
-            {t("nav.signOut")}
+            <LogOut className={`h-4 w-4 ${collapsed ? "" : "mr-2"}`} />
+            {!collapsed && t("nav.signOut")}
           </Button>
         </div>
       </aside>
