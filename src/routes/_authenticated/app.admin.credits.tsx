@@ -23,8 +23,8 @@ export const Route = createFileRoute("/_authenticated/app/admin/credits")({
 });
 
 function AdminCredits() {
-  const { data: role, isLoading } = usePlatformRole();
-  if (isLoading) return <div>Chargement…</div>;
+  const { data: role, isLoading, isFetching } = usePlatformRole();
+  if (isLoading || isFetching || role === undefined) return <div>Chargement…</div>;
   if (role !== "admin") return <Navigate to="/dashboard" />;
 
   return (
