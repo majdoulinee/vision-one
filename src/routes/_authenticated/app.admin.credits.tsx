@@ -1,8 +1,7 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { usePlatformRole } from "@/hooks/use-platform-role";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +13,8 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { BackButton } from "@/components/agriplan/BackButton";
-import { Info, Download } from "lucide-react";
+import { AdminShell } from "@/components/agriplan/AdminShell";
+import { Download } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/admin/credits")({
   ssr: false,
@@ -23,28 +22,12 @@ export const Route = createFileRoute("/_authenticated/app/admin/credits")({
 });
 
 function AdminCredits() {
-  const { data: role } = usePlatformRole();
-  if (role === undefined) return <div>Chargement…</div>;
-  if (role !== "admin") return <Navigate to="/dashboard" />;
-
   return (
-    <div className="space-y-6">
-      <BackButton to="/dashboard" />
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Panel crédits</h1>
-          <p className="text-muted-foreground">Administration des soldes, demandes, grand livre et tarification.</p>
-        </div>
+    <AdminShell>
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Crédits</h1>
+        <p className="text-sm text-muted-foreground">Administration des soldes, demandes, grand livre et tarification.</p>
       </div>
-
-      <div className="rounded-md border border-accent/60 bg-accent/15 p-3 text-sm flex items-start gap-2">
-        <Info className="h-4 w-4 mt-0.5 shrink-0" />
-        <div>
-          <strong>Mode&nbsp;: OCTROI MANUEL.</strong> Encaissement hors plateforme (virement / facture AGRIDATA). Aucune donnée bancaire n'est traitée par Vision One.
-          <span className="ml-2 opacity-70">(activation du paiement en ligne — bientôt)</span>
-        </div>
-      </div>
-
       <Tabs defaultValue="orgs" className="w-full">
         <TabsList>
           <TabsTrigger value="orgs">Organisations</TabsTrigger>
@@ -57,7 +40,7 @@ function AdminCredits() {
         <TabsContent value="ledger" className="mt-4"><LedgerTab /></TabsContent>
         <TabsContent value="pricing" className="mt-4"><PricingTab /></TabsContent>
       </Tabs>
-    </div>
+    </AdminShell>
   );
 }
 
