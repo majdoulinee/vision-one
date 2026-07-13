@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { fmtDate, fmtNum } from "@/lib/format";
 import { usePublishedVersion } from "@/hooks/use-referentiel";
 import { PlusCircle, Wallet, ShieldCheck } from "lucide-react";
+import { LowCreditBanner } from "@/components/agriplan/LowCreditBanner";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -90,6 +91,7 @@ function Dashboard() {
 
   return (
     <div className="space-y-6">
+      <LowCreditBanner />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{t("dashboard.title")}</h1>

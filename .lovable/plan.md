@@ -1,46 +1,55 @@
-## Objectif
+# Plan — Suivi des demandes & Alertes solde bas
 
-Corriger le graphique 52 semaines manquant (barres invisibles) et aligner la landing sur le HTML de référence `agriplan-landing-2.html` — copie littérale, seule différence : la marque reste **VisionOne**.
+## 1. Page de suivi d'une demande de crédits
 
-## Correctif 1 — Le graphique 52 semaines (cause du bug)
+**Route** : `src/routes/_authenticated/app.credits.requests.$id.tsx`
 
-Dans `WeeksTrame.tsx` les barres ont `scale-y-0` + `animation: bar-grow …`, mais aucun `@keyframes bar-grow` n'existe dans `src/styles.css`. Résultat : les barres restent écrasées à zéro (exactement ce que montre la capture avec la flèche rouge).
+Contenu :
+- En-tête : pack, crédits, montant MAD, date de création, `BackButton` vers `/app/credits`.
+- Badge de statut (`en_attente` / `accordee` / `refusee`) réutilisant `StatutBadge` extrait de `app.credits.tsx` vers `src/components/agriplan/CreditStatusBadge.tsx`.
+- Timeline des décisions :
+  - Créée le … par le demandeur (jointure `profiles`).
+  - Traitée le … par `traitee_par` (si présent).
+  - Motif de refus affiché en clair si `refusee`.
+- Bloc « Écriture au grand livre liée » :
+  - Si `accordee`, retrouver l'entrée `credit_ledger` correspondante via `motif ILIKE '%req <id-court>%'` (motif déjà écrit par la RPC `decide_credit_request` → `grant_credits`) et afficher `id`, `delta`, `solde_apres`, `at`, avec lien copier-ID.
+  - Si `en_attente` / `refusee` : afficher « Aucune écriture liée ».
+- Message informatif : rappel du mode « virement / facture AGRIDATA ».
 
-**Fix :** ajouter dans `src/styles.css` :
-```css
-@keyframes bar-grow { to { transform: scaleY(1); } }
-```
-Vérifier aussi que `.grain-overlay`, la couleur `bg-ink-2`, `text-clay`, `text-ochre`, `border-ink` sont bien exposées dans le thème Tailwind v4 (`@theme` dans `styles.css`) — sinon les barres de pic (clay) et cash (ochre) ne s'affichent pas non plus.
+Liste dans `app.credits.tsx` : rendre chaque ligne du tableau « Mes demandes » cliquable (`<Link>` vers la nouvelle route). Aucune autre logique modifiée.
 
-## Correctif 2 — Alignement au HTML de référence
+RLS : les policies existantes sur `credit_requests` et `credit_ledger` couvrent déjà la lecture par membre d'org — pas de migration.
 
-Repasser `src/routes/index.tsx` section par section face à `agriplan-landing-2.html` et corriger tous les écarts de structure/typo/copy pour obtenir une copie littérale :
+## 2. Alertes automatiques sur solde bas
 
-- Nav : liens `Méthode / Preuve / Institutions / Tarifs / Se connecter` + CTA `Pré-faisabilité gratuite` (déjà OK, vérifier l'ordre et le style).
-- Hero : eyebrow, H1 avec `<em>vérifier</em>` en italique clay, lead, deux CTA (clay + ghost), note.
-- Widget "Mode inversé" (`InverseWidget`) : header ink/parch, capital input + MAD, 4 chips zones, 3 résultats animés, footer parchemin — vérifier libellés exacts.
-- **Trame semaines** : titre + légende identiques, 52 barres avec pics S18–S22 (cash ocre) et S29–S34 (peak clay) — animation réparée par le correctif 1.
-- Manifeste (bloc sombre) : eyebrow ocre "La frontière IA", grande phrase serif avec `ne chiffre jamais` souligné ocre, paragraphe secondaire.
-- Sections 01→04 (Méthode, Référentiel/Moat, Preuve, Segments) : titres, sous-titres, cartes, listes — texte exact du HTML.
-- Contre-expertise (fond ink) : tableau écarts, barre de risque.
-- Tarifs : 3 cartes (Découverte / Pré-faisa / Pro), carte milieu `star`, badge, note italique serif.
-- Escalier institutions (3 marches, la 3ᵉ ink).
-- CTA final centré + footer.
+Déclencheur : `wallet.credits <= wallet.credits_alerte` (seuil déjà en base, défaut 3), niveau « ocre » = badge accent déjà utilisé dans `CreditBadge`.
 
-Seul changement autorisé vs HTML : `AGRI<span>PLAN</span>` → `Vision<span>One</span>` dans le wordmark (nav + footer + title/meta). Tout le reste de la copy reste tel quel (y compris "AGRIPLAN" dans le body devient "Vision One").
+### a. Toast + bannière in-app (client)
 
-## Vérification
+Nouveau hook `src/hooks/use-low-credit-alert.ts` :
+- Lit `useWallet()`.
+- Quand `credits <= credits_alerte` et `credits > 0` : émet un `toast.warning` une fois par session (clé `sessionStorage: vision-one.lowCreditToast.<orgId>.<credits>`) avec action « Voir mes crédits » → navigate `/app/credits`.
+- Quand `credits === 0` : `toast.error` équivalent (« Solde épuisé »), même déduplication.
 
-- Ouvrir `/` dans le preview, prendre une capture Playwright de la trame 52 semaines : les barres doivent former la courbe (préparation basse → plantation ocre → pic clay → décrue).
-- Vérifier que la page ne contient plus "AGRIPLAN" (`rg -i agriplan src/routes/index.tsx` → 0 résultat).
-- Contrôler visuellement les 11 sections vs le HTML de référence.
+Montage : appelé dans `AppShell.tsx` (une seule instance côté layout authentifié).
 
-## Portée
+Bannière persistante : dans `src/routes/_authenticated/dashboard.tsx`, afficher un encart ocre (`border-accent/50 bg-accent/10`) au-dessus du contenu quand seuil atteint, avec `<Link to="/app/credits">` en CTA. Masquée si `credits > credits_alerte`.
 
-Fichiers touchés :
-- `src/styles.css` (keyframe + tokens manquants éventuels)
-- `src/routes/index.tsx` (alignement copie)
-- `src/components/landing/WeeksTrame.tsx` (si besoin, mais logique OK une fois le keyframe ajouté)
-- `src/components/landing/InverseWidget.tsx` / `PdfMock.tsx` (seulement si la copie diverge du HTML)
+### b. Renforcement visuel
 
-Aucun changement backend, aucun changement business logic.
+`CreditBadge` gère déjà les 3 tons (ok / ocre / rouge) — aucun changement.
+
+## Détails techniques
+
+- Nouveaux fichiers :
+  - `src/routes/_authenticated/app.credits.requests.$id.tsx`
+  - `src/components/agriplan/CreditStatusBadge.tsx` (extraction)
+  - `src/components/agriplan/LowCreditBanner.tsx`
+  - `src/hooks/use-low-credit-alert.ts`
+- Fichiers modifiés :
+  - `src/routes/_authenticated/app.credits.tsx` — lignes cliquables, import du badge extrait.
+  - `src/components/agriplan/AppShell.tsx` — appel du hook d'alerte.
+  - `src/routes/_authenticated/dashboard.tsx` — insertion de la bannière.
+  - `src/locales/{fr,en,ar}.json` — clés `credits.low`, `credits.empty`, `credits.viewLink`, libellés timeline.
+- Pas de migration SQL : toutes les données existent déjà (`credit_requests`, `credit_ledger`, `wallets.credits_alerte`).
+- Lookup ledger côté client : `supabase.from('credit_ledger').select().eq('org_id', ...).eq('type','octroi_admin').ilike('motif', '%req <short>%').maybeSingle()`.
