@@ -57,7 +57,9 @@
     "loading": "Loading...",
     "error": "Error",
     "welcome": "Welcome",
-    "language": "Language"
+    "language": "Language",
+    "back": "Back",
+    "backHome": "Back to home"
   },
   "landing": {
     "hero": "From seasonal budget to bankable Business Plan — verifiable.",
