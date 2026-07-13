@@ -218,39 +218,41 @@ function BPPage() {
               </div>
               <Card>
                 <CardHeader><CardTitle>{t("bp.yearTable")}</CardTitle></CardHeader>
-                <CardContent className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead className="text-left text-muted-foreground">
-                      <tr>
-                        <th className="py-2">{t("bp.colYear")}</th>
-                        <th className="text-end">{t("bp.colCa")}</th>
-                        <th className="text-end">{t("bp.colOpex")}</th>
-                        <th className="text-end">{t("bp.colCap")}</th>
-                        <th className="text-end">{t("bp.colEbitda")}</th>
-                        <th className="text-end">{t("bp.colAmort")}</th>
-                        <th className="text-end">{t("bp.colDette")}</th>
-                        <th className="text-end">{t("bp.colResultat")}</th>
-                        <th className="text-end">{t("bp.colCf")}</th>
-                        <th className="text-end">{t("bp.colCumul")}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                      {sc.annees.map((y: any) => (
-                        <tr key={y.annee}>
-                          <td className="py-1.5">{y.annee}</td>
-                          <td className="text-end">{fmtMAD(y.ca)}</td>
-                          <td className="text-end">{fmtMAD(-Math.abs(y.opex))}</td>
-                          <td className="text-end">{fmtMAD(y.capitalise)}</td>
-                          <td className="text-end">{fmtMAD(y.ebitda)}</td>
-                          <td className="text-end">{fmtMAD(-Math.abs(y.amortissement))}</td>
-                          <td className="text-end">{fmtMAD(-Math.abs(y.serviceDette))}</td>
-                          <td className="text-end">{fmtMAD(y.resultat)}</td>
-                          <td className={`text-end ${y.cashFlow < 0 ? "text-destructive" : ""}`}>{fmtMAD(y.cashFlow)}</td>
-                          <td className={`text-end ${y.cashCumule < 0 ? "text-destructive" : ""}`}>{fmtMAD(y.cashCumule)}</td>
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[960px] text-sm border-separate border-spacing-0">
+                      <thead>
+                        <tr className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
+                          <th className="sticky left-0 z-10 bg-muted/40 px-4 py-3 text-left font-medium">{t("bp.colYear")}</th>
+                          <th className="px-4 py-3 text-right font-medium whitespace-nowrap">{t("bp.colCa")}</th>
+                          <th className="px-4 py-3 text-right font-medium whitespace-nowrap">{t("bp.colOpex")}</th>
+                          <th className="px-4 py-3 text-right font-medium whitespace-nowrap">{t("bp.colCap")}</th>
+                          <th className="px-4 py-3 text-right font-medium whitespace-nowrap">{t("bp.colEbitda")}</th>
+                          <th className="px-4 py-3 text-right font-medium whitespace-nowrap">{t("bp.colAmort")}</th>
+                          <th className="px-4 py-3 text-right font-medium whitespace-nowrap">{t("bp.colDette")}</th>
+                          <th className="px-4 py-3 text-right font-medium whitespace-nowrap">{t("bp.colResultat")}</th>
+                          <th className="px-4 py-3 text-right font-medium whitespace-nowrap">{t("bp.colCf")}</th>
+                          <th className="px-4 py-3 text-right font-medium whitespace-nowrap">{t("bp.colCumul")}</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {sc.annees.map((y: any, i: number) => (
+                          <tr key={y.annee} className={`border-t transition-colors hover:bg-muted/30 ${i % 2 === 1 ? "bg-muted/10" : ""}`}>
+                            <td className={`sticky left-0 z-10 px-4 py-3 font-semibold ${i % 2 === 1 ? "bg-muted/10" : "bg-background"}`}>{y.annee}</td>
+                            <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">{fmtMAD(y.ca)}</td>
+                            <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">{fmtMAD(-Math.abs(y.opex))}</td>
+                            <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">{fmtMAD(y.capitalise)}</td>
+                            <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap font-medium">{fmtMAD(y.ebitda)}</td>
+                            <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">{fmtMAD(-Math.abs(y.amortissement))}</td>
+                            <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">{fmtMAD(-Math.abs(y.serviceDette))}</td>
+                            <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">{fmtMAD(y.resultat)}</td>
+                            <td className={`px-4 py-3 text-right tabular-nums whitespace-nowrap ${y.cashFlow < 0 ? "text-destructive" : ""}`}>{fmtMAD(y.cashFlow)}</td>
+                            <td className={`px-4 py-3 text-right tabular-nums whitespace-nowrap font-semibold ${y.cashCumule < 0 ? "text-destructive" : "text-primary"}`}>{fmtMAD(y.cashCumule)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
