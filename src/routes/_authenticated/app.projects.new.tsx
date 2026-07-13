@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrg } from "@/hooks/use-current-org";
+import { useSession } from "@/hooks/use-session";
 import { usePublishedVersion, useReferentiel } from "@/hooks/use-referentiel";
 import { recommend, inverse } from "@/engines/recommendation";
 import type { Orientation, Risque } from "@/engines/types";
@@ -21,6 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { fmtHa, fmtMAD, fmtNum } from "@/lib/format";
 import { ArrowRight, Compass, Wallet as WalletIcon } from "lucide-react";
+import { BackButton } from "@/components/agriplan/BackButton";
+import { formatError } from "@/lib/format-error";
 
 export const Route = createFileRoute("/_authenticated/app/projects/new")({
   ssr: false,
@@ -32,6 +35,7 @@ type Mode = "projet" | "capital";
 function NewProjectWizard() {
   const { t } = useTranslation();
   const { current } = useCurrentOrg();
+  const { user } = useSession();
   const version = usePublishedVersion();
   const ref = useReferentiel(version.data?.version);
   const nav = useNavigate();
@@ -54,16 +58,21 @@ function NewProjectWizard() {
   async function submitStep1() {
     if (!current) return;
     if (!mode) return;
+    if (!user) {
+      toast.error(t("common.error"));
+      return;
+    }
     setBusy(true);
     try {
       const payload: any = {
         org_id: current.org_id,
+        created_by: user.id,
         name,
         mode,
         zone_code: zoneCode,
         surface_ha: mode === "projet" ? Number(surface) : null,
         capital: capital ? Number(capital) : null,
-        status: "brouillon",
+        status: "draft",
         data: {
           horizon: Number(horizon || (mode === "capital" ? 8 : 7)),
           orientation,
@@ -79,7 +88,7 @@ function NewProjectWizard() {
       if (error) throw error;
       setProjectId(data.id);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : String(e));
+      toast.error(formatError(e));
     } finally {
       setBusy(false);
     }
@@ -120,6 +129,9 @@ function NewProjectWizard() {
   if (!mode) {
     return (
       <div className="mx-auto max-w-4xl space-y-6">
+        <div className="flex items-center gap-3">
+          <BackButton to="/dashboard" />
+        </div>
         <h1 className="text-3xl font-bold tracking-tight">{t("wizard.title")}</h1>
         <div className="grid gap-4 sm:grid-cols-2">
           <ModeCard
@@ -143,6 +155,9 @@ function NewProjectWizard() {
   if (!projectId) {
     return (
       <div className="mx-auto max-w-2xl space-y-4">
+        <div className="flex items-center gap-3">
+          <BackButton onClick={() => setMode(null)} />
+        </div>
         <h1 className="text-2xl font-bold tracking-tight">
           {mode === "projet" ? t("wizard.modeClassique") : t("wizard.modeInverse")}
         </h1>
@@ -207,7 +222,7 @@ function NewProjectWizard() {
               </Select>
             </div>
             <div className="sm:col-span-2 flex items-center justify-between">
-              <Button variant="ghost" onClick={() => setMode(null)}>{t("wizard.back")}</Button>
+              <BackButton onClick={() => setMode(null)} label={t("wizard.back")} />
               <Button
                 disabled={busy || !name || !zoneCode || (mode === "projet" ? !surface : !capital)}
                 onClick={submitStep1}

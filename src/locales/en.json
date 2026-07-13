@@ -48,7 +48,11 @@
     "email": "Email",
     "sendInvite": "Send invitation",
     "pending": "Pending",
-    "revoke": "Revoke"
+    "revoke": "Revoke",
+    "emailSent": "Invitation email sent to {{email}}",
+    "emailFailed": "Email could not be sent — link copied to clipboard",
+    "resend": "Resend email",
+    "resent": "Email resent"
   },
   "role": { "owner": "Owner", "admin": "Admin", "editor": "Editor", "member": "Member", "viewer": "Viewer" },
   "common": {
@@ -57,7 +61,9 @@
     "loading": "Loading...",
     "error": "Error",
     "welcome": "Welcome",
-    "language": "Language"
+    "language": "Language",
+    "back": "Back",
+    "backHome": "Back to home"
   },
   "landing": {
     "hero": "From seasonal budget to bankable Business Plan — verifiable.",

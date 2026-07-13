@@ -25,6 +25,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { sendInvitationEmail } from "@/lib/invitations.functions";
+import { formatError } from "@/lib/format-error";
+import { Mail } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: Settings,
@@ -48,6 +52,7 @@ function Settings() {
   const { t } = useTranslation();
   const { current } = useCurrentOrg();
   const qc = useQueryClient();
+  const sendEmail = useServerFn(sendInvitationEmail);
   const orgId = current?.org_id ?? null;
   const myRole = current?.role;
   const canManage = myRole === "owner" || myRole === "admin";
@@ -94,24 +99,45 @@ function Settings() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       const token = crypto.randomUUID().replace(/-/g, "");
-      const { error } = await supabase.from("invitations").insert({
-        org_id: orgId,
-        email: email.toLowerCase(),
-        role,
-        token,
-        invited_by: user.id,
-        expires_at: new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString(),
-      });
+      const invEmail = email.toLowerCase();
+      const { data: inv, error } = await supabase
+        .from("invitations")
+        .insert({
+          org_id: orgId,
+          email: invEmail,
+          role,
+          token,
+          invited_by: user.id,
+          expires_at: new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString(),
+        })
+        .select("id")
+        .single();
       if (error) throw error;
+      // Fire-and-await the email server function
+      const result = await sendEmail({ data: { invitationId: inv.id } });
       const link = `${window.location.origin}/invite/${token}`;
-      await navigator.clipboard.writeText(link).catch(() => undefined);
-      toast.success(`Invitation créée. Lien copié : ${link}`);
+      if (result?.sent) {
+        toast.success(t("settings.emailSent", { email: invEmail }));
+      } else {
+        await navigator.clipboard.writeText(link).catch(() => undefined);
+        toast.warning(t("settings.emailFailed") + ` — ${link}`);
+      }
       setEmail("");
       qc.invalidateQueries({ queryKey: ["invitations", orgId] });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
+      toast.error(formatError(err));
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function resend(id: string) {
+    try {
+      const result = await sendEmail({ data: { invitationId: id } });
+      if (result?.sent) toast.success(t("settings.resent"));
+      else toast.warning(t("settings.emailFailed"));
+    } catch (err) {
+      toast.error(formatError(err));
     }
   }
 
@@ -229,7 +255,11 @@ function Settings() {
                       <Badge variant="secondary">{t(`role.${i.role}`)}</Badge>
                     </TableCell>
                     <TableCell>{t("settings.pending")}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right space-x-1">
+                      <Button variant="outline" size="sm" onClick={() => resend(i.id)}>
+                        <Mail className="mr-1 h-3.5 w-3.5" />
+                        {t("settings.resend")}
+                      </Button>
                       <Button variant="ghost" size="sm" onClick={() => revoke(i.id)}>
                         {t("settings.revoke")}
                       </Button>

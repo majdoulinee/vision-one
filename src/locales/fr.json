@@ -51,7 +51,11 @@
     "email": "Email",
     "sendInvite": "Envoyer l'invitation",
     "pending": "En attente",
-    "revoke": "Révoquer"
+    "revoke": "Révoquer",
+    "emailSent": "Invitation envoyée par email à {{email}}",
+    "emailFailed": "L'email n'a pas pu être envoyé — lien copié dans le presse-papier",
+    "resend": "Renvoyer l'email",
+    "resent": "Email renvoyé"
   },
   "role": {
     "owner": "Propriétaire",
@@ -66,7 +70,9 @@
     "loading": "Chargement...",
     "error": "Erreur",
     "welcome": "Bienvenue",
-    "language": "Langue"
+    "language": "Langue",
+    "back": "Retour",
+    "backHome": "Retour à l'accueil"
   },
   "landing": {
     "hero": "Du budget de campagne au Business Plan bancable — vérifiable.",
