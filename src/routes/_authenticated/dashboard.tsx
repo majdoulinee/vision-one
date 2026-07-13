@@ -63,7 +63,7 @@ function CreateFirstOrg() {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const [name, setName] = useState("");
-  const [type, setType] = useState<(typeof ORG_TYPES)[number]>("farm");
+  const [type, setType] = useState<(typeof ORG_TYPES)[number]>("ferme");
   const [country, setCountry] = useState("");
   const [busy, setBusy] = useState(false);
 
