@@ -1,0 +1,1 @@
+UPDATE public.profil_zone_mappings SET quality='eligible' WHERE profile_code='AVO-TEST' AND zone_code='SOUSS' AND quality='possible';
