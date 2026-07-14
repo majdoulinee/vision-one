@@ -78,7 +78,7 @@ function UserDetail() {
         .select("id, at, action, entity_type, entity_id, meta, user_id, org_id")
         .or(`user_id.eq.${id},and(entity_type.eq.user,entity_id.eq.${id})`)
         .order("at", { ascending: false })
-        .limit(50);
+        .limit(500);
       if (error) throw error;
       return data ?? [];
     },
