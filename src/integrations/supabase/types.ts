@@ -1117,6 +1117,10 @@ export type Database = {
         Args: { p_decision: string; p_id: string; p_motif: string }
         Returns: undefined
       }
+      client_request_consultant_revocation: {
+        Args: { p_link_id: string; p_motif: string }
+        Returns: undefined
+      }
       comite_notify_ref_publication: {
         Args: { p_lot_id: string }
         Returns: number
@@ -1156,6 +1160,21 @@ export type Database = {
       }
       is_org_member: { Args: { _org_id: string }; Returns: boolean }
       is_referentiel_editor: { Args: never; Returns: boolean }
+      org_extend_invitation: { Args: { p_inv_id: string }; Returns: string }
+      org_leave: { Args: { p_org: string }; Returns: undefined }
+      org_remove_member: {
+        Args: { p_motif: string; p_org: string; p_user: string }
+        Returns: undefined
+      }
+      org_set_member_role: {
+        Args: {
+          p_motif: string
+          p_org: string
+          p_role: Database["public"]["Enums"]["org_role"]
+          p_user: string
+        }
+        Returns: undefined
+      }
       refund_credits: {
         Args: { p_ledger_id: string; p_motif: string }
         Returns: string
