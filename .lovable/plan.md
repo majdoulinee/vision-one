@@ -1,55 +1,34 @@
-# Refonte gestion utilisateurs — 5 blocs
+# Passer aux Emails natifs Lovable
 
-La migration DB est déjà passée (nouvelles RPC + policy self-leave). Il reste la partie code, à livrer en build mode.
+Oui — Lovable propose un système d'emails natif qui fonctionne sans configuration DNS pour un prototype. Il envoie depuis un domaine géré par Lovable, sans avoir besoin de vérifier un domaine chez Resend.
 
-## Bloc 1 — `/settings` (membres & invitations)
+## Ce que je vais faire
 
-- Élargir l'invitation aux rôles `owner | admin | editor | member | viewer` (owner uniquement par un owner).
-- Table membres : menu **Changer de rôle** (via `org_set_member_role`), bouton **Retirer** (`org_remove_member`), bouton **Quitter l'organisation** (`org_leave`) pour non-owner.
-- Badges à côté du rôle d'org : « Comité » / « Admin plateforme » via `platform_role`.
-- Section **Consultants rattachés à cette org** (liste + bouton « Demander la révocation » → `client_request_consultant_revocation`, `ReasonDialog` motif ≥ 5).
-- Section **Invitations** : statuts « en attente / expirées », action **Prolonger 7 j** (`org_extend_invitation`) et **Renvoyer**.
-- Rappel visuel pour comité/admin plateforme : "Vos privilèges plateforme s'exercent sur `/app/comite` ou `/app/admin`."
-
-## Bloc 2 — Console admin utilisateurs `/app/admin/users`
-
-- Filtres via `FilterChips` : `platform_role` (user/comite/admin), statut (actif/désactivé), + recherche existante.
-- Colonne **Organisations** cliquable → popover `{org, rôle}`.
-- Action **→ admin plateforme** en plus de `→ comité` (déjà supporté par `admin_set_user_platform_role`).
-- Migration table vers `ComiteTable` pour l'homogénéité DS.
-
-## Bloc 3 — Fiche utilisateur `/app/admin/users/$id`
-
-- Profil + statut + `platform_role`.
-- Orgs + rôles (lien `org_switch` pour l'admin plateforme).
-- Liens consultant où l'utilisateur est membre (via ses orgs, comme consultant ou comme client).
-- Historique `audit_log` filtré (`entity_id = user_id` OU meta contient user_id).
-- Actions rôle plateforme / activation reprises depuis la liste.
-
-## Bloc 4 — Espace consultant `/app/consultants`
-
-- Route visible dans la sidebar uniquement si `current.org.type === 'consultant'`.
-- Table clients rattachés (nom, rôle, source crédits, statut, date).
-- Bouton **Ouvrir en mode client** via `switchOrg` de `useCurrentOrg` (si le consultant est également membre du client — sinon lien lecture seule via `client_org_id`).
-- Bouton **Demander la révocation** (mêmes RPC) côté consultant.
-
-## Bloc 5 — Petites corrections transverses
-
-- Élargir types TS `role` (`owner|admin|editor|member|viewer`) dans `settings.tsx`, invitations, hooks.
-- Traductions FR/EN/AR : `role.*`, `platform_role.*`, `consultant.role.operateur/lecteur`, labels des nouvelles pages.
-- `StatusBadge` réutilisé pour statut membre/invitation.
-- `AppShell` : entrée sidebar « Consultants » conditionnelle.
+1. **Vérifier le domaine email du projet** (`email_domain--get_project_custom_domain` + `list_email_domains`) pour confirmer qu'un domaine Lovable managé est disponible.
+2. **Scaffolder le système d'emails transactionnels** via `email_domain--scaffold_transactional_email_templates`. Cela crée :
+   - Un registre de templates React Email
+   - Un helper `sendEmail` server-only
+   - Une route `/emails/preview` pour prévisualiser les templates
+3. **Créer un template `InvitationEmail`** (React Email) reprenant le branding Vision One (parchment, ochre, forest) avec :
+   - Nom de l'organisation
+   - Rôle proposé
+   - Bouton "Accepter l'invitation" pointant vers `/invite/:token`
+   - Date d'expiration
+4. **Remplacer l'appel Resend actuel** dans le server function d'invitation par le helper `sendEmail` natif. Garder le fallback "lien copié" au cas où l'envoi échoue.
+5. **Retirer la dépendance à `RESEND_API_KEY` et `RESEND_FROM`** pour les invitations (on peut garder le secret pour un usage futur, mais le code d'invitation n'y touche plus).
+6. **Tester** en envoyant une invitation à une adresse externe et vérifier la livraison + le rendu.
 
 ## Détails techniques
 
-- Aucune nouvelle table. Utilise les RPC :
-  - `public.org_set_member_role(uuid, uuid, org_role, text)`
-  - `public.org_remove_member(uuid, uuid, text)`
-  - `public.org_leave(uuid)`
-  - `public.org_extend_invitation(uuid) → timestamptz`
-  - `public.client_request_consultant_revocation(uuid, text)`
-- Nouvelles routes : `src/routes/_authenticated/app.admin.users.$id.tsx`, `src/routes/_authenticated/app.consultants.tsx`.
-- Nouveaux hooks : `useUserDetail(id)`, `useConsultantLinksForConsultant()`.
-- Réutilise `ReasonDialog`, `FilterChips`, `ComiteTable`, `StatusBadge`.
+- Le helper Lovable Emails utilise `LOVABLE_API_KEY` (déjà provisionnée) via le gateway — aucun secret utilisateur.
+- Les emails partent depuis un sous-domaine géré Lovable (ex. `@notify.lovable.app`), déjà authentifié SPF/DKIM/DMARC côté plateforme.
+- Le code d'envoi reste dans le server function `sendInvitationEmail` — seul le corps de la fonction change.
+- Aucun changement UI, aucun changement de schéma DB.
 
-Approuve pour passer en build mode et livrer les 5 blocs d'un coup.
+## Limites à connaître (prototype)
+
+- Volume/quotas limités par la plateforme Lovable — parfait pour une démo, à remplacer par un domaine dédié pour la prod.
+- L'adresse `from` sera générique Lovable, pas `@ton-domaine.com`.
+- Pour passer en prod avec ton propre domaine, il faudra vérifier un domaine custom plus tard (workflow séparé).
+
+Confirme et je lance le scaffold + la migration du code d'invitation.
