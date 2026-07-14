@@ -22,6 +22,7 @@ import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]
 import { Route as AuthenticatedAppReferentielRouteImport } from './routes/_authenticated/app.referentiel'
 import { Route as AuthenticatedAppInboxRouteImport } from './routes/_authenticated/app.inbox'
 import { Route as AuthenticatedAppCreditsRouteImport } from './routes/_authenticated/app.credits'
+import { Route as AuthenticatedAppConsultantsRouteImport } from './routes/_authenticated/app.consultants'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicVerifyDocIdRouteImport } from './routes/api/public/verify.$docId'
@@ -40,6 +41,7 @@ import { Route as AuthenticatedAppAdminCreditsRouteImport } from './routes/_auth
 import { Route as AuthenticatedAppAdminConsultantsRouteImport } from './routes/_authenticated/app.admin.consultants'
 import { Route as AuthenticatedAppAdminAuditRouteImport } from './routes/_authenticated/app.admin.audit'
 import { Route as AuthenticatedAppCreditsRequestsIdRouteImport } from './routes/_authenticated/app.credits.requests.$id'
+import { Route as AuthenticatedAppAdminUsersIdRouteImport } from './routes/_authenticated/app.admin.users.$id'
 import { Route as AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRouteImport } from './routes/_authenticated/app.projects.$id.prefaisabilite.$profilCode'
 
 const McpRoute = McpRouteImport.update({
@@ -109,6 +111,12 @@ const AuthenticatedAppCreditsRoute = AuthenticatedAppCreditsRouteImport.update({
   path: '/app/credits',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppConsultantsRoute =
+  AuthenticatedAppConsultantsRouteImport.update({
+    id: '/app/consultants',
+    path: '/app/consultants',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -215,6 +223,12 @@ const AuthenticatedAppCreditsRequestsIdRoute =
     path: '/requests/$id',
     getParentRoute: () => AuthenticatedAppCreditsRoute,
   } as any)
+const AuthenticatedAppAdminUsersIdRoute =
+  AuthenticatedAppAdminUsersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAppAdminUsersRoute,
+  } as any)
 const AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute =
   AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRouteImport.update({
     id: '/app/projects/$id/prefaisabilite/$profilCode',
@@ -234,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/verify/$docId': typeof VerifyDocIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/app/consultants': typeof AuthenticatedAppConsultantsRoute
   '/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/app/inbox': typeof AuthenticatedAppInboxRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
@@ -243,7 +258,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/organizations': typeof AuthenticatedAppAdminOrganizationsRoute
   '/app/admin/plans': typeof AuthenticatedAppAdminPlansRoute
   '/app/admin/referentiel': typeof AuthenticatedAppAdminReferentielRoute
-  '/app/admin/users': typeof AuthenticatedAppAdminUsersRoute
+  '/app/admin/users': typeof AuthenticatedAppAdminUsersRouteWithChildren
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/comite/bee-one': typeof AuthenticatedAppComiteBeeOneRoute
@@ -252,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/app/comite/versions': typeof AuthenticatedAppComiteVersionsRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
+  '/app/admin/users/$id': typeof AuthenticatedAppAdminUsersIdRoute
   '/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
@@ -267,6 +283,7 @@ export interface FileRoutesByTo {
   '/verify/$docId': typeof VerifyDocIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/app/consultants': typeof AuthenticatedAppConsultantsRoute
   '/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/app/inbox': typeof AuthenticatedAppInboxRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
@@ -276,7 +293,7 @@ export interface FileRoutesByTo {
   '/app/admin/organizations': typeof AuthenticatedAppAdminOrganizationsRoute
   '/app/admin/plans': typeof AuthenticatedAppAdminPlansRoute
   '/app/admin/referentiel': typeof AuthenticatedAppAdminReferentielRoute
-  '/app/admin/users': typeof AuthenticatedAppAdminUsersRoute
+  '/app/admin/users': typeof AuthenticatedAppAdminUsersRouteWithChildren
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/comite/bee-one': typeof AuthenticatedAppComiteBeeOneRoute
@@ -285,6 +302,7 @@ export interface FileRoutesByTo {
   '/app/comite/versions': typeof AuthenticatedAppComiteVersionsRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
+  '/app/admin/users/$id': typeof AuthenticatedAppAdminUsersIdRoute
   '/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
@@ -302,6 +320,7 @@ export interface FileRoutesById {
   '/verify/$docId': typeof VerifyDocIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/_authenticated/app/consultants': typeof AuthenticatedAppConsultantsRoute
   '/_authenticated/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/_authenticated/app/inbox': typeof AuthenticatedAppInboxRoute
   '/_authenticated/app/referentiel': typeof AuthenticatedAppReferentielRoute
@@ -311,7 +330,7 @@ export interface FileRoutesById {
   '/_authenticated/app/admin/organizations': typeof AuthenticatedAppAdminOrganizationsRoute
   '/_authenticated/app/admin/plans': typeof AuthenticatedAppAdminPlansRoute
   '/_authenticated/app/admin/referentiel': typeof AuthenticatedAppAdminReferentielRoute
-  '/_authenticated/app/admin/users': typeof AuthenticatedAppAdminUsersRoute
+  '/_authenticated/app/admin/users': typeof AuthenticatedAppAdminUsersRouteWithChildren
   '/_authenticated/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/_authenticated/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/_authenticated/app/comite/bee-one': typeof AuthenticatedAppComiteBeeOneRoute
@@ -320,6 +339,7 @@ export interface FileRoutesById {
   '/_authenticated/app/comite/versions': typeof AuthenticatedAppComiteVersionsRoute
   '/_authenticated/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
+  '/_authenticated/app/admin/users/$id': typeof AuthenticatedAppAdminUsersIdRoute
   '/_authenticated/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
   '/_authenticated/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
@@ -337,6 +357,7 @@ export interface FileRouteTypes {
     | '/verify/$docId'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/app/consultants'
     | '/app/credits'
     | '/app/inbox'
     | '/app/referentiel'
@@ -355,6 +376,7 @@ export interface FileRouteTypes {
     | '/app/comite/versions'
     | '/app/projects/new'
     | '/api/public/verify/$docId'
+    | '/app/admin/users/$id'
     | '/app/credits/requests/$id'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesByTo: FileRoutesByTo
@@ -370,6 +392,7 @@ export interface FileRouteTypes {
     | '/verify/$docId'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/app/consultants'
     | '/app/credits'
     | '/app/inbox'
     | '/app/referentiel'
@@ -388,6 +411,7 @@ export interface FileRouteTypes {
     | '/app/comite/versions'
     | '/app/projects/new'
     | '/api/public/verify/$docId'
+    | '/app/admin/users/$id'
     | '/app/credits/requests/$id'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   id:
@@ -404,6 +428,7 @@ export interface FileRouteTypes {
     | '/verify/$docId'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/_authenticated/app/consultants'
     | '/_authenticated/app/credits'
     | '/_authenticated/app/inbox'
     | '/_authenticated/app/referentiel'
@@ -422,6 +447,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/comite/versions'
     | '/_authenticated/app/projects/new'
     | '/api/public/verify/$docId'
+    | '/_authenticated/app/admin/users/$id'
     | '/_authenticated/app/credits/requests/$id'
     | '/_authenticated/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesById: FileRoutesById
@@ -531,6 +557,13 @@ declare module '@tanstack/react-router' {
       path: '/app/credits'
       fullPath: '/app/credits'
       preLoaderRoute: typeof AuthenticatedAppCreditsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/consultants': {
+      id: '/_authenticated/app/consultants'
+      path: '/app/consultants'
+      fullPath: '/app/consultants'
+      preLoaderRoute: typeof AuthenticatedAppConsultantsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/.mcp/invoke-tool/$tool': {
@@ -659,6 +692,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppCreditsRequestsIdRouteImport
       parentRoute: typeof AuthenticatedAppCreditsRoute
     }
+    '/_authenticated/app/admin/users/$id': {
+      id: '/_authenticated/app/admin/users/$id'
+      path: '/$id'
+      fullPath: '/app/admin/users/$id'
+      preLoaderRoute: typeof AuthenticatedAppAdminUsersIdRouteImport
+      parentRoute: typeof AuthenticatedAppAdminUsersRoute
+    }
     '/_authenticated/app/projects/$id/prefaisabilite/$profilCode': {
       id: '/_authenticated/app/projects/$id/prefaisabilite/$profilCode'
       path: '/app/projects/$id/prefaisabilite/$profilCode'
@@ -684,9 +724,24 @@ const AuthenticatedAppCreditsRouteWithChildren =
     AuthenticatedAppCreditsRouteChildren,
   )
 
+interface AuthenticatedAppAdminUsersRouteChildren {
+  AuthenticatedAppAdminUsersIdRoute: typeof AuthenticatedAppAdminUsersIdRoute
+}
+
+const AuthenticatedAppAdminUsersRouteChildren: AuthenticatedAppAdminUsersRouteChildren =
+  {
+    AuthenticatedAppAdminUsersIdRoute: AuthenticatedAppAdminUsersIdRoute,
+  }
+
+const AuthenticatedAppAdminUsersRouteWithChildren =
+  AuthenticatedAppAdminUsersRoute._addFileChildren(
+    AuthenticatedAppAdminUsersRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedAppConsultantsRoute: typeof AuthenticatedAppConsultantsRoute
   AuthenticatedAppCreditsRoute: typeof AuthenticatedAppCreditsRouteWithChildren
   AuthenticatedAppInboxRoute: typeof AuthenticatedAppInboxRoute
   AuthenticatedAppReferentielRoute: typeof AuthenticatedAppReferentielRoute
@@ -696,7 +751,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppAdminOrganizationsRoute: typeof AuthenticatedAppAdminOrganizationsRoute
   AuthenticatedAppAdminPlansRoute: typeof AuthenticatedAppAdminPlansRoute
   AuthenticatedAppAdminReferentielRoute: typeof AuthenticatedAppAdminReferentielRoute
-  AuthenticatedAppAdminUsersRoute: typeof AuthenticatedAppAdminUsersRoute
+  AuthenticatedAppAdminUsersRoute: typeof AuthenticatedAppAdminUsersRouteWithChildren
   AuthenticatedAppBudgetsIdRoute: typeof AuthenticatedAppBudgetsIdRoute
   AuthenticatedAppBusinessPlansIdRoute: typeof AuthenticatedAppBusinessPlansIdRoute
   AuthenticatedAppComiteBeeOneRoute: typeof AuthenticatedAppComiteBeeOneRoute
@@ -710,6 +765,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedAppConsultantsRoute: AuthenticatedAppConsultantsRoute,
   AuthenticatedAppCreditsRoute: AuthenticatedAppCreditsRouteWithChildren,
   AuthenticatedAppInboxRoute: AuthenticatedAppInboxRoute,
   AuthenticatedAppReferentielRoute: AuthenticatedAppReferentielRoute,
@@ -720,7 +776,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedAppAdminOrganizationsRoute,
   AuthenticatedAppAdminPlansRoute: AuthenticatedAppAdminPlansRoute,
   AuthenticatedAppAdminReferentielRoute: AuthenticatedAppAdminReferentielRoute,
-  AuthenticatedAppAdminUsersRoute: AuthenticatedAppAdminUsersRoute,
+  AuthenticatedAppAdminUsersRoute: AuthenticatedAppAdminUsersRouteWithChildren,
   AuthenticatedAppBudgetsIdRoute: AuthenticatedAppBudgetsIdRoute,
   AuthenticatedAppBusinessPlansIdRoute: AuthenticatedAppBusinessPlansIdRoute,
   AuthenticatedAppComiteBeeOneRoute: AuthenticatedAppComiteBeeOneRoute,
