@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/agriplan/AdminShell";
@@ -7,9 +7,13 @@ import { BackButton } from "@/components/agriplan/BackButton";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ReasonDialog } from "@/components/agriplan/ReasonDialog";
 import { toast } from "sonner";
 import { formatError } from "@/lib/format-error";
+import { Download } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/admin/users/$id")({
   ssr: false,
@@ -74,11 +78,91 @@ function UserDetail() {
         .select("id, at, action, entity_type, entity_id, meta, user_id, org_id")
         .or(`user_id.eq.${id},and(entity_type.eq.user,entity_id.eq.${id})`)
         .order("at", { ascending: false })
-        .limit(50);
+        .limit(500);
       if (error) throw error;
       return data ?? [];
     },
   });
+
+  const actorIds = useMemo(
+    () => Array.from(new Set((audit.data ?? []).map((a: any) => a.user_id).filter(Boolean))),
+    [audit.data],
+  );
+  const actorProfiles = useQuery({
+    queryKey: ["admin_user_audit_actors", actorIds.join(",")],
+    enabled: actorIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", actorIds);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const actorMap = useMemo(() => {
+    const m = new Map<string, { name: string; email: string | null }>();
+    for (const p of (actorProfiles.data ?? []) as any[]) {
+      m.set(p.id, { name: p.full_name || p.email || p.id.slice(0, 8), email: p.email });
+    }
+    return m;
+  }, [actorProfiles.data]);
+
+  const [fFrom, setFFrom] = useState("");
+  const [fTo, setFTo] = useState("");
+  const [fAction, setFAction] = useState<string>("all");
+  const [fActor, setFActor] = useState<string>("all");
+
+  const uniqueActions = useMemo(
+    () => Array.from(new Set((audit.data ?? []).map((a: any) => a.action).filter(Boolean))).sort(),
+    [audit.data],
+  );
+
+  const filteredAudit = useMemo(() => {
+    const rows = (audit.data ?? []) as any[];
+    const fromTs = fFrom ? new Date(fFrom).getTime() : null;
+    const toTs = fTo ? new Date(fTo).getTime() + 24 * 3600 * 1000 - 1 : null;
+    return rows.filter((a) => {
+      const t = new Date(a.at).getTime();
+      if (fromTs !== null && t < fromTs) return false;
+      if (toTs !== null && t > toTs) return false;
+      if (fAction !== "all" && a.action !== fAction) return false;
+      if (fActor !== "all" && a.user_id !== fActor) return false;
+      return true;
+    });
+  }, [audit.data, fFrom, fTo, fAction, fActor]);
+
+  function exportCsv() {
+    const rows = filteredAudit;
+    const header = ["date", "action", "entity_type", "entity_id", "acteur", "acteur_email", "org_id", "motif"];
+    const esc = (v: any) => {
+      const s = v == null ? "" : String(v);
+      return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const lines = [header.join(",")];
+    for (const a of rows) {
+      const actor = a.user_id ? actorMap.get(a.user_id) : null;
+      lines.push([
+        new Date(a.at).toISOString(),
+        a.action ?? "",
+        a.entity_type ?? "",
+        a.entity_id ?? "",
+        actor?.name ?? a.user_id ?? "",
+        actor?.email ?? "",
+        a.org_id ?? "",
+        a.meta?.motif ?? "",
+      ].map(esc).join(","));
+    }
+    const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `audit-${id.slice(0, 8)}-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
 
   const [dialog, setDialog] = useState<
     | null
@@ -201,22 +285,79 @@ function UserDetail() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Historique d'audit</CardTitle>
-          <CardDescription>50 derniers événements liés à ce compte.</CardDescription>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle className="text-base">Historique d'audit</CardTitle>
+              <CardDescription>
+                {filteredAudit.length} / {(audit.data ?? []).length} événement(s) — 500 derniers max.
+              </CardDescription>
+            </div>
+            <Button size="sm" variant="outline" onClick={exportCsv} disabled={filteredAudit.length === 0}>
+              <Download className="h-4 w-4 mr-1" /> Exporter CSV
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Du</Label>
+              <Input type="date" value={fFrom} onChange={(e) => setFFrom(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Au</Label>
+              <Input type="date" value={fTo} onChange={(e) => setFTo(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Action</Label>
+              <Select value={fAction} onValueChange={setFAction}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes</SelectItem>
+                  {uniqueActions.map((a) => (
+                    <SelectItem key={a} value={a}>{a}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Acteur</Label>
+              <Select value={fActor} onValueChange={setFActor}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous</SelectItem>
+                  {actorIds.map((uid) => (
+                    <SelectItem key={uid} value={uid}>
+                      {actorMap.get(uid)?.name ?? uid.slice(0, 8)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          {(fFrom || fTo || fAction !== "all" || fActor !== "all") && (
+            <div className="pt-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => { setFFrom(""); setFTo(""); setFAction("all"); setFActor("all"); }}
+              >
+                Réinitialiser
+              </Button>
+            </div>
+          )}
         </CardHeader>
         <CardContent className="p-0 divide-y">
-          {(audit.data ?? []).map((a: any) => (
+          {filteredAudit.map((a: any) => (
             <div key={a.id} className="flex items-start justify-between gap-3 p-3 text-sm">
               <div className="min-w-0">
                 <div className="font-medium mono-eyebrow">{a.action}</div>
                 <div className="text-xs text-muted-foreground truncate">
                   {a.entity_type} · {a.entity_id?.slice(0, 8)}{a.meta?.motif ? ` — ${a.meta.motif}` : ""}
+                  {a.user_id && actorMap.get(a.user_id) ? ` · par ${actorMap.get(a.user_id)!.name}` : ""}
                 </div>
               </div>
               <div className="text-xs text-muted-foreground shrink-0">{new Date(a.at).toLocaleString()}</div>
             </div>
           ))}
-          {(audit.data ?? []).length === 0 && (
+          {filteredAudit.length === 0 && (
             <div className="p-4 text-center text-sm text-muted-foreground">Aucun événement.</div>
           )}
         </CardContent>
