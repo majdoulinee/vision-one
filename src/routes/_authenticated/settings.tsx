@@ -1,34 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCurrentOrg } from "@/hooks/use-current-org";
+import { useCurrentOrg, ORG_ROLES, type OrgRole } from "@/hooks/use-current-org";
+import { useSession } from "@/hooks/use-session";
+import { usePlatformRole } from "@/hooks/use-platform-role";
+import { useConsultantLinksForClient } from "@/hooks/use-consultant-links";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { sendInvitationEmail } from "@/lib/invitations.functions";
 import { formatError } from "@/lib/format-error";
-import { Mail } from "lucide-react";
+import { Mail, Users, LogOut, Info } from "lucide-react";
+import { ReasonDialog } from "@/components/agriplan/ReasonDialog";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: Settings,
@@ -36,26 +31,29 @@ export const Route = createFileRoute("/_authenticated/settings")({
 
 type Member = {
   user_id: string;
-  role: "owner" | "admin" | "editor" | "member" | "viewer";
-  profile: { full_name: string | null; email: string | null } | null;
+  role: OrgRole;
+  profile: { full_name: string | null; email: string | null; platform_role: string | null } | null;
 };
 
 type Invitation = {
   id: string;
   email: string;
-  role: "member" | "viewer";
+  role: OrgRole;
   accepted_at: string | null;
   expires_at: string;
 };
 
 function Settings() {
   const { t } = useTranslation();
+  const { user } = useSession();
   const { current } = useCurrentOrg();
+  const { data: myPlatformRole } = usePlatformRole();
   const qc = useQueryClient();
   const sendEmail = useServerFn(sendInvitationEmail);
   const orgId = current?.org_id ?? null;
   const myRole = current?.role;
-  const canManage = myRole === "owner" || myRole === "admin";
+  const isOwner = myRole === "owner";
+  const canManage = isOwner || myRole === "admin";
 
   const members = useQuery({
     queryKey: ["members", orgId],
@@ -63,7 +61,7 @@ function Settings() {
     queryFn: async (): Promise<Member[]> => {
       const { data, error } = await supabase
         .from("org_members")
-        .select("user_id, role, profile:profiles!inner(full_name,email)")
+        .select("user_id, role, profile:profiles!inner(full_name,email,platform_role)")
         .eq("org_id", orgId!);
       if (error) throw error;
       return (data ?? []) as unknown as Member[];
@@ -85,19 +83,39 @@ function Settings() {
     },
   });
 
+  const consultantLinksQ = useConsultantLinksForClient();
+  const activeLinks = (consultantLinksQ.data ?? []).filter((l: any) => l.statut === "actif");
+
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"member" | "viewer">("member");
+  const [role, setRole] = useState<OrgRole>("member");
   const [busy, setBusy] = useState(false);
+
+  // Only owners can create owners
+  const invitableRoles = useMemo<OrgRole[]>(
+    () => (isOwner ? ["owner", "admin", "editor", "member", "viewer"] : ["admin", "editor", "member", "viewer"]),
+    [isOwner],
+  );
+
+  const [reasonDialog, setReasonDialog] = useState<
+    | { kind: "change_role"; userId: string; newRole: OrgRole; label: string }
+    | { kind: "remove_member"; userId: string; label: string }
+    | { kind: "revoke_consultant"; linkId: string; label: string }
+    | null
+  >(null);
+  const [confirmLeave, setConfirmLeave] = useState(false);
+
+  const ownerCount = (members.data ?? []).filter((m) => m.role === "owner").length;
 
   async function sendInvite(e: React.FormEvent) {
     e.preventDefault();
     if (!orgId) return;
+    if (role === "owner" && !isOwner) return toast.error("Seul un propriétaire peut inviter un propriétaire.");
     setBusy(true);
     try {
       const {
-        data: { user },
+        data: { user: authUser },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!authUser) throw new Error("Not authenticated");
       const token = crypto.randomUUID().replace(/-/g, "");
       const invEmail = email.toLowerCase();
       const { data: inv, error } = await supabase
@@ -107,13 +125,12 @@ function Settings() {
           email: invEmail,
           role,
           token,
-          invited_by: user.id,
+          invited_by: authUser.id,
           expires_at: new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString(),
         })
         .select("id")
         .single();
       if (error) throw error;
-      // Fire-and-await the email server function
       const result = await sendEmail({ data: { invitationId: inv.id } });
       const link = `${window.location.origin}/invite/${token}`;
       if (result?.sent) {
@@ -141,10 +158,65 @@ function Settings() {
     }
   }
 
+  async function extend(id: string) {
+    try {
+      const { error } = await supabase.rpc("org_extend_invitation", { p_inv_id: id });
+      if (error) throw error;
+      toast.success(t("settings.extended"));
+      qc.invalidateQueries({ queryKey: ["invitations", orgId] });
+    } catch (e) {
+      toast.error(formatError(e));
+    }
+  }
+
   async function revoke(id: string) {
     const { error } = await supabase.from("invitations").delete().eq("id", id);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["invitations", orgId] });
+  }
+
+  async function handleReason(motif: string) {
+    if (!reasonDialog || !orgId) return;
+    try {
+      if (reasonDialog.kind === "change_role") {
+        const { error } = await supabase.rpc("org_set_member_role", {
+          p_org: orgId, p_user: reasonDialog.userId, p_role: reasonDialog.newRole, p_motif: motif,
+        });
+        if (error) throw error;
+        toast.success("Rôle mis à jour.");
+      } else if (reasonDialog.kind === "remove_member") {
+        const { error } = await supabase.rpc("org_remove_member", {
+          p_org: orgId, p_user: reasonDialog.userId, p_motif: motif,
+        });
+        if (error) throw error;
+        toast.success("Membre retiré.");
+      } else if (reasonDialog.kind === "revoke_consultant") {
+        const { error } = await supabase.rpc("client_request_consultant_revocation", {
+          p_link_id: reasonDialog.linkId, p_motif: motif,
+        });
+        if (error) throw error;
+        toast.success("Demande envoyée aux administrateurs.");
+      }
+      qc.invalidateQueries({ queryKey: ["members", orgId] });
+      qc.invalidateQueries({ queryKey: ["consultant_links_client", orgId] });
+    } catch (e) {
+      toast.error(formatError(e));
+    }
+  }
+
+  async function doLeave() {
+    if (!orgId) return;
+    try {
+      const { error } = await supabase.rpc("org_leave", { p_org: orgId });
+      if (error) throw error;
+      toast.success("Vous avez quitté l'organisation.");
+      qc.invalidateQueries({ queryKey: ["my-orgs"] });
+      qc.invalidateQueries({ queryKey: ["members", orgId] });
+    } catch (e) {
+      toast.error(formatError(e));
+    } finally {
+      setConfirmLeave(false);
+    }
   }
 
   if (!current) return <div className="text-muted-foreground">{t("common.loading")}</div>;
@@ -152,6 +224,21 @@ function Settings() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <h1 className="text-3xl font-bold tracking-tight">{t("settings.title")}</h1>
+
+      {(myPlatformRole === "admin" || myPlatformRole === "comite") && (
+        <div className="rounded-md border border-accent/50 bg-accent/10 px-4 py-2 text-sm flex items-start gap-2">
+          <Info className="h-4 w-4 mt-0.5 shrink-0" />
+          <div>
+            Vous agissez dans cette organisation en tant que <strong>{t(`role.${myRole}`)}</strong>.
+            Vos privilèges plateforme (<strong>{myPlatformRole}</strong>) s'exercent sur{" "}
+            {myPlatformRole === "admin" ? (
+              <a className="underline" href="/app/admin/organizations">/app/admin</a>
+            ) : (
+              <a className="underline" href="/app/comite/propositions">/app/comite</a>
+            )}.
+          </div>
+        </div>
+      )}
 
       <Card>
         <CardHeader>
@@ -174,28 +261,94 @@ function Settings() {
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>{t("settings.members")}</CardTitle>
+        <CardHeader className="flex-row items-center justify-between gap-2">
+          <div>
+            <CardTitle>{t("settings.members")}</CardTitle>
+            <CardDescription>
+              {members.data?.length ?? 0} membre(s) · {ownerCount} propriétaire(s)
+            </CardDescription>
+          </div>
+          {myRole && myRole !== "owner" && (
+            <Button variant="outline" size="sm" onClick={() => setConfirmLeave(true)}>
+              <LogOut className="mr-1.5 h-3.5 w-3.5" /> {t("settings.leaveOrg")}
+            </Button>
+          )}
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>{t("auth.fullName")}</TableHead>
                 <TableHead>{t("settings.email")}</TableHead>
                 <TableHead>{t("settings.role")}</TableHead>
+                {canManage && <TableHead className="text-end">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {members.data?.map((m) => (
-                <TableRow key={m.user_id}>
-                  <TableCell>{m.profile?.full_name ?? "—"}</TableCell>
-                  <TableCell>{m.profile?.email ?? "—"}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{t(`role.${m.role}`)}</Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {members.data?.map((m) => {
+                const isSelf = m.user_id === user?.id;
+                const isTargetOwner = m.role === "owner";
+                const canChangeTarget =
+                  canManage && !isSelf && (isOwner || !isTargetOwner);
+                const pf = m.profile?.platform_role;
+                return (
+                  <TableRow key={m.user_id}>
+                    <TableCell>
+                      <div className="font-medium">{m.profile?.full_name ?? "—"}</div>
+                      {isSelf && <div className="text-[10px] uppercase tracking-wide text-muted-foreground">vous</div>}
+                    </TableCell>
+                    <TableCell>{m.profile?.email ?? "—"}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap items-center gap-1">
+                        <Badge variant="secondary">{t(`role.${m.role}`)}</Badge>
+                        {pf === "admin" && <Badge variant="ochre" className="mono-eyebrow">Admin plateforme</Badge>}
+                        {pf === "comite" && <Badge variant="sky" className="mono-eyebrow">Comité</Badge>}
+                      </div>
+                    </TableCell>
+                    {canManage && (
+                      <TableCell className="text-end space-x-1">
+                        <Select
+                          value={m.role}
+                          onValueChange={(v) => {
+                            if (v === m.role) return;
+                            const nr = v as OrgRole;
+                            setReasonDialog({
+                              kind: "change_role",
+                              userId: m.user_id,
+                              newRole: nr,
+                              label: `${m.profile?.email ?? m.user_id} → ${t(`role.${nr}`)}`,
+                            });
+                          }}
+                          disabled={!canChangeTarget}
+                        >
+                          <SelectTrigger className="inline-flex h-8 w-[130px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ORG_ROLES.filter((r) => isOwner || r !== "owner").map((r) => (
+                              <SelectItem key={r} value={r}>{t(`role.${r}`)}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          disabled={!canChangeTarget}
+                          onClick={() =>
+                            setReasonDialog({
+                              kind: "remove_member",
+                              userId: m.user_id,
+                              label: m.profile?.email ?? m.user_id,
+                            })
+                          }
+                        >
+                          {t("settings.remove")}
+                        </Button>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>
@@ -205,6 +358,9 @@ function Settings() {
         <Card>
           <CardHeader>
             <CardTitle>{t("settings.invitations")}</CardTitle>
+            <CardDescription>
+              Invitations en attente. Les invitations expirées peuvent être prolongées.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={sendInvite} className="flex flex-wrap items-end gap-3">
@@ -220,15 +376,13 @@ function Settings() {
               </div>
               <div className="space-y-1">
                 <Label>{t("settings.role")}</Label>
-                <Select value={role} onValueChange={(v) => setRole(v as typeof role)}>
-                  <SelectTrigger className="w-[140px]">
+                <Select value={role} onValueChange={(v) => setRole(v as OrgRole)}>
+                  <SelectTrigger className="w-[160px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {(["member", "viewer"] as const).map((r) => (
-                      <SelectItem key={r} value={r}>
-                        {t(`role.${r}`)}
-                      </SelectItem>
+                    {invitableRoles.map((r) => (
+                      <SelectItem key={r} value={r}>{t(`role.${r}`)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -243,34 +397,155 @@ function Settings() {
                 <TableRow>
                   <TableHead>{t("settings.email")}</TableHead>
                   <TableHead>{t("settings.role")}</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Statut</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {invitations.data?.map((i) => (
-                  <TableRow key={i.id}>
-                    <TableCell>{i.email}</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{t(`role.${i.role}`)}</Badge>
-                    </TableCell>
-                    <TableCell>{t("settings.pending")}</TableCell>
-                    <TableCell className="text-right space-x-1">
-                      <Button variant="outline" size="sm" onClick={() => resend(i.id)}>
-                        <Mail className="mr-1 h-3.5 w-3.5" />
-                        {t("settings.resend")}
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => revoke(i.id)}>
-                        {t("settings.revoke")}
-                      </Button>
+                {(invitations.data ?? []).map((i) => {
+                  const expired = new Date(i.expires_at).getTime() < Date.now();
+                  return (
+                    <TableRow key={i.id}>
+                      <TableCell>{i.email}</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{t(`role.${i.role}`)}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        {expired ? (
+                          <Badge variant="destructive">Expirée</Badge>
+                        ) : (
+                          <Badge variant="secondary">{t("settings.pending")}</Badge>
+                        )}
+                        <span className="ml-2 text-[11px] text-muted-foreground">
+                          {new Date(i.expires_at).toLocaleDateString()}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right space-x-1">
+                        {expired && (
+                          <Button variant="outline" size="sm" onClick={() => extend(i.id)}>
+                            {t("settings.extend")}
+                          </Button>
+                        )}
+                        <Button variant="outline" size="sm" onClick={() => resend(i.id)}>
+                          <Mail className="mr-1 h-3.5 w-3.5" />
+                          {t("settings.resend")}
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => revoke(i.id)}>
+                          {t("settings.revoke")}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+                {(invitations.data ?? []).length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="p-4 text-center text-sm text-muted-foreground">
+                      Aucune invitation en attente.
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </CardContent>
         </Card>
       )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-4 w-4" /> Consultants rattachés
+          </CardTitle>
+          <CardDescription>
+            Cabinets ayant accès à votre organisation. La révocation passe par l'administrateur plateforme.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0 overflow-x-auto">
+          {activeLinks.length === 0 ? (
+            <div className="p-6 text-center text-sm text-muted-foreground">
+              Aucun cabinet rattaché.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Cabinet</TableHead>
+                  <TableHead>Rôle</TableHead>
+                  <TableHead>Crédits</TableHead>
+                  <TableHead>Depuis</TableHead>
+                  {canManage && <TableHead className="text-end">Actions</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {activeLinks.map((l: any) => (
+                  <TableRow key={l.id}>
+                    <TableCell className="font-medium">{l.consultant_org?.name ?? "—"}</TableCell>
+                    <TableCell><Badge variant="secondary">{l.role}</Badge></TableCell>
+                    <TableCell className="text-xs">source : {l.credits_source}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {new Date(l.accorde_le).toLocaleDateString()}
+                    </TableCell>
+                    {canManage && (
+                      <TableCell className="text-end">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setReasonDialog({
+                              kind: "revoke_consultant",
+                              linkId: l.id,
+                              label: l.consultant_org?.name ?? "",
+                            })
+                          }
+                        >
+                          Demander la révocation
+                        </Button>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      <ReasonDialog
+        open={!!reasonDialog}
+        onOpenChange={(v) => !v && setReasonDialog(null)}
+        title={
+          reasonDialog?.kind === "change_role"
+            ? `Changer le rôle — ${reasonDialog.label}`
+            : reasonDialog?.kind === "remove_member"
+              ? `Retirer ${reasonDialog.label}`
+              : reasonDialog?.kind === "revoke_consultant"
+                ? `Demander la révocation — ${reasonDialog.label}`
+                : ""
+        }
+        description="Motif obligatoire (journal d'audit)."
+        minLen={5}
+        destructive={reasonDialog?.kind !== "change_role"}
+        confirmLabel={
+          reasonDialog?.kind === "change_role"
+            ? "Appliquer"
+            : reasonDialog?.kind === "remove_member"
+              ? "Retirer"
+              : "Envoyer la demande"
+        }
+        onConfirm={handleReason}
+      />
+
+      <ReasonDialog
+        open={confirmLeave}
+        onOpenChange={setConfirmLeave}
+        title="Quitter l'organisation"
+        description="Motif obligatoire (journal d'audit). Vous perdrez l'accès aux projets de cette organisation."
+        minLen={5}
+        destructive
+        confirmLabel="Quitter"
+        onConfirm={async () => {
+          await doLeave();
+        }}
+      />
     </div>
   );
 }

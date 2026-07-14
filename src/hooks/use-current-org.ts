@@ -20,6 +20,9 @@ export function canWriteRole(role: OrgMembership["role"] | undefined): boolean {
   return role === "owner" || role === "admin" || role === "editor" || role === "member";
 }
 
+export const ORG_ROLES = ["owner", "admin", "editor", "member", "viewer"] as const;
+export type OrgRole = (typeof ORG_ROLES)[number];
+
 export function useMyOrganizations() {
   const { user } = useSession();
   return useQuery({

@@ -18,3 +18,20 @@ export function useConsultantLinksForClient() {
     },
   });
 }
+
+export function useConsultantLinksForConsultant() {
+  const { currentId } = useCurrentOrg();
+  return useQuery({
+    queryKey: ["consultant_links_consultant", currentId],
+    enabled: !!currentId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("consultant_links")
+        .select("*, client_org:organizations!consultant_links_client_org_id_fkey(id,name,type,country)")
+        .eq("consultant_org_id", currentId!)
+        .order("accorde_le", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}

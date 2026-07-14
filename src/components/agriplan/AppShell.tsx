@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Settings, LogOut, PlusCircle, Database, Coins, ShieldCheck, Inbox, PanelLeftClose, PanelLeftOpen, Landmark } from "lucide-react";
+import { LayoutDashboard, Settings, LogOut, PlusCircle, Database, Coins, ShieldCheck, Inbox, PanelLeftClose, PanelLeftOpen, Landmark, Briefcase } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { OrgSwitcher } from "./OrgSwitcher";
 import { usePlatformRole } from "@/hooks/use-platform-role";
+import { useCurrentOrg } from "@/hooks/use-current-org";
 import { BrandLogo } from "./BrandLogo";
 import { CreditBadge } from "./CreditBadge";
 import { useLowCreditAlert } from "@/hooks/use-low-credit-alert";
@@ -19,6 +20,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: platformRole } = usePlatformRole();
+  const { current } = useCurrentOrg();
   useLowCreditAlert();
 
   const [collapsed, setCollapsed] = useState<boolean>(() => {
@@ -57,6 +59,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { to: "/app/inbox", label: "Notifications", Icon: Inbox },
     { to: "/settings", label: t("nav.settings"), Icon: Settings },
   ];
+  if (current?.org.type === "consultant") {
+    nav.splice(2, 0, { to: "/app/consultants", label: "Mes clients", Icon: Briefcase });
+  }
   if (platformRole === "admin" || platformRole === "comite") {
     nav.push({ to: "/app/referentiel", label: t("nav2.referentiel"), Icon: Database });
   }
