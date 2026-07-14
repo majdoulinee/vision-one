@@ -1,62 +1,55 @@
-# Refonte UI Comité — Design System Vision One
+# Refonte gestion utilisateurs — 5 blocs
 
-## Objectif
-Aligner les 4 pages Comité + `ComiteShell` sur le design system almanach (parchemin, encre, ocre, argile, ciel) déjà défini dans `src/styles.css`. Aujourd'hui ces écrans utilisent des couleurs codées en dur (`#12211A`, `#D9A521`, `#C0552F`, `#2E6E8E`, `#F3EFE3`, `rgba(...)`) et un mélange de styles inline qui ne suivent pas les tokens.
+La migration DB est déjà passée (nouvelles RPC + policy self-leave). Il reste la partie code, à livrer en build mode.
 
-## Principes design (repris de la landing / dashboard)
-- Palette via tokens uniquement : `ink`, `ink-2`, `parch`, `parch-2`, `line`, `mute`, `clay`, `ochre`, `sky`
-- Typo : `font-serif` (Fraunces) pour titres/versions, `mono-eyebrow` pour tags/statuts, sans par défaut
-- Coins nets (`rounded-sm` max, jamais `rounded-xl`), bordures `border-line`
-- Ombres dures (`hard-shadow`, `hard-shadow-ink`) sur cartes clés
-- Aucune couleur en `style={{}}` — tout passe par classes Tailwind + tokens
+## Bloc 1 — `/settings` (membres & invitations)
 
-## Périmètre (fichiers touchés — UI uniquement)
+- Élargir l'invitation aux rôles `owner | admin | editor | member | viewer` (owner uniquement par un owner).
+- Table membres : menu **Changer de rôle** (via `org_set_member_role`), bouton **Retirer** (`org_remove_member`), bouton **Quitter l'organisation** (`org_leave`) pour non-owner.
+- Badges à côté du rôle d'org : « Comité » / « Admin plateforme » via `platform_role`.
+- Section **Consultants rattachés à cette org** (liste + bouton « Demander la révocation » → `client_request_consultant_revocation`, `ReasonDialog` motif ≥ 5).
+- Section **Invitations** : statuts « en attente / expirées », action **Prolonger 7 j** (`org_extend_invitation`) et **Renvoyer**.
+- Rappel visuel pour comité/admin plateforme : "Vos privilèges plateforme s'exercent sur `/app/comite` ou `/app/admin`."
 
-### 1. `src/components/agriplan/ComiteShell.tsx`
-- Header ink → `bg-ink text-parch` (au lieu de `#12211A/#F3EFE3` inline)
-- Badge « Comité d'experts » → `bg-ochre text-ink mono-eyebrow`
-- Onglets actifs → `bg-parch/15 text-parch`, inactifs → `text-parch/70`
-- Pipeline (BROUILLON → PUBLIÉE) : chips `bg-ochre/15 text-parch mono-eyebrow`, séparateurs `→` en `text-parch/40`
-- Devise italique en `font-serif italic text-parch/70`
+## Bloc 2 — Console admin utilisateurs `/app/admin/users`
 
-### 2. `src/routes/_authenticated/app.comite.propositions.tsx`
-- Filtres statuts : bouton actif `bg-ink text-parch`, inactif `border-line hover:bg-muted`
-- Table header : `bg-muted/50 mono-eyebrow text-mute`
-- Ligne « strong » : `bg-clay/5` (remplace `bg-[hsl(15,60%,95%)]`)
-- Sparklines : barres old = `fill-line`, new = `fill-sky`
-- Delta ± : `text-clay` (positif = alerte) / `text-sky` (négatif = économie)
-- Badges décision : APPROUVER `bg-sky text-parch mono-eyebrow`, RENVOYER `bg-ochre text-ink mono-eyebrow`
-- Statut brut : chip `border-line mono-eyebrow`
-- Motif renvoi : `text-clay`
-- Éditeur proposition (grille 13 semaines/mois) : bordures `border-line`, delta% `text-clay/text-sky`
+- Filtres via `FilterChips` : `platform_role` (user/comite/admin), statut (actif/désactivé), + recherche existante.
+- Colonne **Organisations** cliquable → popover `{org, rôle}`.
+- Action **→ admin plateforme** en plus de `→ comité` (déjà supporté par `admin_set_user_platform_role`).
+- Migration table vers `ComiteTable` pour l'homogénéité DS.
 
-### 3. `src/routes/_authenticated/app.comite.bee-one.tsx`
-- Carte bloquée (k-anonymat < seuil) : `border-clay bg-clay/5`, bandeau coin `bg-clay text-parch mono-eyebrow`
-- Barre k-anonymat : track `bg-ink/10`, fill `bg-clay` (bloqué) ou `bg-ink-2` (ok), marqueur seuil `bg-ink`
-- Labels ratio : `text-clay` / `text-ink-2` selon état, en `mono-eyebrow`
-- Chips seuil / statut : `mono-eyebrow text-mute border-line`
+## Bloc 3 — Fiche utilisateur `/app/admin/users/$id`
 
-### 4. `src/routes/_authenticated/app.comite.publish.tsx`
-- Barre sticky d'action : `bg-ink text-parch hard-shadow-ink`
-- Icône Lock : `text-ochre`
-- Compteurs : Approuvée `text-ink-2` (vert forêt), Renvoyée `text-clay`
-- Bouton « Publier » : `bg-ochre text-ink` si actif, `bg-parch/15 text-parch/50` sinon
-- Encart avertissement immuable : `bg-ochre/15 border-ochre text-ink`
-- Bouton confirmation final : `bg-clay text-parch`
-- Devise italique : `font-serif italic`
+- Profil + statut + `platform_role`.
+- Orgs + rôles (lien `org_switch` pour l'admin plateforme).
+- Liens consultant où l'utilisateur est membre (via ses orgs, comme consultant ou comme client).
+- Historique `audit_log` filtré (`entity_id = user_id` OU meta contient user_id).
+- Actions rôle plateforme / activation reprises depuis la liste.
 
-### 5. `src/routes/_authenticated/app.comite.versions.tsx`
-- Numéro version : `font-serif text-ink`
-- Badge « publiée · immuable » : `bg-ochre text-ink mono-eyebrow`
-- Cartes versions : `border-line hard-shadow` sur hover
+## Bloc 4 — Espace consultant `/app/consultants`
 
-## Hors périmètre
-- Aucun changement de logique métier, RPC, requêtes, ou schéma
-- Aucun changement de routing / hooks / permissions
-- Aucun texte / copie modifié (uniquement styles)
+- Route visible dans la sidebar uniquement si `current.org.type === 'consultant'`.
+- Table clients rattachés (nom, rôle, source crédits, statut, date).
+- Bouton **Ouvrir en mode client** via `switchOrg` de `useCurrentOrg` (si le consultant est également membre du client — sinon lien lecture seule via `client_org_id`).
+- Bouton **Demander la révocation** (mêmes RPC) côté consultant.
 
-## Vérification
-- Build passe (typecheck strict)
-- Navigation `/app/comite/*` : header + pipeline lisibles clair et dark
-- Cohérence visuelle avec dashboard client et landing (même palette, mêmes chips mono)
-- Aucun `style={{ background:'#...' }}` ni classe `bg-[#...]` restant dans les 5 fichiers
+## Bloc 5 — Petites corrections transverses
+
+- Élargir types TS `role` (`owner|admin|editor|member|viewer`) dans `settings.tsx`, invitations, hooks.
+- Traductions FR/EN/AR : `role.*`, `platform_role.*`, `consultant.role.operateur/lecteur`, labels des nouvelles pages.
+- `StatusBadge` réutilisé pour statut membre/invitation.
+- `AppShell` : entrée sidebar « Consultants » conditionnelle.
+
+## Détails techniques
+
+- Aucune nouvelle table. Utilise les RPC :
+  - `public.org_set_member_role(uuid, uuid, org_role, text)`
+  - `public.org_remove_member(uuid, uuid, text)`
+  - `public.org_leave(uuid)`
+  - `public.org_extend_invitation(uuid) → timestamptz`
+  - `public.client_request_consultant_revocation(uuid, text)`
+- Nouvelles routes : `src/routes/_authenticated/app.admin.users.$id.tsx`, `src/routes/_authenticated/app.consultants.tsx`.
+- Nouveaux hooks : `useUserDetail(id)`, `useConsultantLinksForConsultant()`.
+- Réutilise `ReasonDialog`, `FilterChips`, `ComiteTable`, `StatusBadge`.
+
+Approuve pour passer en build mode et livrer les 5 blocs d'un coup.
