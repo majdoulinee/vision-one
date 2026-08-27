@@ -1,5 +1,9 @@
 import iconAsset from "@/assets/vision-one-icon.png.asset.json";
 
+// Fallback local icon for dev environments where the Lovable-hosted asset
+// (/__l5e/assets-v1/...) isn't reachable (e.g. plain `vite dev` locally).
+const iconSrc = "/favicon.png";
+
 type Size = "sm" | "md" | "lg";
 const px: Record<Size, number> = { sm: 24, md: 32, lg: 48 };
 
@@ -18,7 +22,7 @@ export function BrandLogo({
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <img
-        src={iconAsset.url}
+        src={iconSrc}
         alt="Vision One"
         width={s}
         height={s}
