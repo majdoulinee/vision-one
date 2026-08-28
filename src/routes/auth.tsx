@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -90,16 +89,18 @@ function AuthPage() {
 
   async function handleGoogle() {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: next ? window.location.origin + next : window.location.origin,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin + (next ?? "/dashboard"),
+      },
     });
-    if (result.error) {
-      toast.error(formatError(result.error) || "OAuth error");
+    if (error) {
+      toast.error(formatError(error) || "OAuth error");
       setBusy(false);
       return;
     }
-    if (result.redirected) return;
-    postAuthNavigate();
+    // Supabase performs a full-page redirect to Google from here; no further action needed.
   }
 
   return (
