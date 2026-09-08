@@ -108,7 +108,7 @@ export default function Landing() {
                 à partir d'un référentiel de normes vivant, alimenté par les données réelles de production au Maroc.
               </p>
               <div className="flex flex-wrap gap-3 items-center">
-                <Btn variant="clay" href="#final">
+                <Btn variant="clay" to="/auth" search={{ mode: "signup" }}>
                   Tester la pré-faisabilité <span aria-hidden="true">→</span>
                 </Btn>
                 <Btn variant="ghost" href="#preuve">

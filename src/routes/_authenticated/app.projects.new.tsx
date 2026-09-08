@@ -19,6 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { fmtHa, fmtMAD, fmtNum } from "@/lib/format";
 import { ArrowRight, Compass, Wallet as WalletIcon } from "lucide-react";
@@ -167,9 +169,9 @@ function NewProjectWizard() {
               <Label>{t("wizard.name")}</Label>
               <Input value={name} onChange={(e) => setName(e.target.value)} />
             </div>
-            <div>
+            <div className="sm:col-span-2">
               <Label>{t("wizard.zone")}</Label>
-              <Select value={zoneCode} onValueChange={setZoneCode}>
+              <Select value={zoneCode} onValueChange={setZoneCode} disabled={!version.isLoading && !version.data}>
                 <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                 <SelectContent>
                   {zones.map((z) => (
@@ -177,6 +179,15 @@ function NewProjectWizard() {
                   ))}
                 </SelectContent>
               </Select>
+              {!version.isLoading && !version.data && (
+                <Alert variant="destructive" className="mt-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Référentiel non publié</AlertTitle>
+                  <AlertDescription>
+                    Le référentiel n'est pas encore publié — contactez l'administrateur de la plateforme.
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
             {mode === "projet" ? (
               <>
