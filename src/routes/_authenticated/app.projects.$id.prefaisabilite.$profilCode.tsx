@@ -4,8 +4,6 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { usePublishedVersion, useReferentiel } from "@/hooks/use-referentiel";
 import { useCurrentOrg } from "@/hooks/use-current-org";
-import { useSession } from "@/hooks/use-session";
-import { advanceOnboardingStep } from "@/lib/onboarding";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { margeNormativeHa } from "@/engines/recommendation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -21,28 +19,16 @@ import { fmtHa, fmtMAD } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/app/projects/$id/prefaisabilite/$profilCode")({
   ssr: false,
   component: Prefaisabilite,
-  validateSearch: (
-    s: Record<string, unknown>,
-  ): { generate: 0 | 1; onboarding?: 0 | 1 } => ({
-    generate: s.generate ? 1 : 0,
-    // Présent quand on arrive depuis l'écran 4 de l'onboarding (§5) : la
-    // validation de cet écran (pré-faisabilité vue OU génération complète)
-    // fait avancer le tunnel au lieu de suivre le parcours normal.
-    // Optionnel dans le type pour ne pas casser les liens existants
-    // (wizard hors onboarding) qui ne le passent pas.
-    onboarding: s.onboarding ? 1 : 0,
-  }),
+  validateSearch: (s: Record<string, unknown>) => ({ generate: s.generate ? 1 : 0 }),
 });
 
 function Prefaisabilite() {
   const { id, profilCode } = Route.useParams();
-  const { generate, onboarding } = Route.useSearch() as { generate: 0 | 1; onboarding: 0 | 1 };
+  const { generate } = Route.useSearch() as { generate: 0 | 1 };
   const { t } = useTranslation();
   const nav = useNavigate();
   const qc = useQueryClient();
-  const { user } = useSession();
   const { current } = useCurrentOrg();
-  const [onboardingHandled, setOnboardingHandled] = useState(false);
   const version = usePublishedVersion();
   const ref = useReferentiel(version.data?.version);
   const [autoOpen, setAutoOpen] = useState<boolean>(generate === 1);
@@ -109,18 +95,6 @@ function Prefaisabilite() {
     }
   }, [autoOpen, profil, project.data, busy]);
 
-  // Onboarding §5 : "consulter la pré-faisabilité" (sans générer) compte déjà
-  // comme validation de l'écran résultat — on avance le tunnel et on redirige
-  // vers l'écran "projet prêt" au lieu de laisser l'utilisateur sur cette page.
-  useEffect(() => {
-    if (onboarding === 1 && generate === 0 && !onboardingHandled && current && user && profil) {
-      setOnboardingHandled(true);
-      advanceOnboardingStep(current.org_id, user.id, "result_done")
-        .catch(() => {})
-        .finally(() => nav({ to: "/onboarding/projet-pret", search: { credited: 0, projectId: id } as any }));
-    }
-  }, [onboarding, generate, onboardingHandled, current, user, profil, nav]);
-
   if (!profil || !project.data || !current) return <div>{t("common.loading")}</div>;
 
   const insufficient = (wallet.data?.credits ?? 0) < totalCost;
@@ -167,13 +141,7 @@ function Prefaisabilite() {
 
       qc.invalidateQueries();
       toast.success("Budget & BP");
-
-      if (onboarding === 1 && user) {
-        await advanceOnboardingStep(current.org_id, user.id, "result_done");
-        nav({ to: "/onboarding/projet-pret", search: { credited: 1, projectId: id } as any });
-      } else {
-        nav({ to: "/app/budgets/$id", params: { id: data.budgetId } });
-      }
+      nav({ to: "/app/budgets/$id", params: { id: data.budgetId } });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : String(e));
     } finally {
@@ -201,13 +169,11 @@ function Prefaisabilite() {
             </Badge>
           </div>
         </div>
-        {onboarding !== 1 && (
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/app/projects/new">
-              <ArrowLeft className="mr-2 h-4 w-4" /> {t("prefa.backToWizard")}
-            </Link>
-          </Button>
-        )}
+        <Button asChild variant="ghost" size="sm">
+          <Link to="/app/projects/new">
+            <ArrowLeft className="mr-2 h-4 w-4" /> {t("prefa.backToWizard")}
+          </Link>
+        </Button>
       </div>
 
       <div className="rounded-lg border border-accent bg-accent/10 p-4 text-sm">
