@@ -5,7 +5,7 @@ function fmt(n: number) {
   return new Intl.NumberFormat("fr-FR").format(Math.round(n));
 }
 
-export function InverseWidget() {
+export function InverseWidget({ refVersion = "2026.2" }: { refVersion?: string }) {
   const [capitalStr, setCapitalStr] = useState("5 000 000");
   const [zone, setZone] = useState<ZoneKey>("Souss-Massa");
 
@@ -94,7 +94,7 @@ export function InverseWidget() {
       </div>
       <div className="px-5 py-3 bg-parch-2 text-xs text-mute flex items-center gap-2">
         <span className="w-1.5 h-1.5 rounded-full bg-ochre flex-none" />
-        Aucun chiffre généré par une IA — normes v2026.2, provenance tracée.
+        Aucun chiffre généré par une IA — normes v{refVersion}, provenance tracée.
       </div>
     </div>
   );

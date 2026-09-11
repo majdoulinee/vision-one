@@ -10,7 +10,7 @@ export function useLowCreditAlert() {
   useEffect(() => {
     if (!data) return;
     const { org_id, credits, credits_alerte } = data;
-    const threshold = credits_alerte ?? 3;
+    const threshold = credits_alerte ?? 1;
     if (credits > threshold) return;
 
     const bucket = credits === 0 ? "empty" : "low";

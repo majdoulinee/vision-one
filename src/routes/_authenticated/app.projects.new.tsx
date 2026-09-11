@@ -8,20 +8,14 @@ import { usePublishedVersion, useReferentiel } from "@/hooks/use-referentiel";
 import { recommend, inverse } from "@/engines/recommendation";
 import type { Orientation, Risque } from "@/engines/types";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import {
+  ProjectContextFields,
+  validateProjectForm,
+  type ProjectFormErrors,
+} from "@/components/agriplan/ProjectContextFields";
 import { fmtHa, fmtMAD, fmtNum } from "@/lib/format";
 import { ArrowRight, Compass, Wallet as WalletIcon } from "lucide-react";
 import { BackButton } from "@/components/agriplan/BackButton";
@@ -54,6 +48,7 @@ function NewProjectWizard() {
   const [orientation, setOrientation] = useState<Orientation>("export");
   const [risk, setRisk] = useState<Risque>("moyen");
   const [busy, setBusy] = useState(false);
+  const [errors, setErrors] = useState<ProjectFormErrors>({});
 
   const zones = ref.data?.zones ?? [];
 
@@ -62,6 +57,12 @@ function NewProjectWizard() {
     if (!mode) return;
     if (!user) {
       toast.error(t("common.error"));
+      return;
+    }
+    const fieldErrors = validateProjectForm(t, mode, { name, zoneCode, surface, capital, horizon });
+    setErrors(fieldErrors);
+    if (Object.keys(fieldErrors).length > 0) {
+      toast.error(Object.values(fieldErrors)[0] as string);
       return;
     }
     setBusy(true);
@@ -165,79 +166,27 @@ function NewProjectWizard() {
         </h1>
         <Card>
           <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <Label>{t("wizard.name")}</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <div className="sm:col-span-2">
-              <Label>{t("wizard.zone")}</Label>
-              <Select value={zoneCode} onValueChange={setZoneCode} disabled={!version.isLoading && !version.data}>
-                <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
-                <SelectContent>
-                  {zones.map((z) => (
-                    <SelectItem key={z.code} value={z.code}>{z.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {!version.isLoading && !version.data && (
-                <Alert variant="destructive" className="mt-2">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertTitle>Référentiel non publié</AlertTitle>
-                  <AlertDescription>
-                    Le référentiel n'est pas encore publié — contactez l'administrateur de la plateforme.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-            {mode === "projet" ? (
-              <>
-                <div>
-                  <Label>{t("wizard.surface")}</Label>
-                  <Input type="number" step="0.1" value={surface} onChange={(e) => setSurface(e.target.value)} />
-                </div>
-                <div>
-                  <Label>{t("wizard.capitalOpt")}</Label>
-                  <Input type="number" value={capital} onChange={(e) => setCapital(e.target.value)} />
-                </div>
-              </>
-            ) : (
-              <div className="sm:col-span-2">
-                <Label>{t("wizard.capital")}</Label>
-                <Input type="number" value={capital} onChange={(e) => setCapital(e.target.value)} />
-              </div>
-            )}
-            <div>
-              <Label>{t("wizard.horizon")}</Label>
-              <Input type="number" value={horizon} onChange={(e) => setHorizon(e.target.value)} />
-            </div>
-            <div>
-              <Label>{t("wizard.orientation")}</Label>
-              <Select value={orientation} onValueChange={(v) => setOrientation(v as Orientation)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="export">{t("orient.export")}</SelectItem>
-                  <SelectItem value="local">{t("orient.local")}</SelectItem>
-                  <SelectItem value="mixte">{t("orient.mixte")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>{t("wizard.risk")}</Label>
-              <Select value={risk} onValueChange={(v) => setRisk(v as Risque)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="faible">{t("risk.faible")}</SelectItem>
-                  <SelectItem value="moyen">{t("risk.moyen")}</SelectItem>
-                  <SelectItem value="eleve">{t("risk.eleve")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <ProjectContextFields
+              mode={mode}
+              zones={zones}
+              referentielMissing={!version.isLoading && !version.data}
+              values={{ name, zoneCode, surface, capital, horizon }}
+              onChange={(patch) => {
+                if (patch.name !== undefined) setName(patch.name);
+                if (patch.zoneCode !== undefined) setZoneCode(patch.zoneCode);
+                if (patch.surface !== undefined) setSurface(patch.surface);
+                if (patch.capital !== undefined) setCapital(patch.capital);
+                if (patch.horizon !== undefined) setHorizon(patch.horizon);
+              }}
+              orientation={orientation}
+              onOrientationChange={setOrientation}
+              risk={risk}
+              onRiskChange={setRisk}
+              errors={errors}
+            />
             <div className="sm:col-span-2 flex items-center justify-between">
               <BackButton onClick={() => setMode(null)} label={t("wizard.back")} />
-              <Button
-                disabled={busy || !name || !zoneCode || (mode === "projet" ? !surface : !capital)}
-                onClick={submitStep1}
-              >
+              <Button disabled={busy} onClick={submitStep1}>
                 {t("wizard.next")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>

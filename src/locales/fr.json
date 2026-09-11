@@ -55,7 +55,8 @@
     "emailSent": "Invitation envoyée par email à {{email}}",
     "emailFailed": "L'email n'a pas pu être envoyé — lien copié dans le presse-papier",
     "resend": "Renvoyer l'email",
-    "resent": "Email renvoyé"
+    "resent": "Email renvoyé",
+    "remove": "Retirer"
   },
   "role": {
     "owner": "Propriétaire",
@@ -72,7 +73,8 @@
     "welcome": "Bienvenue",
     "language": "Langue",
     "back": "Retour",
-    "backHome": "Retour à l'accueil"
+    "backHome": "Retour à l'accueil",
+    "optional": "optionnel"
   },
   "landing": {
     "hero": "Du budget de campagne au Business Plan bancable — vérifiable.",
@@ -145,7 +147,15 @@
     "score": "Score",
     "seePrefaisa": "Pré-faisabilité (gratuit)",
     "generate": "Générer budget & BP (1 crédit)",
-    "noResults": "Aucun profil ne correspond aux critères."
+    "noResults": "Aucun profil ne correspond aux critères.",
+    "err": {
+      "name": "Le nom du projet est requis.",
+      "zone": "Choisissez une zone.",
+      "surface": "Renseignez une superficie supérieure à 0.",
+      "capitalRequired": "Renseignez un capital supérieur à 0.",
+      "capitalNegative": "Le capital ne peut pas être négatif.",
+      "horizon": "L'horizon doit être compris entre {{min}} et {{max}} ans."
+    }
   },
   "orient": { "export": "Export", "local": "Local", "mixte": "Mixte" },
   "risk": { "faible": "Faible", "moyen": "Moyen", "eleve": "Élevé" },
@@ -353,5 +363,53 @@
     "listEmpty": "Aucun document exporté pour l'instant.",
     "download": "Télécharger",
     "proof": "Preuve"
+  },
+  "onboarding": {
+    "stepOf": "Étape {{n}} sur 5",
+    "back": "Retour",
+    "org": {
+      "title": "Bienvenue sur Vision One",
+      "subtitle": "Pour commencer, dites-nous qui vous êtes.",
+      "nameLabel": "Nom de l'organisation",
+      "namePlaceholder": "ex. Coopérative Souss Agrumes",
+      "submit": "Continuer",
+      "typeDesc": {
+        "investisseur": "Vous évaluez des projets agricoles pour décider d'un investissement.",
+        "agriculteur": "Vous portez votre propre projet d'exploitation.",
+        "consultant": "Vous accompagnez plusieurs porteurs de projet.",
+        "groupe": "Vous gérez plusieurs exploitations ou projets pour un groupe.",
+        "banque": "Vous instruisez des dossiers de financement agricole.",
+        "assureur": "Vous évaluez le risque agricole pour l'assurance.",
+        "organisme_public": "Vous accompagnez des projets pour le compte d'une institution publique."
+      }
+    },
+    "contexte": {
+      "title": "Parlez-nous de votre projet",
+      "subtitle": "Ces informations nous permettent de vous recommander les profils les plus adaptés."
+    },
+    "resultat": {
+      "adjust": "Ajuster mes paramètres",
+      "generateFirstCredit": "Générer avec mon premier crédit offert",
+      "generateStandard": "Générer (1 crédit)"
+    },
+    "projetPret": {
+      "title": "Votre projet est prêt",
+      "subtitle": "Voici un récapitulatif avant de passer à l'étape suivante.",
+      "creditUsed": "1 crédit utilisé — il vous reste {{credits}} crédit(s).",
+      "inviteTeam": "Inviter mon équipe",
+      "later": "Plus tard"
+    },
+    "equipe": {
+      "title": "Invitez votre équipe",
+      "subtitle": "Ajoutez un collaborateur pour qu'il puisse suivre ce projet avec vous.",
+      "sendAndContinue": "Envoyer et continuer",
+      "skip": "Passer cette étape"
+    },
+    "checklist": {
+      "title": "Pour aller plus loin",
+      "hide": "Masquer",
+      "inviteTeam": "Inviter votre équipe",
+      "discoverReferentiel": "Découvrir le référentiel"
+    }
   }
 }

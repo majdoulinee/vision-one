@@ -52,7 +52,8 @@
     "emailSent": "Invitation email sent to {{email}}",
     "emailFailed": "Email could not be sent — link copied to clipboard",
     "resend": "Resend email",
-    "resent": "Email resent"
+    "resent": "Email resent",
+    "remove": "Remove"
   },
   "role": { "owner": "Owner", "admin": "Admin", "editor": "Editor", "member": "Member", "viewer": "Viewer" },
   "common": {
@@ -63,7 +64,8 @@
     "welcome": "Welcome",
     "language": "Language",
     "back": "Back",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "optional": "optional"
   },
   "landing": {
     "hero": "From seasonal budget to bankable Business Plan — verifiable.",
@@ -127,7 +129,15 @@
     "score": "Score",
     "seePrefaisa": "Pre-feasibility (free)",
     "generate": "Generate budget & BP (1 credit)",
-    "noResults": "No profile matches the criteria."
+    "noResults": "No profile matches the criteria.",
+    "err": {
+      "name": "The project name is required.",
+      "zone": "Choose a zone.",
+      "surface": "Enter a surface greater than 0.",
+      "capitalRequired": "Enter a capital greater than 0.",
+      "capitalNegative": "Capital cannot be negative.",
+      "horizon": "Horizon must be between {{min}} and {{max}} years."
+    }
   },
   "orient": { "export": "Export", "local": "Local", "mixte": "Mixed" },
   "risk": { "faible": "Low", "moyen": "Medium", "eleve": "High" },
@@ -250,5 +260,53 @@
     "listEmpty": "No exported document yet.",
     "download": "Download",
     "proof": "Proof"
+  },
+  "onboarding": {
+    "stepOf": "Step {{n}} of 5",
+    "back": "Back",
+    "org": {
+      "title": "Welcome to Vision One",
+      "subtitle": "To get started, tell us who you are.",
+      "nameLabel": "Organization name",
+      "namePlaceholder": "e.g. Souss Citrus Cooperative",
+      "submit": "Continue",
+      "typeDesc": {
+        "investisseur": "You evaluate agricultural projects to decide on an investment.",
+        "agriculteur": "You run your own farming project.",
+        "consultant": "You support several project owners.",
+        "groupe": "You manage several farms or projects for a group.",
+        "banque": "You review agricultural financing applications.",
+        "assureur": "You assess agricultural risk for insurance.",
+        "organisme_public": "You support projects on behalf of a public institution."
+      }
+    },
+    "contexte": {
+      "title": "Tell us about your project",
+      "subtitle": "This lets us recommend the profiles best suited to you."
+    },
+    "resultat": {
+      "adjust": "Adjust my settings",
+      "generateFirstCredit": "Generate with my free first credit",
+      "generateStandard": "Generate (1 credit)"
+    },
+    "projetPret": {
+      "title": "Your project is ready",
+      "subtitle": "Here's a summary before moving to the next step.",
+      "creditUsed": "1 credit used — you have {{credits}} credit(s) left.",
+      "inviteTeam": "Invite my team",
+      "later": "Later"
+    },
+    "equipe": {
+      "title": "Invite your team",
+      "subtitle": "Add a teammate so they can follow this project with you.",
+      "sendAndContinue": "Send and continue",
+      "skip": "Skip this step"
+    },
+    "checklist": {
+      "title": "To go further",
+      "hide": "Hide",
+      "inviteTeam": "Invite your team",
+      "discoverReferentiel": "Discover the reference data"
+    }
   }
 }

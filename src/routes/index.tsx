@@ -1,9 +1,30 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { InverseWidget } from "@/components/landing/InverseWidget";
 import { WeeksTrame } from "@/components/landing/WeeksTrame";
 import { PdfMock } from "@/components/landing/PdfMock";
 import { Reveal } from "@/components/landing/RevealOnScroll";
 import { GAPS } from "@/components/landing/data";
+
+// VO-12 : la version du référentiel affichée publiquement doit être lue
+// depuis la base (fonction RPC lisible en anonyme), jamais citée en dur --
+// sans quoi la landing continue d'affirmer une version qui peut ne plus
+// correspondre à ce qui est réellement publié.
+const FALLBACK_REF_VERSION = "2026.2";
+
+function usePublicRefVersion() {
+  const { data } = useQuery({
+    queryKey: ["public-ref-version"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_published_ref_version");
+      if (error) throw error;
+      return data as string | null;
+    },
+    staleTime: 5 * 60_000,
+  });
+  return data ?? FALLBACK_REF_VERSION;
+}
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -65,6 +86,7 @@ function Btn({
 }
 
 export default function Landing() {
+  const refVersion = usePublicRefVersion();
   return (
     <div className="min-h-screen bg-parch text-ink grain-overlay">
       {/* ============ NAV ============ */}
@@ -122,7 +144,7 @@ export default function Landing() {
             </div>
 
             <Reveal>
-              <InverseWidget />
+              <InverseWidget refVersion={refVersion} />
             </Reveal>
           </div>
 
@@ -226,7 +248,7 @@ export default function Landing() {
                     RÉFÉRENTIEL NORMES & PROFILS
                   </b>
                   <span className="mono-eyebrow text-ochre" style={{ fontSize: 11.5, letterSpacing: ".08em" }}>
-                    v2026.2 — k-anonymat ≥ 5
+                    v{refVersion} — k-anonymat ≥ 5
                   </span>
                 </div>
                 <Arrows />
@@ -246,7 +268,7 @@ export default function Landing() {
                   ["~25 %", "des superficies fruits & légumes au Maroc", "alimentent le référentiel via Bee One."],
                   ["ha × sem", "la maille native", "Chaque norme est stockée par hectare et par semaine — pas par mois."],
                   ["7 zones", "agro-climatiques", "Souss-Massa, Loukkos, Gharb, Saïss, Haouz, Oriental, Doukkala."],
-                  ["v2026.2", "versionné, tracé", "Chaque document cite la version des normes qui l'a produit."],
+                  [`v${refVersion}`, "versionné, tracé", "Chaque document cite la version des normes qui l'a produit."],
                   ["N ≥ 5", "k-anonymat garanti", "Aucune ferme identifiable, jamais."],
                 ].map(([k, b, p]) => (
                   <li
@@ -438,11 +460,12 @@ export default function Landing() {
             <div className="grid gap-px bg-line border border-line grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {[
                 { lab: "PRÉ-FAISABILITÉ", amt: "Gratuit", u: "Sans carte bancaire", li: ["Recommandation scorée", "Marge normative par ha", "3–5 profils comparés"], cta: "Commencer", star: false },
-                { lab: "DOCUMENT PONCTUEL", amt: "1 crédit", small: " / doc", u: "Budget complet ou BP complet", li: ["Semaine par semaine", "3 scénarios", "PDF vérifiable inclus"], cta: "Générer", star: false },
+                { lab: "BUDGET PONCTUEL", amt: "1 crédit", small: " / doc", u: "Un budget de campagne complet", li: ["Semaine par semaine", "3 scénarios", "PDF vérifiable inclus"], cta: "Générer", star: false },
+                { lab: "BUSINESS PLAN COMPLET", amt: "3 crédits", small: " / doc", u: "BP bancable 5–10 ans", li: ["Semaine par semaine", "3 scénarios", "PDF vérifiable inclus"], cta: "Générer", star: false },
                 { lab: "BUDGET DE CAMPAGNE", amt: "190 MAD", small: " /ha/an", u: "Re-forecast illimité pendant la campagne", li: ["Suivi hebdomadaire", "Alerte trésorerie", "Export à la demande"], cta: "S'abonner", star: true, badge: "CŒUR DU MODÈLE — RÉCURRENT" },
-                { lab: "PACK CONSULTANT", amt: "Sur demande", u: "Multi-projet, benchmark", li: ["Portefeuille", "Comparaison inter-fermes", "Marque blanche (V2)"], cta: "Nous contacter", star: false },
-                { lab: "GROUPE AGRICOLE", amt: "Sur demande", u: "Multi-entités, consolidation", li: ["Rôles & permissions", "Consolidation groupe", "SLA dédié"], cta: "Nous contacter", star: false },
-                { lab: "INSTITUTIONNEL", amt: "Sur demande", u: "Banques, assureurs, publics", li: ["Contre-expertise (V2)", "Accès référentiel", "API vérification"], cta: "Nous contacter", star: false },
+                { lab: "PACK CONSULTANT", amt: "Sur demande", u: "Multi-projet, benchmark", li: ["Portefeuille", "Comparaison inter-fermes", "Marque blanche (V2)"], cta: "Nous contacter", star: false, contact: "Pack consultant" },
+                { lab: "GROUPE AGRICOLE", amt: "Sur demande", u: "Multi-entités, consolidation", li: ["Rôles & permissions", "Consolidation groupe", "SLA dédié"], cta: "Nous contacter", star: false, contact: "Groupe agricole" },
+                { lab: "INSTITUTIONNEL", amt: "Sur demande", u: "Banques, assureurs, publics", li: ["Contre-expertise (V2)", "Accès référentiel", "API vérification"], cta: "Nous contacter", star: false, contact: "Institutionnel" },
               ].map((p) => (
                 <div
                   key={p.lab}
@@ -479,9 +502,18 @@ export default function Landing() {
                     ))}
                   </ul>
                   <div className="mt-auto">
-                    <Btn variant={p.star ? "clay" : "ghost"} to="/auth" search={{ mode: "signup" }}>
-                      {p.cta}
-                    </Btn>
+                    {p.contact ? (
+                      <Btn
+                        variant="ghost"
+                        href={`mailto:contact@agridataconsulting.ma?subject=${encodeURIComponent("Vision One — " + p.contact)}`}
+                      >
+                        {p.cta}
+                      </Btn>
+                    ) : (
+                      <Btn variant={p.star ? "clay" : "ghost"} to="/auth" search={{ mode: "signup" }}>
+                        {p.cta}
+                      </Btn>
+                    )}
                   </div>
                 </div>
               ))}
@@ -560,6 +592,7 @@ export default function Landing() {
             <a href="#methode" className="hover:text-ink">Méthode</a>
             <a href="#preuve" className="hover:text-ink">Preuve</a>
             <a href="#tarifs" className="hover:text-ink">Tarifs</a>
+            <Link to="/mentions-legales" className="hover:text-ink">Mentions légales</Link>
             <Link to="/auth" className="hover:text-ink">Connexion</Link>
           </div>
         </div>
