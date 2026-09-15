@@ -14,7 +14,7 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Coins, ArrowLeft, Info, Search } from "lucide-react";
+import { Coins, ArrowLeft, Info, Search, CreditCard, Loader2 } from "lucide-react";
 import { BackButton } from "@/components/agriplan/BackButton";
 import { CreditStatusBadge } from "@/components/agriplan/CreditStatusBadge";
 
@@ -95,7 +95,7 @@ function CreditsPage() {
       <div className="rounded-md border border-accent/50 bg-accent/10 p-3 text-sm flex items-start gap-2">
         <Info className="h-4 w-4 mt-0.5 shrink-0" />
         <div>
-          <strong>Mode&nbsp;: octroi manuel.</strong> Le règlement s'effectue par virement sur facture AGRIDATA. Vos crédits sont crédités à réception. Aucune donnée bancaire n'est traitée.
+          <strong>Deux modes de règlement.</strong> Paiement en ligne par carte (ChariPay, crédité automatiquement après confirmation) ou virement sur facture AGRIDATA (octroi manuel après réception). Aucune donnée bancaire n'est traitée ni stockée par Vision One dans les deux cas.
         </div>
       </div>
 
@@ -140,9 +140,14 @@ function CreditsPage() {
         </Card>
       </div>
 
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Demander des crédits</h2>
-        {isOwner && <RequestCreditsDialog orgId={current.org_id} onDone={() => qc.invalidateQueries({ queryKey: ["credit_requests_mine"] })} />}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h2 className="text-xl font-semibold">Acheter des crédits</h2>
+        {isOwner && (
+          <div className="flex gap-2">
+            <PayOnlineDialog orgId={current.org_id} />
+            <RequestCreditsDialog orgId={current.org_id} onDone={() => qc.invalidateQueries({ queryKey: ["credit_requests_mine"] })} />
+          </div>
+        )}
       </div>
 
       {(requests.data ?? []).length > 0 && (
@@ -287,6 +292,78 @@ function LedgerTypeBadge({ t }: { t: string }) {
     achat_en_ligne: "Achat",
   };
   return <span className="text-xs rounded border px-1.5 py-0.5">{label[t] ?? t}</span>;
+}
+
+function PayOnlineDialog({ orgId }: { orgId: string }) {
+  const [open, setOpen] = useState(false);
+  const [pack, setPack] = useState(PACKS[0].code);
+  const [phone, setPhone] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function submit() {
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("charipay-create-session", {
+        body: { org_id: orgId, pack, phone: phone || undefined },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        throw new Error(data.message || data.error);
+      }
+      if (!data?.checkoutUrl) throw new Error("Réponse ChariPay inattendue (pas d'URL de paiement).");
+      // Redirection pleine page vers la caisse hébergée ChariPay — la
+      // confirmation se fera par webhook, pas par ce retour de fonction.
+      window.location.href = data.checkoutUrl;
+    } catch (e: any) {
+      toast.error(e?.message ?? String(e));
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="default">
+          <CreditCard className="h-4 w-4" /> Payer en ligne
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Paiement en ligne (ChariPay)</DialogTitle>
+          <DialogDescription>Carte bancaire — crédits ajoutés automatiquement dès confirmation du paiement.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <Label>Pack</Label>
+            <div className="mt-1 grid grid-cols-3 gap-2">
+              {PACKS.map((p) => (
+                <button
+                  key={p.code}
+                  type="button"
+                  onClick={() => setPack(p.code)}
+                  className={`rounded border p-3 text-start text-sm ${pack === p.code ? "border-primary bg-primary/5" : "border-border"}`}
+                >
+                  <div className="font-semibold capitalize">{p.code}</div>
+                  <div className="text-xs text-muted-foreground">{p.credits} crédits · {p.mad} MAD</div>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="phone">Téléphone (optionnel)</Label>
+            <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+2126XXXXXXXX" />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>Annuler</Button>
+          <Button onClick={submit} disabled={busy}>
+            {busy && <Loader2 className="h-4 w-4 animate-spin" />}
+            Payer {PACKS.find((p) => p.code === pack)!.mad} MAD
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 function RequestCreditsDialog({ orgId, onDone }: { orgId: string; onDone: () => void }) {

@@ -9,16 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VerifyIndexRouteImport } from './routes/verify.index'
 import { Route as VerifyDocIdRouteImport } from './routes/verify.$docId'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as AuthenticatedOnboardingResultatRouteImport } from './routes/_authenticated/onboarding.resultat'
+import { Route as AuthenticatedOnboardingProjetPretRouteImport } from './routes/_authenticated/onboarding.projet-pret'
+import { Route as AuthenticatedOnboardingOrganisationRouteImport } from './routes/_authenticated/onboarding.organisation'
+import { Route as AuthenticatedOnboardingEquipeRouteImport } from './routes/_authenticated/onboarding.equipe'
+import { Route as AuthenticatedOnboardingContexteRouteImport } from './routes/_authenticated/onboarding.contexte'
 import { Route as AuthenticatedAppReferentielRouteImport } from './routes/_authenticated/app.referentiel'
 import { Route as AuthenticatedAppInboxRouteImport } from './routes/_authenticated/app.inbox'
 import { Route as AuthenticatedAppCreditsRouteImport } from './routes/_authenticated/app.credits'
@@ -27,6 +34,7 @@ import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicVerifyDocIdRouteImport } from './routes/api/public/verify.$docId'
 import { Route as AuthenticatedAppProjectsNewRouteImport } from './routes/_authenticated/app.projects.new'
+import { Route as AuthenticatedAppCreditsRetourRouteImport } from './routes/_authenticated/app.credits.retour'
 import { Route as AuthenticatedAppComiteVersionsRouteImport } from './routes/_authenticated/app.comite.versions'
 import { Route as AuthenticatedAppComitePublishRouteImport } from './routes/_authenticated/app.comite.publish'
 import { Route as AuthenticatedAppComitePropositionsRouteImport } from './routes/_authenticated/app.comite.propositions'
@@ -44,6 +52,11 @@ import { Route as AuthenticatedAppCreditsRequestsIdRouteImport } from './routes/
 import { Route as AuthenticatedAppAdminUsersIdRouteImport } from './routes/_authenticated/app.admin.users.$id'
 import { Route as AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRouteImport } from './routes/_authenticated/app.projects.$id.prefaisabilite.$profilCode'
 
+const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
+  id: '/mentions-legales',
+  path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
@@ -61,6 +74,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyIndexRoute = VerifyIndexRouteImport.update({
+  id: '/verify/',
+  path: '/verify/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerifyDocIdRoute = VerifyDocIdRouteImport.update({
@@ -94,6 +112,36 @@ const Char91DotmcpChar93ListToolsRoute =
     id: '/.mcp/list-tools',
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedOnboardingResultatRoute =
+  AuthenticatedOnboardingResultatRouteImport.update({
+    id: '/onboarding/resultat',
+    path: '/onboarding/resultat',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOnboardingProjetPretRoute =
+  AuthenticatedOnboardingProjetPretRouteImport.update({
+    id: '/onboarding/projet-pret',
+    path: '/onboarding/projet-pret',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOnboardingOrganisationRoute =
+  AuthenticatedOnboardingOrganisationRouteImport.update({
+    id: '/onboarding/organisation',
+    path: '/onboarding/organisation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOnboardingEquipeRoute =
+  AuthenticatedOnboardingEquipeRouteImport.update({
+    id: '/onboarding/equipe',
+    path: '/onboarding/equipe',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOnboardingContexteRoute =
+  AuthenticatedOnboardingContexteRouteImport.update({
+    id: '/onboarding/contexte',
+    path: '/onboarding/contexte',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppReferentielRoute =
   AuthenticatedAppReferentielRouteImport.update({
@@ -138,6 +186,12 @@ const AuthenticatedAppProjectsNewRoute =
     id: '/app/projects/new',
     path: '/app/projects/new',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAppCreditsRetourRoute =
+  AuthenticatedAppCreditsRetourRouteImport.update({
+    id: '/retour',
+    path: '/retour',
+    getParentRoute: () => AuthenticatedAppCreditsRoute,
   } as any)
 const AuthenticatedAppComiteVersionsRoute =
   AuthenticatedAppComiteVersionsRouteImport.update({
@@ -240,18 +294,25 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/mcp': typeof McpRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/verify/$docId': typeof VerifyDocIdRoute
+  '/verify/': typeof VerifyIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/consultants': typeof AuthenticatedAppConsultantsRoute
   '/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/app/inbox': typeof AuthenticatedAppInboxRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
+  '/onboarding/contexte': typeof AuthenticatedOnboardingContexteRoute
+  '/onboarding/equipe': typeof AuthenticatedOnboardingEquipeRoute
+  '/onboarding/organisation': typeof AuthenticatedOnboardingOrganisationRoute
+  '/onboarding/projet-pret': typeof AuthenticatedOnboardingProjetPretRoute
+  '/onboarding/resultat': typeof AuthenticatedOnboardingResultatRoute
   '/app/admin/audit': typeof AuthenticatedAppAdminAuditRoute
   '/app/admin/consultants': typeof AuthenticatedAppAdminConsultantsRoute
   '/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
@@ -265,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/app/comite/propositions': typeof AuthenticatedAppComitePropositionsRoute
   '/app/comite/publish': typeof AuthenticatedAppComitePublishRoute
   '/app/comite/versions': typeof AuthenticatedAppComiteVersionsRoute
+  '/app/credits/retour': typeof AuthenticatedAppCreditsRetourRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/admin/users/$id': typeof AuthenticatedAppAdminUsersIdRoute
@@ -275,18 +337,25 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/mcp': typeof McpRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/verify/$docId': typeof VerifyDocIdRoute
+  '/verify': typeof VerifyIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/app/consultants': typeof AuthenticatedAppConsultantsRoute
   '/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/app/inbox': typeof AuthenticatedAppInboxRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
+  '/onboarding/contexte': typeof AuthenticatedOnboardingContexteRoute
+  '/onboarding/equipe': typeof AuthenticatedOnboardingEquipeRoute
+  '/onboarding/organisation': typeof AuthenticatedOnboardingOrganisationRoute
+  '/onboarding/projet-pret': typeof AuthenticatedOnboardingProjetPretRoute
+  '/onboarding/resultat': typeof AuthenticatedOnboardingResultatRoute
   '/app/admin/audit': typeof AuthenticatedAppAdminAuditRoute
   '/app/admin/consultants': typeof AuthenticatedAppAdminConsultantsRoute
   '/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
@@ -300,6 +369,7 @@ export interface FileRoutesByTo {
   '/app/comite/propositions': typeof AuthenticatedAppComitePropositionsRoute
   '/app/comite/publish': typeof AuthenticatedAppComitePublishRoute
   '/app/comite/versions': typeof AuthenticatedAppComiteVersionsRoute
+  '/app/credits/retour': typeof AuthenticatedAppCreditsRetourRoute
   '/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/admin/users/$id': typeof AuthenticatedAppAdminUsersIdRoute
@@ -312,18 +382,25 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/mcp': typeof McpRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/invite/$token': typeof InviteTokenRoute
   '/verify/$docId': typeof VerifyDocIdRoute
+  '/verify/': typeof VerifyIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/app/consultants': typeof AuthenticatedAppConsultantsRoute
   '/_authenticated/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/_authenticated/app/inbox': typeof AuthenticatedAppInboxRoute
   '/_authenticated/app/referentiel': typeof AuthenticatedAppReferentielRoute
+  '/_authenticated/onboarding/contexte': typeof AuthenticatedOnboardingContexteRoute
+  '/_authenticated/onboarding/equipe': typeof AuthenticatedOnboardingEquipeRoute
+  '/_authenticated/onboarding/organisation': typeof AuthenticatedOnboardingOrganisationRoute
+  '/_authenticated/onboarding/projet-pret': typeof AuthenticatedOnboardingProjetPretRoute
+  '/_authenticated/onboarding/resultat': typeof AuthenticatedOnboardingResultatRoute
   '/_authenticated/app/admin/audit': typeof AuthenticatedAppAdminAuditRoute
   '/_authenticated/app/admin/consultants': typeof AuthenticatedAppAdminConsultantsRoute
   '/_authenticated/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
@@ -337,6 +414,7 @@ export interface FileRoutesById {
   '/_authenticated/app/comite/propositions': typeof AuthenticatedAppComitePropositionsRoute
   '/_authenticated/app/comite/publish': typeof AuthenticatedAppComitePublishRoute
   '/_authenticated/app/comite/versions': typeof AuthenticatedAppComiteVersionsRoute
+  '/_authenticated/app/credits/retour': typeof AuthenticatedAppCreditsRetourRoute
   '/_authenticated/app/projects/new': typeof AuthenticatedAppProjectsNewRoute
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/_authenticated/app/admin/users/$id': typeof AuthenticatedAppAdminUsersIdRoute
@@ -349,18 +427,25 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/mcp'
+    | '/mentions-legales'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dashboard'
     | '/settings'
     | '/invite/$token'
     | '/verify/$docId'
+    | '/verify/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/app/consultants'
     | '/app/credits'
     | '/app/inbox'
     | '/app/referentiel'
+    | '/onboarding/contexte'
+    | '/onboarding/equipe'
+    | '/onboarding/organisation'
+    | '/onboarding/projet-pret'
+    | '/onboarding/resultat'
     | '/app/admin/audit'
     | '/app/admin/consultants'
     | '/app/admin/credits'
@@ -374,6 +459,7 @@ export interface FileRouteTypes {
     | '/app/comite/propositions'
     | '/app/comite/publish'
     | '/app/comite/versions'
+    | '/app/credits/retour'
     | '/app/projects/new'
     | '/api/public/verify/$docId'
     | '/app/admin/users/$id'
@@ -384,18 +470,25 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/mcp'
+    | '/mentions-legales'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dashboard'
     | '/settings'
     | '/invite/$token'
     | '/verify/$docId'
+    | '/verify'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/app/consultants'
     | '/app/credits'
     | '/app/inbox'
     | '/app/referentiel'
+    | '/onboarding/contexte'
+    | '/onboarding/equipe'
+    | '/onboarding/organisation'
+    | '/onboarding/projet-pret'
+    | '/onboarding/resultat'
     | '/app/admin/audit'
     | '/app/admin/consultants'
     | '/app/admin/credits'
@@ -409,6 +502,7 @@ export interface FileRouteTypes {
     | '/app/comite/propositions'
     | '/app/comite/publish'
     | '/app/comite/versions'
+    | '/app/credits/retour'
     | '/app/projects/new'
     | '/api/public/verify/$docId'
     | '/app/admin/users/$id'
@@ -420,18 +514,25 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/mcp'
+    | '/mentions-legales'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/dashboard'
     | '/_authenticated/settings'
     | '/invite/$token'
     | '/verify/$docId'
+    | '/verify/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/app/consultants'
     | '/_authenticated/app/credits'
     | '/_authenticated/app/inbox'
     | '/_authenticated/app/referentiel'
+    | '/_authenticated/onboarding/contexte'
+    | '/_authenticated/onboarding/equipe'
+    | '/_authenticated/onboarding/organisation'
+    | '/_authenticated/onboarding/projet-pret'
+    | '/_authenticated/onboarding/resultat'
     | '/_authenticated/app/admin/audit'
     | '/_authenticated/app/admin/consultants'
     | '/_authenticated/app/admin/credits'
@@ -445,6 +546,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/comite/propositions'
     | '/_authenticated/app/comite/publish'
     | '/_authenticated/app/comite/versions'
+    | '/_authenticated/app/credits/retour'
     | '/_authenticated/app/projects/new'
     | '/api/public/verify/$docId'
     | '/_authenticated/app/admin/users/$id'
@@ -457,10 +559,12 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   McpRoute: typeof McpRoute
+  MentionsLegalesRoute: typeof MentionsLegalesRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   InviteTokenRoute: typeof InviteTokenRoute
   VerifyDocIdRoute: typeof VerifyDocIdRoute
+  VerifyIndexRoute: typeof VerifyIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicVerifyDocIdRoute: typeof ApiPublicVerifyDocIdRoute
@@ -468,6 +572,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/mentions-legales': {
+      id: '/mentions-legales'
+      path: '/mentions-legales'
+      fullPath: '/mentions-legales'
+      preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mcp': {
       id: '/mcp'
       path: '/mcp'
@@ -494,6 +605,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify/': {
+      id: '/verify/'
+      path: '/verify'
+      fullPath: '/verify/'
+      preLoaderRoute: typeof VerifyIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verify/$docId': {
@@ -537,6 +655,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/.mcp/list-tools'
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/onboarding/resultat': {
+      id: '/_authenticated/onboarding/resultat'
+      path: '/onboarding/resultat'
+      fullPath: '/onboarding/resultat'
+      preLoaderRoute: typeof AuthenticatedOnboardingResultatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding/projet-pret': {
+      id: '/_authenticated/onboarding/projet-pret'
+      path: '/onboarding/projet-pret'
+      fullPath: '/onboarding/projet-pret'
+      preLoaderRoute: typeof AuthenticatedOnboardingProjetPretRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding/organisation': {
+      id: '/_authenticated/onboarding/organisation'
+      path: '/onboarding/organisation'
+      fullPath: '/onboarding/organisation'
+      preLoaderRoute: typeof AuthenticatedOnboardingOrganisationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding/equipe': {
+      id: '/_authenticated/onboarding/equipe'
+      path: '/onboarding/equipe'
+      fullPath: '/onboarding/equipe'
+      preLoaderRoute: typeof AuthenticatedOnboardingEquipeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding/contexte': {
+      id: '/_authenticated/onboarding/contexte'
+      path: '/onboarding/contexte'
+      fullPath: '/onboarding/contexte'
+      preLoaderRoute: typeof AuthenticatedOnboardingContexteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/app/referentiel': {
       id: '/_authenticated/app/referentiel'
@@ -593,6 +746,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/projects/new'
       preLoaderRoute: typeof AuthenticatedAppProjectsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/credits/retour': {
+      id: '/_authenticated/app/credits/retour'
+      path: '/retour'
+      fullPath: '/app/credits/retour'
+      preLoaderRoute: typeof AuthenticatedAppCreditsRetourRouteImport
+      parentRoute: typeof AuthenticatedAppCreditsRoute
     }
     '/_authenticated/app/comite/versions': {
       id: '/_authenticated/app/comite/versions'
@@ -710,11 +870,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAppCreditsRouteChildren {
+  AuthenticatedAppCreditsRetourRoute: typeof AuthenticatedAppCreditsRetourRoute
   AuthenticatedAppCreditsRequestsIdRoute: typeof AuthenticatedAppCreditsRequestsIdRoute
 }
 
 const AuthenticatedAppCreditsRouteChildren: AuthenticatedAppCreditsRouteChildren =
   {
+    AuthenticatedAppCreditsRetourRoute: AuthenticatedAppCreditsRetourRoute,
     AuthenticatedAppCreditsRequestsIdRoute:
       AuthenticatedAppCreditsRequestsIdRoute,
   }
@@ -745,6 +907,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppCreditsRoute: typeof AuthenticatedAppCreditsRouteWithChildren
   AuthenticatedAppInboxRoute: typeof AuthenticatedAppInboxRoute
   AuthenticatedAppReferentielRoute: typeof AuthenticatedAppReferentielRoute
+  AuthenticatedOnboardingContexteRoute: typeof AuthenticatedOnboardingContexteRoute
+  AuthenticatedOnboardingEquipeRoute: typeof AuthenticatedOnboardingEquipeRoute
+  AuthenticatedOnboardingOrganisationRoute: typeof AuthenticatedOnboardingOrganisationRoute
+  AuthenticatedOnboardingProjetPretRoute: typeof AuthenticatedOnboardingProjetPretRoute
+  AuthenticatedOnboardingResultatRoute: typeof AuthenticatedOnboardingResultatRoute
   AuthenticatedAppAdminAuditRoute: typeof AuthenticatedAppAdminAuditRoute
   AuthenticatedAppAdminConsultantsRoute: typeof AuthenticatedAppAdminConsultantsRoute
   AuthenticatedAppAdminCreditsRoute: typeof AuthenticatedAppAdminCreditsRoute
@@ -769,6 +936,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppCreditsRoute: AuthenticatedAppCreditsRouteWithChildren,
   AuthenticatedAppInboxRoute: AuthenticatedAppInboxRoute,
   AuthenticatedAppReferentielRoute: AuthenticatedAppReferentielRoute,
+  AuthenticatedOnboardingContexteRoute: AuthenticatedOnboardingContexteRoute,
+  AuthenticatedOnboardingEquipeRoute: AuthenticatedOnboardingEquipeRoute,
+  AuthenticatedOnboardingOrganisationRoute:
+    AuthenticatedOnboardingOrganisationRoute,
+  AuthenticatedOnboardingProjetPretRoute:
+    AuthenticatedOnboardingProjetPretRoute,
+  AuthenticatedOnboardingResultatRoute: AuthenticatedOnboardingResultatRoute,
   AuthenticatedAppAdminAuditRoute: AuthenticatedAppAdminAuditRoute,
   AuthenticatedAppAdminConsultantsRoute: AuthenticatedAppAdminConsultantsRoute,
   AuthenticatedAppAdminCreditsRoute: AuthenticatedAppAdminCreditsRoute,
@@ -797,11 +971,13 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   McpRoute: McpRoute,
+  MentionsLegalesRoute: MentionsLegalesRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   InviteTokenRoute: InviteTokenRoute,
   VerifyDocIdRoute: VerifyDocIdRoute,
+  VerifyIndexRoute: VerifyIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicVerifyDocIdRoute: ApiPublicVerifyDocIdRoute,
