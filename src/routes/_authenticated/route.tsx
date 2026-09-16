@@ -14,7 +14,22 @@ export const Route = createFileRoute("/_authenticated")({
     // (dashboard, etc.) tant qu'il n'est pas terminé.
     if (!location.pathname.startsWith("/onboarding")) {
       const target = await resolveOnboardingRedirect(data.user.id);
-      if (target) throw redirect({ to: target });
+      if (target) {
+        // Un admin plateforme (profiles.platform_role = "admin") accède à
+        // toute l'app sans jamais être renvoyé dans le tunnel d'onboarding,
+        // quel que soit l'état d'avancement de l'organisation à laquelle son
+        // compte est rattaché. On ne fait cette vérification que si une
+        // redirection serait sinon déclenchée, pour ne pas ajouter de requête
+        // supplémentaire au cas courant (onboarding déjà terminé).
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("platform_role")
+          .eq("id", data.user.id)
+          .maybeSingle();
+        if (profile?.platform_role !== "admin") {
+          throw redirect({ to: target });
+        }
+      }
     }
 
     return { user: data.user };
