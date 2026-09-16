@@ -21,6 +21,11 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as AuthenticatedOnboardingResultatRouteImport } from './routes/_authenticated/onboarding.resultat'
+import { Route as AuthenticatedOnboardingProjetPretRouteImport } from './routes/_authenticated/onboarding.projet-pret'
+import { Route as AuthenticatedOnboardingOrganisationRouteImport } from './routes/_authenticated/onboarding.organisation'
+import { Route as AuthenticatedOnboardingEquipeRouteImport } from './routes/_authenticated/onboarding.equipe'
+import { Route as AuthenticatedOnboardingContexteRouteImport } from './routes/_authenticated/onboarding.contexte'
 import { Route as AuthenticatedAppReferentielRouteImport } from './routes/_authenticated/app.referentiel'
 import { Route as AuthenticatedAppInboxRouteImport } from './routes/_authenticated/app.inbox'
 import { Route as AuthenticatedAppCreditsRouteImport } from './routes/_authenticated/app.credits'
@@ -107,6 +112,36 @@ const Char91DotmcpChar93ListToolsRoute =
     id: '/.mcp/list-tools',
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedOnboardingResultatRoute =
+  AuthenticatedOnboardingResultatRouteImport.update({
+    id: '/onboarding/resultat',
+    path: '/onboarding/resultat',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOnboardingProjetPretRoute =
+  AuthenticatedOnboardingProjetPretRouteImport.update({
+    id: '/onboarding/projet-pret',
+    path: '/onboarding/projet-pret',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOnboardingOrganisationRoute =
+  AuthenticatedOnboardingOrganisationRouteImport.update({
+    id: '/onboarding/organisation',
+    path: '/onboarding/organisation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOnboardingEquipeRoute =
+  AuthenticatedOnboardingEquipeRouteImport.update({
+    id: '/onboarding/equipe',
+    path: '/onboarding/equipe',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOnboardingContexteRoute =
+  AuthenticatedOnboardingContexteRouteImport.update({
+    id: '/onboarding/contexte',
+    path: '/onboarding/contexte',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppReferentielRoute =
   AuthenticatedAppReferentielRouteImport.update({
@@ -273,6 +308,11 @@ export interface FileRoutesByFullPath {
   '/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/app/inbox': typeof AuthenticatedAppInboxRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
+  '/onboarding/contexte': typeof AuthenticatedOnboardingContexteRoute
+  '/onboarding/equipe': typeof AuthenticatedOnboardingEquipeRoute
+  '/onboarding/organisation': typeof AuthenticatedOnboardingOrganisationRoute
+  '/onboarding/projet-pret': typeof AuthenticatedOnboardingProjetPretRoute
+  '/onboarding/resultat': typeof AuthenticatedOnboardingResultatRoute
   '/app/admin/audit': typeof AuthenticatedAppAdminAuditRoute
   '/app/admin/consultants': typeof AuthenticatedAppAdminConsultantsRoute
   '/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
@@ -311,6 +351,11 @@ export interface FileRoutesByTo {
   '/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/app/inbox': typeof AuthenticatedAppInboxRoute
   '/app/referentiel': typeof AuthenticatedAppReferentielRoute
+  '/onboarding/contexte': typeof AuthenticatedOnboardingContexteRoute
+  '/onboarding/equipe': typeof AuthenticatedOnboardingEquipeRoute
+  '/onboarding/organisation': typeof AuthenticatedOnboardingOrganisationRoute
+  '/onboarding/projet-pret': typeof AuthenticatedOnboardingProjetPretRoute
+  '/onboarding/resultat': typeof AuthenticatedOnboardingResultatRoute
   '/app/admin/audit': typeof AuthenticatedAppAdminAuditRoute
   '/app/admin/consultants': typeof AuthenticatedAppAdminConsultantsRoute
   '/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
@@ -351,6 +396,11 @@ export interface FileRoutesById {
   '/_authenticated/app/credits': typeof AuthenticatedAppCreditsRouteWithChildren
   '/_authenticated/app/inbox': typeof AuthenticatedAppInboxRoute
   '/_authenticated/app/referentiel': typeof AuthenticatedAppReferentielRoute
+  '/_authenticated/onboarding/contexte': typeof AuthenticatedOnboardingContexteRoute
+  '/_authenticated/onboarding/equipe': typeof AuthenticatedOnboardingEquipeRoute
+  '/_authenticated/onboarding/organisation': typeof AuthenticatedOnboardingOrganisationRoute
+  '/_authenticated/onboarding/projet-pret': typeof AuthenticatedOnboardingProjetPretRoute
+  '/_authenticated/onboarding/resultat': typeof AuthenticatedOnboardingResultatRoute
   '/_authenticated/app/admin/audit': typeof AuthenticatedAppAdminAuditRoute
   '/_authenticated/app/admin/consultants': typeof AuthenticatedAppAdminConsultantsRoute
   '/_authenticated/app/admin/credits': typeof AuthenticatedAppAdminCreditsRoute
@@ -391,6 +441,11 @@ export interface FileRouteTypes {
     | '/app/credits'
     | '/app/inbox'
     | '/app/referentiel'
+    | '/onboarding/contexte'
+    | '/onboarding/equipe'
+    | '/onboarding/organisation'
+    | '/onboarding/projet-pret'
+    | '/onboarding/resultat'
     | '/app/admin/audit'
     | '/app/admin/consultants'
     | '/app/admin/credits'
@@ -429,6 +484,11 @@ export interface FileRouteTypes {
     | '/app/credits'
     | '/app/inbox'
     | '/app/referentiel'
+    | '/onboarding/contexte'
+    | '/onboarding/equipe'
+    | '/onboarding/organisation'
+    | '/onboarding/projet-pret'
+    | '/onboarding/resultat'
     | '/app/admin/audit'
     | '/app/admin/consultants'
     | '/app/admin/credits'
@@ -468,6 +528,11 @@ export interface FileRouteTypes {
     | '/_authenticated/app/credits'
     | '/_authenticated/app/inbox'
     | '/_authenticated/app/referentiel'
+    | '/_authenticated/onboarding/contexte'
+    | '/_authenticated/onboarding/equipe'
+    | '/_authenticated/onboarding/organisation'
+    | '/_authenticated/onboarding/projet-pret'
+    | '/_authenticated/onboarding/resultat'
     | '/_authenticated/app/admin/audit'
     | '/_authenticated/app/admin/consultants'
     | '/_authenticated/app/admin/credits'
@@ -590,6 +655,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/.mcp/list-tools'
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/onboarding/resultat': {
+      id: '/_authenticated/onboarding/resultat'
+      path: '/onboarding/resultat'
+      fullPath: '/onboarding/resultat'
+      preLoaderRoute: typeof AuthenticatedOnboardingResultatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding/projet-pret': {
+      id: '/_authenticated/onboarding/projet-pret'
+      path: '/onboarding/projet-pret'
+      fullPath: '/onboarding/projet-pret'
+      preLoaderRoute: typeof AuthenticatedOnboardingProjetPretRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding/organisation': {
+      id: '/_authenticated/onboarding/organisation'
+      path: '/onboarding/organisation'
+      fullPath: '/onboarding/organisation'
+      preLoaderRoute: typeof AuthenticatedOnboardingOrganisationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding/equipe': {
+      id: '/_authenticated/onboarding/equipe'
+      path: '/onboarding/equipe'
+      fullPath: '/onboarding/equipe'
+      preLoaderRoute: typeof AuthenticatedOnboardingEquipeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding/contexte': {
+      id: '/_authenticated/onboarding/contexte'
+      path: '/onboarding/contexte'
+      fullPath: '/onboarding/contexte'
+      preLoaderRoute: typeof AuthenticatedOnboardingContexteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/app/referentiel': {
       id: '/_authenticated/app/referentiel'
@@ -807,6 +907,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppCreditsRoute: typeof AuthenticatedAppCreditsRouteWithChildren
   AuthenticatedAppInboxRoute: typeof AuthenticatedAppInboxRoute
   AuthenticatedAppReferentielRoute: typeof AuthenticatedAppReferentielRoute
+  AuthenticatedOnboardingContexteRoute: typeof AuthenticatedOnboardingContexteRoute
+  AuthenticatedOnboardingEquipeRoute: typeof AuthenticatedOnboardingEquipeRoute
+  AuthenticatedOnboardingOrganisationRoute: typeof AuthenticatedOnboardingOrganisationRoute
+  AuthenticatedOnboardingProjetPretRoute: typeof AuthenticatedOnboardingProjetPretRoute
+  AuthenticatedOnboardingResultatRoute: typeof AuthenticatedOnboardingResultatRoute
   AuthenticatedAppAdminAuditRoute: typeof AuthenticatedAppAdminAuditRoute
   AuthenticatedAppAdminConsultantsRoute: typeof AuthenticatedAppAdminConsultantsRoute
   AuthenticatedAppAdminCreditsRoute: typeof AuthenticatedAppAdminCreditsRoute
@@ -831,6 +936,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppCreditsRoute: AuthenticatedAppCreditsRouteWithChildren,
   AuthenticatedAppInboxRoute: AuthenticatedAppInboxRoute,
   AuthenticatedAppReferentielRoute: AuthenticatedAppReferentielRoute,
+  AuthenticatedOnboardingContexteRoute: AuthenticatedOnboardingContexteRoute,
+  AuthenticatedOnboardingEquipeRoute: AuthenticatedOnboardingEquipeRoute,
+  AuthenticatedOnboardingOrganisationRoute:
+    AuthenticatedOnboardingOrganisationRoute,
+  AuthenticatedOnboardingProjetPretRoute:
+    AuthenticatedOnboardingProjetPretRoute,
+  AuthenticatedOnboardingResultatRoute: AuthenticatedOnboardingResultatRoute,
   AuthenticatedAppAdminAuditRoute: AuthenticatedAppAdminAuditRoute,
   AuthenticatedAppAdminConsultantsRoute: AuthenticatedAppAdminConsultantsRoute,
   AuthenticatedAppAdminCreditsRoute: AuthenticatedAppAdminCreditsRoute,

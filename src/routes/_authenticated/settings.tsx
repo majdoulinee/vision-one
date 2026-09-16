@@ -8,8 +8,6 @@ import { useConsultantLinksForClient } from "@/hooks/use-consultant-links";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -24,6 +22,7 @@ import { sendInvitationEmail } from "@/lib/invitations.functions";
 import { formatError } from "@/lib/format-error";
 import { Mail, Users, LogOut, Info } from "lucide-react";
 import { ReasonDialog } from "@/components/agriplan/ReasonDialog";
+import { InviteMemberForm } from "@/components/agriplan/InviteMemberForm";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: Settings,
@@ -86,10 +85,6 @@ function Settings() {
   const consultantLinksQ = useConsultantLinksForClient();
   const activeLinks = (consultantLinksQ.data ?? []).filter((l: any) => l.statut === "actif");
 
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState<OrgRole>("member");
-  const [busy, setBusy] = useState(false);
-
   // Only owners can create owners
   const invitableRoles = useMemo<OrgRole[]>(
     () => (isOwner ? ["owner", "admin", "editor", "member", "viewer"] : ["admin", "editor", "member", "viewer"]),
@@ -105,48 +100,6 @@ function Settings() {
   const [confirmLeave, setConfirmLeave] = useState(false);
 
   const ownerCount = (members.data ?? []).filter((m) => m.role === "owner").length;
-
-  async function sendInvite(e: React.FormEvent) {
-    e.preventDefault();
-    if (!orgId) return;
-    if (role === "owner" && !isOwner) return toast.error("Seul un propriétaire peut inviter un propriétaire.");
-    setBusy(true);
-    try {
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser();
-      if (!authUser) throw new Error("Not authenticated");
-      const token = crypto.randomUUID().replace(/-/g, "");
-      const invEmail = email.toLowerCase();
-      const { data: inv, error } = await supabase
-        .from("invitations")
-        .insert({
-          org_id: orgId,
-          email: invEmail,
-          role,
-          token,
-          invited_by: authUser.id,
-          expires_at: new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString(),
-        })
-        .select("id")
-        .single();
-      if (error) throw error;
-      const result = await sendEmail({ data: { invitationId: inv.id } });
-      const link = `${window.location.origin}/invite/${token}`;
-      if (result?.sent) {
-        toast.success(t("settings.emailSent", { email: invEmail }));
-      } else {
-        await navigator.clipboard.writeText(link).catch(() => undefined);
-        toast.warning(t("settings.emailFailed") + ` — ${link}`);
-      }
-      setEmail("");
-      qc.invalidateQueries({ queryKey: ["invitations", orgId] });
-    } catch (err) {
-      toast.error(formatError(err));
-    } finally {
-      setBusy(false);
-    }
-  }
 
   async function resend(id: string) {
     try {
@@ -363,34 +316,12 @@ function Settings() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <form onSubmit={sendInvite} className="flex flex-wrap items-end gap-3">
-              <div className="min-w-[220px] flex-1 space-y-1">
-                <Label htmlFor="invEmail">{t("settings.email")}</Label>
-                <Input
-                  id="invEmail"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>{t("settings.role")}</Label>
-                <Select value={role} onValueChange={(v) => setRole(v as OrgRole)}>
-                  <SelectTrigger className="w-[160px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {invitableRoles.map((r) => (
-                      <SelectItem key={r} value={r}>{t(`role.${r}`)}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button type="submit" disabled={busy}>
-                {t("settings.sendInvite")}
-              </Button>
-            </form>
+            <InviteMemberForm
+              orgId={orgId!}
+              allowedRoles={invitableRoles}
+              defaultRole="member"
+              onSent={() => qc.invalidateQueries({ queryKey: ["invitations", orgId] })}
+            />
 
             <Table>
               <TableHeader>
