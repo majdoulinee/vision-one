@@ -67,6 +67,15 @@
     "backHome": "Back to home",
     "optional": "optional"
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved."
+  },
+  "errorPage": {
+    "title": "This page didn't load",
+    "description": "Something went wrong on our end. You can try refreshing or head back home.",
+    "tryAgain": "Try again"
+  },
   "landing": {
     "hero": "From seasonal budget to bankable Business Plan — verifiable.",
     "sub": "Vision One structures agricultural financial planning with deterministic calculations and a QR-verifiable PDF.",

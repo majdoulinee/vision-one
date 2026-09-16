@@ -20,7 +20,7 @@ export function LanguageSwitcher() {
           <span>{LABELS[i18n.language] ?? "FR"}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" collisionPadding={16} className="max-w-[calc(100vw-2rem)]">
         {(["fr", "ar", "en"] as const).map((l) => (
           <DropdownMenuItem key={l} onClick={() => i18n.changeLanguage(l)}>
             {LABELS[l]}

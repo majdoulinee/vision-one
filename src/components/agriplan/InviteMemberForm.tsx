@@ -90,9 +90,9 @@ export function InviteMemberForm({
         />
       </div>
       <div className="space-y-1">
-        <Label>{t("settings.role")}</Label>
+        <Label htmlFor="inviteRole">{t("settings.role")}</Label>
         <Select value={role} onValueChange={(v) => setRole(v as OrgRole)}>
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger id="inviteRole" className="w-[160px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

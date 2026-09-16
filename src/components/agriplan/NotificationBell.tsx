@@ -106,6 +106,7 @@ export function NotificationBell() {
                       markAsRead.mutate(n.id);
                     }}
                     title="Marquer comme lu"
+                    aria-label="Marquer comme lu"
                   >
                     <Check className="h-3.5 w-3.5" />
                   </button>
@@ -117,6 +118,7 @@ export function NotificationBell() {
                     remove.mutate(n.id);
                   }}
                   title="Supprimer"
+                  aria-label="Supprimer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>

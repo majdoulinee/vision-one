@@ -168,6 +168,13 @@
   box-shadow: 6px 6px 0 var(--ink);
 }
 
+/* VO-19 : isole les fragments latins/numériques (montants, versions, emails)
+   dans un contexte RTL pour éviter que le bidi les réordonne. Sans effet en LTR. */
+@utility ltr-fragment {
+  unicode-bidi: isolate;
+  direction: ltr;
+}
+
 @utility grain-overlay {
   position: relative;
   &::after {

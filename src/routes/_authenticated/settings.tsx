@@ -274,7 +274,7 @@ function Settings() {
                           }}
                           disabled={!canChangeTarget}
                         >
-                          <SelectTrigger className="inline-flex h-8 w-[130px]">
+                          <SelectTrigger className="inline-flex h-8 w-[130px]" aria-label={t("settings.role")}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>

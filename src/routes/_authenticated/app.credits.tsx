@@ -334,12 +334,13 @@ function PayOnlineDialog({ orgId }: { orgId: string }) {
         </DialogHeader>
         <div className="space-y-3">
           <div>
-            <Label>Pack</Label>
-            <div className="mt-1 grid grid-cols-3 gap-2">
+            <Label id="pack-label-pay">Pack</Label>
+            <div role="group" aria-labelledby="pack-label-pay" className="mt-1 grid grid-cols-3 gap-2">
               {PACKS.map((p) => (
                 <button
                   key={p.code}
                   type="button"
+                  aria-pressed={pack === p.code}
                   onClick={() => setPack(p.code)}
                   className={`rounded border p-3 text-start text-sm ${pack === p.code ? "border-primary bg-primary/5" : "border-border"}`}
                 >
@@ -409,12 +410,13 @@ function RequestCreditsDialog({ orgId, onDone }: { orgId: string; onDone: () => 
         </DialogHeader>
         <div className="space-y-3">
           <div>
-            <Label>Pack</Label>
-            <div className="mt-1 grid grid-cols-3 gap-2">
+            <Label id="pack-label-request">Pack</Label>
+            <div role="group" aria-labelledby="pack-label-request" className="mt-1 grid grid-cols-3 gap-2">
               {PACKS.map((p) => (
                 <button
                   key={p.code}
                   type="button"
+                  aria-pressed={pack === p.code}
                   onClick={() => setPack(p.code)}
                   className={`rounded border p-3 text-start text-sm ${pack === p.code ? "border-primary bg-primary/5" : "border-border"}`}
                 >

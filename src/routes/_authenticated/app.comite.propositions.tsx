@@ -174,7 +174,7 @@ function PropView() {
             options={FILTER_OPTIONS.map((o) => ({ ...o, count: counts[o.value] }))}
           />
         </div>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <ComiteTable minWidth={900} columns={PROPOSITIONS_COLUMNS}>
               {filtered.map((p: any) => {
                 const d = pctDelta(p.ancienne_valeur, p.nouvelle_valeur);

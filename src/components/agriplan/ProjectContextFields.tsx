@@ -97,8 +97,9 @@ export function ProjectContextFields({
   return (
     <>
       <div className="sm:col-span-2">
-        <Label>{t("wizard.name")}</Label>
+        <Label htmlFor="wizard-name">{t("wizard.name")}</Label>
         <Input
+          id="wizard-name"
           value={values.name}
           onChange={(e) => onChange({ name: e.target.value })}
           aria-invalid={!!errors.name}
@@ -107,13 +108,13 @@ export function ProjectContextFields({
       </div>
 
       <div className="sm:col-span-2">
-        <Label>{t("wizard.zone")}</Label>
+        <Label htmlFor="wizard-zone">{t("wizard.zone")}</Label>
         <Select
           value={values.zoneCode}
           onValueChange={(v) => onChange({ zoneCode: v })}
           disabled={referentielMissing}
         >
-          <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+          <SelectTrigger id="wizard-zone"><SelectValue placeholder="—" /></SelectTrigger>
           <SelectContent>
             {zones.map((z) => (
               <SelectItem key={z.code} value={z.code}>{z.label}</SelectItem>
@@ -135,8 +136,9 @@ export function ProjectContextFields({
       {mode === "projet" ? (
         <>
           <div>
-            <Label>{t("wizard.surface")}</Label>
+            <Label htmlFor="wizard-surface">{t("wizard.surface")}</Label>
             <Input
+              id="wizard-surface"
               type="number"
               step="0.1"
               min="0.1"
@@ -147,13 +149,14 @@ export function ProjectContextFields({
             <FieldError message={errors.surface} />
           </div>
           <div>
-            <Label>
+            <Label htmlFor="wizard-capital">
               {t("wizard.capital")}{" "}
               <span className="text-xs font-normal text-muted-foreground">
                 · {t("common.optional")}
               </span>
             </Label>
             <Input
+              id="wizard-capital"
               type="number"
               min="0"
               value={values.capital}
@@ -165,8 +168,9 @@ export function ProjectContextFields({
         </>
       ) : (
         <div className="sm:col-span-2">
-          <Label>{t("wizard.capital")}</Label>
+          <Label htmlFor="wizard-capital">{t("wizard.capital")}</Label>
           <Input
+            id="wizard-capital"
             type="number"
             min="0.01"
             value={values.capital}
@@ -178,8 +182,9 @@ export function ProjectContextFields({
       )}
 
       <div>
-        <Label>{t("wizard.horizon")}</Label>
+        <Label htmlFor="wizard-horizon">{t("wizard.horizon")}</Label>
         <Input
+          id="wizard-horizon"
           type="number"
           min={HORIZON_MIN}
           max={HORIZON_MAX}
@@ -191,9 +196,9 @@ export function ProjectContextFields({
       </div>
 
       <div>
-        <Label>{t("wizard.orientation")}</Label>
+        <Label htmlFor="wizard-orientation">{t("wizard.orientation")}</Label>
         <Select value={orientation} onValueChange={(v) => onOrientationChange(v as Orientation)}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectTrigger id="wizard-orientation"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="export">{t("orient.export")}</SelectItem>
             <SelectItem value="local">{t("orient.local")}</SelectItem>
@@ -202,9 +207,9 @@ export function ProjectContextFields({
         </Select>
       </div>
       <div>
-        <Label>{t("wizard.risk")}</Label>
+        <Label htmlFor="wizard-risk">{t("wizard.risk")}</Label>
         <Select value={risk} onValueChange={(v) => onRiskChange(v as Risque)}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectTrigger id="wizard-risk"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="faible">{t("risk.faible")}</SelectItem>
             <SelectItem value="moyen">{t("risk.moyen")}</SelectItem>

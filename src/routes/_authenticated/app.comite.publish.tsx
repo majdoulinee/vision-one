@@ -110,7 +110,7 @@ function View() {
           <CardTitle>Publication de versions</CardTitle>
           <CardDescription>Un lot ne peut être publié que si toutes ses propositions sont « approuvée admin ». Une version publiée est immuable.</CardDescription>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <ComiteTable minWidth={700} columns={PUBLISH_COLUMNS}>
               {(lots.data ?? []).map((l: any) => {
                 const s = stats.data?.[l.id]?.statuts ?? {};
