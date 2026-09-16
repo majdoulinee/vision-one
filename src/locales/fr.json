@@ -296,6 +296,10 @@
     "mapNoZones": "Aucune donnée cartographique pour les zones disponibles.",
     "refMissingTitle": "Référentiel non publié",
     "refMissingDesc": "Le référentiel n'est pas encore publié — contactez l'administrateur de la plateforme.",
+    "draftFoundTitle": "Brouillon trouvé",
+    "draftFoundDesc": "Vous avez un brouillon de projet non terminé, enregistré le {{date}}.",
+    "draftResume": "Reprendre",
+    "draftDiscard": "Ignorer",
     "err": {
       "name": "Le nom du projet est requis.",
       "zone": "Choisissez une zone.",

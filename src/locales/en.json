@@ -278,6 +278,10 @@
     "mapNoZones": "No map data available for the current zones.",
     "refMissingTitle": "Reference data not published",
     "refMissingDesc": "The reference data has not been published yet — contact the platform administrator.",
+    "draftFoundTitle": "Draft found",
+    "draftFoundDesc": "You have an unfinished project draft, saved on {{date}}.",
+    "draftResume": "Resume",
+    "draftDiscard": "Discard",
     "err": {
       "name": "The project name is required.",
       "zone": "Choose a zone.",

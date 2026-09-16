@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrg } from "@/hooks/use-current-org";
@@ -10,6 +11,7 @@ import type { Orientation, Risque } from "@/engines/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import {
   ProjectContextFields,
@@ -17,16 +19,74 @@ import {
   type ProjectFormErrors,
 } from "@/components/agriplan/ProjectContextFields";
 import { fmtHa, fmtMAD, fmtNum } from "@/lib/format";
-import { ArrowRight, Compass, Wallet as WalletIcon } from "lucide-react";
+import { ArrowRight, Compass, Wallet as WalletIcon, RotateCcw } from "lucide-react";
 import { BackButton } from "@/components/agriplan/BackButton";
 import { formatError } from "@/lib/format-error";
 
+// VO-15 : l'étape et les champs du tunnel sont reflétés dans l'URL
+// (validateSearch + navigate({search}), sur le modèle de
+// onboarding.contexte.tsx) — un rafraîchissement ou un lien partagé
+// retombe exactement là où l'utilisateur en était.
+const searchSchema = z.object({
+  mode: z.enum(["projet", "capital"]).optional(),
+  projectId: z.string().optional(),
+  name: z.string().optional(),
+  zoneCode: z.string().optional(),
+  surface: z.string().optional(),
+  capital: z.string().optional(),
+  horizon: z.string().optional(),
+  orientation: z.enum(["export", "local", "mixte"]).optional(),
+  risk: z.enum(["faible", "moyen", "eleve"]).optional(),
+});
+
 export const Route = createFileRoute("/_authenticated/app/projects/new")({
   ssr: false,
+  validateSearch: (s) => searchSchema.parse(s),
   component: NewProjectWizard,
 });
 
 type Mode = "projet" | "capital";
+
+interface ProjectDraft {
+  mode: Mode;
+  name: string;
+  zoneCode: string;
+  surface: string;
+  capital: string;
+  horizon: string;
+  orientation: Orientation;
+  risk: Risque;
+  savedAt: string;
+}
+
+function draftKey(orgId: string) {
+  return `vision-one:project-draft:${orgId}`;
+}
+
+function readDraft(orgId: string): ProjectDraft | null {
+  try {
+    const raw = localStorage.getItem(draftKey(orgId));
+    return raw ? (JSON.parse(raw) as ProjectDraft) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeDraft(orgId: string, draft: ProjectDraft) {
+  try {
+    localStorage.setItem(draftKey(orgId), JSON.stringify(draft));
+  } catch {
+    // localStorage indisponible (navigation privée, quota dépassé...) — non bloquant.
+  }
+}
+
+function clearDraft(orgId: string) {
+  try {
+    localStorage.removeItem(draftKey(orgId));
+  } catch {
+    // idem
+  }
+}
 
 function NewProjectWizard() {
   const { t } = useTranslation();
@@ -35,22 +95,83 @@ function NewProjectWizard() {
   const version = usePublishedVersion();
   const ref = useReferentiel(version.data?.version);
   const nav = useNavigate();
+  const search = Route.useSearch();
 
-  const [mode, setMode] = useState<Mode | null>(null);
-  const [projectId, setProjectId] = useState<string | null>(null);
+  const [mode, setMode] = useState<Mode | null>(search.mode ?? null);
+  const [projectId, setProjectId] = useState<string | null>(search.projectId ?? null);
 
   // form state
-  const [name, setName] = useState("");
-  const [zoneCode, setZoneCode] = useState("");
-  const [surface, setSurface] = useState<string>("");
-  const [capital, setCapital] = useState<string>("");
-  const [horizon, setHorizon] = useState<string>("7");
-  const [orientation, setOrientation] = useState<Orientation>("export");
-  const [risk, setRisk] = useState<Risque>("moyen");
+  const [name, setName] = useState(search.name ?? "");
+  const [zoneCode, setZoneCode] = useState(search.zoneCode ?? "");
+  const [surface, setSurface] = useState<string>(search.surface ?? "");
+  const [capital, setCapital] = useState<string>(search.capital ?? "");
+  const [horizon, setHorizon] = useState<string>(search.horizon ?? "7");
+  const [orientation, setOrientation] = useState<Orientation>(search.orientation ?? "export");
+  const [risk, setRisk] = useState<Risque>(search.risk ?? "moyen");
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<ProjectFormErrors>({});
 
+  // VO-15 : brouillon local (localStorage) — proposé au chargement si un
+  // brouillon existe pour cette organisation et que l'URL n'a pas déjà
+  // fourni d'état (lien direct, retour arrière...).
+  const [draftPrompt, setDraftPrompt] = useState<ProjectDraft | null>(null);
+  const draftChecked = useRef(false);
+
+  useEffect(() => {
+    if (draftChecked.current || !current) return;
+    draftChecked.current = true;
+    if (search.mode) return;
+    const draft = readDraft(current.org_id);
+    if (draft) setDraftPrompt(draft);
+  }, [current, search.mode]);
+
+  function resumeDraft() {
+    if (!draftPrompt) return;
+    setMode(draftPrompt.mode);
+    setName(draftPrompt.name);
+    setZoneCode(draftPrompt.zoneCode);
+    setSurface(draftPrompt.surface);
+    setCapital(draftPrompt.capital);
+    setHorizon(draftPrompt.horizon);
+    setOrientation(draftPrompt.orientation);
+    setRisk(draftPrompt.risk);
+    setDraftPrompt(null);
+  }
+
+  function discardDraft() {
+    if (current) clearDraft(current.org_id);
+    setDraftPrompt(null);
+  }
+
   const zones = ref.data?.zones ?? [];
+
+  // VO-15 : synchronise en continu l'étape et les champs dans l'URL.
+  useEffect(() => {
+    nav({
+      search: {
+        mode: mode ?? undefined,
+        projectId: projectId ?? undefined,
+        name: name || undefined,
+        zoneCode: zoneCode || undefined,
+        surface: surface || undefined,
+        capital: capital || undefined,
+        horizon: horizon || undefined,
+        orientation,
+        risk,
+      },
+      replace: true,
+    });
+  }, [nav, mode, projectId, name, zoneCode, surface, capital, horizon, orientation, risk]);
+
+  // VO-15 : sauvegarde locale du brouillon tant que le projet n'existe pas
+  // encore côté serveur (au-delà, c'est déjà une vraie ligne `projects`).
+  useEffect(() => {
+    if (!current || !mode || projectId) return;
+    writeDraft(current.org_id, {
+      mode, name, zoneCode, surface, capital, horizon, orientation, risk,
+      savedAt: new Date().toISOString(),
+    });
+  }, [current, mode, projectId, name, zoneCode, surface, capital, horizon, orientation, risk]);
 
   async function submitStep1() {
     if (!current) return;
@@ -90,6 +211,7 @@ function NewProjectWizard() {
         .single();
       if (error) throw error;
       setProjectId(data.id);
+      clearDraft(current.org_id);
     } catch (e) {
       toast.error(formatError(e));
     } finally {
@@ -136,6 +258,21 @@ function NewProjectWizard() {
           <BackButton to="/dashboard" />
         </div>
         <h1 className="text-3xl font-bold tracking-tight">{t("wizard.title")}</h1>
+        {draftPrompt && (
+          <Alert>
+            <RotateCcw className="h-4 w-4" />
+            <AlertTitle>{t("wizard.draftFoundTitle")}</AlertTitle>
+            <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
+              <span>
+                {t("wizard.draftFoundDesc", { date: new Date(draftPrompt.savedAt).toLocaleString() })}
+              </span>
+              <span className="flex gap-2">
+                <Button size="sm" onClick={resumeDraft}>{t("wizard.draftResume")}</Button>
+                <Button size="sm" variant="ghost" onClick={discardDraft}>{t("wizard.draftDiscard")}</Button>
+              </span>
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="grid gap-4 sm:grid-cols-2">
           <ModeCard
             title={t("wizard.modeClassique")}
