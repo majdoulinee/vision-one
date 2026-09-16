@@ -40,3 +40,19 @@ export function fmtDate(d: string | null | undefined): string {
     return d;
   }
 }
+
+// VO-21 : le pays d'une organisation est stocké en code ISO 3166-1 alpha-2
+// (ex. "MA") mais était affiché brut dans l'UI. On le traduit dans la langue
+// courante via Intl.DisplayNames, avec repli sur le code lui-même si ce
+// n'est pas un code ISO reconnu (anciennes données en texte libre).
+export function fmtCountry(code: string | null | undefined, locale?: string): string {
+  if (!code) return "—";
+  const lang = locale ?? i18n.language ?? "fr";
+  if (!/^[A-Za-z]{2}$/.test(code)) return code;
+  try {
+    const dn = new Intl.DisplayNames([lang, "fr"], { type: "region" });
+    return dn.of(code.toUpperCase()) ?? code;
+  } catch {
+    return code;
+  }
+}

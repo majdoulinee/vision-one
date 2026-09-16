@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { sendInvitationEmail } from "@/lib/invitations.functions";
 import { formatError } from "@/lib/format-error";
+import { fmtCountry } from "@/lib/format";
 import { Mail, Users, LogOut, Info } from "lucide-react";
 import { ReasonDialog } from "@/components/agriplan/ReasonDialog";
 import { InviteMemberForm } from "@/components/agriplan/InviteMemberForm";
@@ -214,7 +215,7 @@ function Settings() {
           </div>
           <div>
             <div className="text-xs text-muted-foreground">{t("auth.country")}</div>
-            <div className="font-medium">{current.org.country ?? "—"}</div>
+            <div className="font-medium">{fmtCountry(current.org.country)}</div>
           </div>
         </CardContent>
       </Card>

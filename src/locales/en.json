@@ -202,7 +202,9 @@
     "budgetOk": "Budget ✓", "bpOk": "BP ✓", "created": "Created",
     "contreExpertise": "Counter-expertise",
     "contreExpertiseDesc": "Analyze submitted business plans against the reference norms. Available in V2.",
-    "empty": "No project yet.", "refPublished": "Published version"
+    "empty": "No project yet.",
+    "emptyDesc": "Create your first project to get a profile recommendation and a costed budget.",
+    "refPublished": "Published version"
   },
   "referentiel": {
     "title": "Reference console", "subtitle": "For platform admins and expert committee only.",

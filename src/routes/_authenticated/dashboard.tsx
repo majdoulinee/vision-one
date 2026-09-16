@@ -9,10 +9,11 @@ import { Link } from "@tanstack/react-router";
 import { Badge } from "@/components/ui/badge";
 import { fmtDate, fmtNum } from "@/lib/format";
 import { usePublishedVersion } from "@/hooks/use-referentiel";
-import { PlusCircle, Wallet, ShieldCheck } from "lucide-react";
+import { PlusCircle, Wallet, ShieldCheck, FolderPlus } from "lucide-react";
 import { LowCreditBanner } from "@/components/agriplan/LowCreditBanner";
 import { ConsultantBanner } from "@/components/agriplan/ConsultantBanner";
 import { OnboardingChecklist } from "@/components/agriplan/OnboardingChecklist";
+import { EmptyState } from "@/components/agriplan/EmptyState";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -139,7 +140,12 @@ function Dashboard() {
         </CardHeader>
         <CardContent>
           {!projects.data?.length ? (
-            <p className="text-sm text-muted-foreground">{t("projects.empty")}</p>
+            <EmptyState
+              icon={FolderPlus}
+              title={t("projects.empty")}
+              description={t("projects.emptyDesc")}
+              action={{ label: t("projects.new"), to: "/app/projects/new" }}
+            />
           ) : (
             <div className="divide-y">
               {projects.data.map((p) => (

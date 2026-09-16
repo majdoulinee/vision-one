@@ -284,6 +284,7 @@
     "contreExpertise": "Contre-expertise",
     "contreExpertiseDesc": "Analysez les business plans qui vous sont soumis face au référentiel de normes. Disponible en V2.",
     "empty": "Aucun projet pour l'instant.",
+    "emptyDesc": "Créez votre premier projet pour obtenir une recommandation de profils et un budget chiffré.",
     "refPublished": "Version publiée"
   },
   "referentiel": {

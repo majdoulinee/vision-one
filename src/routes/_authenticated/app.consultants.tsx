@@ -13,6 +13,9 @@ import { ReasonDialog } from "@/components/agriplan/ReasonDialog";
 import { Navigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { formatError } from "@/lib/format-error";
+import { fmtCountry } from "@/lib/format";
+import { EmptyState } from "@/components/agriplan/EmptyState";
+import { Users } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/consultants")({
   ssr: false,
@@ -85,7 +88,7 @@ function ConsultantsSpace() {
                   <TableCell>
                     <div className="font-medium">{l.client_org?.name ?? "—"}</div>
                     <div className="text-xs text-muted-foreground">
-                      {l.client_org?.type} · {l.client_org?.country ?? "—"}
+                      {l.client_org?.type} · {fmtCountry(l.client_org?.country)}
                     </div>
                   </TableCell>
                   <TableCell><Badge variant="secondary" className="mono-eyebrow">{l.role}</Badge></TableCell>
@@ -111,9 +114,13 @@ function ConsultantsSpace() {
               );
             })}
             {active.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={5} className="p-6 text-center text-sm text-muted-foreground">
-                  Aucun client rattaché pour le moment.
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={5} className="p-0">
+                  <EmptyState
+                    icon={Users}
+                    title="Aucun client rattaché pour le moment."
+                    description="Un administrateur plateforme doit d'abord vous rattacher à une organisation cliente."
+                  />
                 </TableCell>
               </TableRow>
             )}
