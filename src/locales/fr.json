@@ -291,6 +291,11 @@
     "seePrefaisa": "Pré-faisabilité (gratuit)",
     "generate": "Générer budget & BP (1 crédit)",
     "noResults": "Aucun profil ne correspond aux critères.",
+    "viewMap": "Voir sur la carte",
+    "viewList": "Voir la liste",
+    "mapNoZones": "Aucune donnée cartographique pour les zones disponibles.",
+    "refMissingTitle": "Référentiel non publié",
+    "refMissingDesc": "Le référentiel n'est pas encore publié — contactez l'administrateur de la plateforme.",
     "err": {
       "name": "Le nom du projet est requis.",
       "zone": "Choisissez une zone.",

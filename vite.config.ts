@@ -35,6 +35,7 @@ export default defineConfig({
                 if (id.includes("@supabase")) return "vendor-supabase";
                 if (id.includes("jspdf") || id.includes("html2canvas") || id.includes("canvg") || id.includes("dompurify")) return "vendor-pdf";
                 if (id.includes("xlsx")) return "vendor-xlsx";
+                if (id.includes("leaflet")) return "vendor-leaflet";
                 return undefined;
               },
             },

@@ -1,8 +1,9 @@
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Map as MapIcon, List as ListIcon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -11,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Orientation, Risque } from "@/engines/types";
+import { ZoneMapPicker, type ZoneOption } from "@/components/agriplan/ZoneMapPicker";
 
 /**
  * Champs du formulaire "contexte projet", partagés entre le tunnel de
@@ -82,7 +84,7 @@ export function ProjectContextFields({
   errors,
 }: {
   mode: ProjectFormMode;
-  zones: { code: string; label: string }[];
+  zones: ZoneOption[];
   referentielMissing: boolean;
   values: ProjectFormValues;
   onChange: (patch: Partial<ProjectFormValues>) => void;
@@ -93,6 +95,18 @@ export function ProjectContextFields({
   errors: ProjectFormErrors;
 }) {
   const { t } = useTranslation();
+  const [showMap, setShowMap] = useState(false);
+  const zonesWithBbox = useMemo(
+    () =>
+      zones.filter(
+        (z) =>
+          typeof z.bbox_lng_min === "number" &&
+          typeof z.bbox_lat_min === "number" &&
+          typeof z.bbox_lng_max === "number" &&
+          typeof z.bbox_lat_max === "number",
+      ),
+    [zones],
+  );
 
   return (
     <>
@@ -108,7 +122,20 @@ export function ProjectContextFields({
       </div>
 
       <div className="sm:col-span-2">
-        <Label htmlFor="wizard-zone">{t("wizard.zone")}</Label>
+        <div className="flex items-center justify-between gap-2">
+          <Label htmlFor="wizard-zone">{t("wizard.zone")}</Label>
+          {zonesWithBbox.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowMap((v) => !v)}
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+              aria-pressed={showMap}
+            >
+              {showMap ? <ListIcon className="h-3.5 w-3.5" /> : <MapIcon className="h-3.5 w-3.5" />}
+              {showMap ? t("wizard.viewList") : t("wizard.viewMap")}
+            </button>
+          )}
+        </div>
         <Select
           value={values.zoneCode}
           onValueChange={(v) => onChange({ zoneCode: v })}
@@ -121,13 +148,22 @@ export function ProjectContextFields({
             ))}
           </SelectContent>
         </Select>
+        {showMap && (
+          <div className="mt-2">
+            <ZoneMapPicker
+              zones={zonesWithBbox}
+              value={values.zoneCode}
+              onChange={(code) => onChange({ zoneCode: code })}
+            />
+          </div>
+        )}
         <FieldError message={errors.zone} />
         {referentielMissing && (
           <Alert variant="destructive" className="mt-2">
             <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Référentiel non publié</AlertTitle>
+            <AlertTitle>{t("wizard.refMissingTitle")}</AlertTitle>
             <AlertDescription>
-              Le référentiel n'est pas encore publié — contactez l'administrateur de la plateforme.
+              {t("wizard.refMissingDesc")}
             </AlertDescription>
           </Alert>
         )}

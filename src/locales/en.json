@@ -273,6 +273,11 @@
     "seePrefaisa": "Pre-feasibility (free)",
     "generate": "Generate budget & BP (1 credit)",
     "noResults": "No profile matches the criteria.",
+    "viewMap": "View on map",
+    "viewList": "View list",
+    "mapNoZones": "No map data available for the current zones.",
+    "refMissingTitle": "Reference data not published",
+    "refMissingDesc": "The reference data has not been published yet — contact the platform administrator.",
     "err": {
       "name": "The project name is required.",
       "zone": "Choose a zone.",
