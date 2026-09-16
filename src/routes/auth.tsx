@@ -36,6 +36,12 @@ export const Route = createFileRoute("/auth")({
       throw redirect({ to: "/dashboard" });
     }
   },
+  head: () => ({
+    meta: [
+      { title: "Connexion — Vision One" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: AuthPage,
 });
 

@@ -21,6 +21,12 @@ import { CreditStatusBadge } from "@/components/agriplan/CreditStatusBadge";
 export const Route = createFileRoute("/_authenticated/app/credits")({
   ssr: false,
   component: CreditsPage,
+  head: () => ({
+    meta: [
+      { title: "Mes crédits — Vision One" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
 });
 
 const PACKS = [

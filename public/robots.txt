@@ -1,0 +1,19 @@
+# Vision One — robots.txt
+# VO-27 : à mettre à jour avec le nom de domaine définitif une fois VO-25
+# (achat du domaine personnalisé) réalisé.
+
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /admin/
+Disallow: /onboarding/
+Disallow: /settings
+Disallow: /auth
+Disallow: /invite/
+Disallow: /verify/
+Disallow: /mentions-legales
+Disallow: /api/
+Disallow: /.well-known/
+Disallow: /.mcp/
+
+Sitemap: https://vision-one-khaki.vercel.app/sitemap.xml

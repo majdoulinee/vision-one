@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Vision One — sitemap.xml (VO-27)
+  Ne liste que les pages publiques, indexables et sans donnée utilisateur.
+  À régénérer avec le domaine définitif une fois VO-25 (domaine personnalisé) réalisé.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://vision-one-khaki.vercel.app/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://vision-one-khaki.vercel.app/auth</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>

@@ -16,6 +16,12 @@ import { OnboardingChecklist } from "@/components/agriplan/OnboardingChecklist";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
+  head: () => ({
+    meta: [
+      { title: "Tableau de bord — Vision One" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
 });
 
 const COUNTER_EXPERTISE_TYPES = ["banque", "assureur", "organisme_public", "groupe"];

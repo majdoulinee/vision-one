@@ -26,6 +26,12 @@ import { InviteMemberForm } from "@/components/agriplan/InviteMemberForm";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: Settings,
+  head: () => ({
+    meta: [
+      { title: "Paramètres — Vision One" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
 });
 
 type Member = {
