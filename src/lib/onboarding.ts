@@ -17,7 +17,12 @@ const ROUTE_FOR_STEP: Record<OnboardingStep, string | null> = {
   org_created: "/onboarding/contexte",
   context_done: "/onboarding/resultat",
   result_done: "/onboarding/projet-pret",
-  project_created: "/onboarding/resultat",
+  // Bug corrigé : pointait vers "/onboarding/resultat" (retour en arrière dans
+  // le tunnel), qui exige mode/zoneCode/horizon/orientation/risk en paramètres
+  // obligatoires — la redirection générique (_authenticated/route.tsx) n'a
+  // jamais ce contexte, donc ça plantait à chaque navigation une fois l'étape
+  // "project_created" atteinte. L'écran suivant logique est bien "équipe".
+  project_created: "/onboarding/equipe",
   team_step: "/onboarding/equipe",
   completed: null, // parcours terminé, pas de redirection
 };

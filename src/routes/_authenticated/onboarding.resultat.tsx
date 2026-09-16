@@ -16,25 +16,35 @@ import { fmtHa, fmtMAD } from "@/lib/format";
 import { BackButton } from "@/components/agriplan/BackButton";
 import { OnboardingProgress } from "@/components/agriplan/OnboardingProgress";
 
+// Champs optionnels : une redirection générique (garde d'onboarding dans
+// _authenticated/route.tsx, ou un lien direct sans contexte) peut amener ici
+// sans ces paramètres. On ne plante plus dans ce cas — beforeLoad renvoie
+// alors vers l'écran contexte pour reconstituer la saisie.
 const searchSchema = z.object({
-  projectId: z.string(),
-  mode: z.enum(["projet", "capital"]),
-  zoneCode: z.string(),
+  projectId: z.string().optional(),
+  mode: z.enum(["projet", "capital"]).optional(),
+  zoneCode: z.string().optional(),
   surface: z.string().optional(),
   capital: z.string().optional(),
-  horizon: z.string(),
-  orientation: z.enum(["export", "local", "mixte"]),
-  risk: z.enum(["faible", "moyen", "eleve"]),
+  horizon: z.string().optional(),
+  orientation: z.enum(["export", "local", "mixte"]).optional(),
+  risk: z.enum(["faible", "moyen", "eleve"]).optional(),
 });
 
 export const Route = createFileRoute("/_authenticated/onboarding/resultat")({
   ssr: false,
   validateSearch: (s) => searchSchema.parse(s),
-  beforeLoad: async () => {
+  beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getUser();
     if (!data.user) throw redirect({ to: "/auth" });
     const target = await guardOnboardingStep(data.user.id, "context_done");
     if (target) throw redirect({ to: target });
+    // Cet écran a besoin du contexte saisi à l'étape précédente. Si on y
+    // arrive sans lui (redirection générique mal aiguillée, lien direct...),
+    // on repart proprement vers l'écran contexte plutôt que de planter.
+    if (!search.mode || !search.zoneCode || !search.projectId) {
+      throw redirect({ to: "/onboarding/contexte" });
+    }
   },
   component: OnboardingResultat,
 });
@@ -65,7 +75,9 @@ function OnboardingResultat() {
   const { mode, zoneCode, surface, capital, horizon, orientation, risk, projectId } = search;
 
   const recos = useMemo(() => {
-    if (!ref.data) return null;
+    // beforeLoad redirige déjà si l'un de ces trois manque ; ce garde-fou ne
+    // fait que protéger le typage et un éventuel rendu transitoire.
+    if (!ref.data || !mode || !zoneCode) return null;
     if (mode === "projet") {
       return recommend(
         {
@@ -96,6 +108,13 @@ function OnboardingResultat() {
   // Repart vers l'écran contexte avec la saisie précédente préchargée (§5 :
   // "ne pas perdre la saisie").
   const adjustSearch = { mode, zoneCode, surface, capital, horizon, orientation, risk } as any;
+
+  // beforeLoad redirige déjà si l'un de ces trois manque ; ce garde-fou ne
+  // fait que protéger le typage (mode/projectId sont requis plus bas) et un
+  // éventuel rendu transitoire avant que la redirection ne prenne effet.
+  if (!mode || !zoneCode || !projectId) {
+    return <div className="text-muted-foreground">{t("common.loading")}</div>;
+  }
 
   return (
     <div className="space-y-6">
