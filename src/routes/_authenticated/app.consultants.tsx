@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrg } from "@/hooks/use-current-org";
@@ -23,12 +24,13 @@ export const Route = createFileRoute("/_authenticated/app/consultants")({
 });
 
 function ConsultantsSpace() {
+  const { t } = useTranslation();
   const { current, switchOrg, orgs, isLoading } = useCurrentOrg();
   const qc = useQueryClient();
   const links = useConsultantLinksForConsultant();
   const [revokeId, setRevokeId] = useState<string | null>(null);
 
-  if (isLoading || !current) return <div className="text-muted-foreground">Chargement…</div>;
+  if (isLoading || !current) return <div className="text-muted-foreground">{t("common.loading")}</div>;
   if (current.org.type !== "consultant") {
     return <Navigate to="/dashboard" />;
   }
@@ -40,7 +42,7 @@ function ConsultantsSpace() {
         p_link_id: revokeId, p_motif: motif,
       });
       if (error) throw error;
-      toast.success("Demande envoyée à l'administrateur plateforme.");
+      toast.success(t("consultants.revocationSent"));
       qc.invalidateQueries({ queryKey: ["consultant_links_consultant", current!.org_id] });
     } catch (e) {
       toast.error(formatError(e));
@@ -56,28 +58,28 @@ function ConsultantsSpace() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Mes clients</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t("consultants.title")}</h1>
         <p className="text-muted-foreground">
-          Organisations clientes rattachées à votre cabinet <strong>{current.org.name}</strong>.
+          {t("consultants.subtitle")} <strong>{current.org.name}</strong>.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Rattachements actifs ({active.length})</CardTitle>
+          <CardTitle className="text-base">{t("consultants.activeCount", { count: active.length })}</CardTitle>
           <CardDescription>
-            Utilisez « Ouvrir » pour basculer sur l'organisation cliente (si vous en êtes également membre).
+            {t("consultants.activeDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0 overflow-x-auto">
           <ComiteTable
             minWidth={900}
             columns={[
-              { key: "client", header: "Client" },
-              { key: "role", header: "Rôle" },
-              { key: "credits", header: "Crédits" },
-              { key: "date", header: "Depuis" },
-              { key: "act", header: "Actions", align: "end" },
+              { key: "client", header: t("consultants.colClient") },
+              { key: "role", header: t("settings.role") },
+              { key: "credits", header: t("consultants.colCredits") },
+              { key: "date", header: t("consultants.colSince") },
+              { key: "act", header: t("common.actions"), align: "end" },
             ]}
           >
             {active.map((l) => {
@@ -92,22 +94,22 @@ function ConsultantsSpace() {
                     </div>
                   </TableCell>
                   <TableCell><Badge variant="secondary" className="mono-eyebrow">{l.role}</Badge></TableCell>
-                  <TableCell className="text-xs">source : {l.credits_source}</TableCell>
+                  <TableCell className="text-xs">{t("consultants.sourceLabel", { source: l.credits_source })}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {new Date(l.accorde_le).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-end space-x-1">
                     {canSwitch ? (
                       <Button size="sm" variant="outline" onClick={() => switchOrg(clientId)}>
-                        Ouvrir en mode client
+                        {t("consultants.openAsClient")}
                       </Button>
                     ) : (
                       <span className="text-[11px] text-muted-foreground">
-                        Non-membre du client
+                        {t("consultants.notMember")}
                       </span>
                     )}
                     <Button size="sm" variant="ghost" onClick={() => setRevokeId(l.id)}>
-                      Demander la révocation
+                      {t("consultants.requestRevocation")}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -118,8 +120,8 @@ function ConsultantsSpace() {
                 <TableCell colSpan={5} className="p-0">
                   <EmptyState
                     icon={Users}
-                    title="Aucun client rattaché pour le moment."
-                    description="Un administrateur plateforme doit d'abord vous rattacher à une organisation cliente."
+                    title={t("consultants.emptyTitle")}
+                    description={t("consultants.emptyDesc")}
                   />
                 </TableCell>
               </TableRow>
@@ -131,7 +133,7 @@ function ConsultantsSpace() {
       {other.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Historique ({other.length})</CardTitle>
+            <CardTitle className="text-base">{t("consultants.historyCount", { count: other.length })}</CardTitle>
           </CardHeader>
           <CardContent className="p-0 divide-y">
             {other.map((l) => (
@@ -152,11 +154,11 @@ function ConsultantsSpace() {
       <ReasonDialog
         open={!!revokeId}
         onOpenChange={(v) => !v && setRevokeId(null)}
-        title="Demander la fin du rattachement"
-        description="Un administrateur plateforme traitera votre demande. Motif obligatoire (journal d'audit)."
+        title={t("consultants.revocationDialogTitle")}
+        description={t("consultants.revocationDialogDesc")}
         minLen={5}
         destructive
-        confirmLabel="Envoyer la demande"
+        confirmLabel={t("consultants.requestRevocation")}
         onConfirm={requestRevocation}
       />
     </div>

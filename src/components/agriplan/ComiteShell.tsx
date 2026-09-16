@@ -1,28 +1,24 @@
 import { Link, useLocation, Navigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { usePlatformRole } from "@/hooks/use-platform-role";
 import { Landmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const TABS = [
-  { to: "/app/comite/propositions", label: "Propositions" },
-  { to: "/app/comite/bee-one", label: "Bee One" },
-  { to: "/app/comite/versions", label: "Versions publiées" },
-  { to: "/app/comite/publish", label: "Publication" },
-];
+const TAB_ROUTES = [
+  { to: "/app/comite/propositions", key: "propositions" },
+  { to: "/app/comite/bee-one", key: "beeOne" },
+  { to: "/app/comite/versions", key: "versions" },
+  { to: "/app/comite/publish", key: "publish" },
+] as const;
 
-const PIPELINE = [
-  "BROUILLON",
-  "SOUMISE",
-  "VALIDÉE COMITÉ",
-  "APPROBATION ADMIN",
-  "PUBLIÉE · IMMUABLE",
-];
+const PIPELINE_KEYS = ["brouillon", "soumise", "valideeComite", "approbationAdmin", "publiee"] as const;
 
 export function ComiteShell({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const { data: role, isPending, isFetching } = usePlatformRole();
   const loc = useLocation();
   if (isPending || isFetching || role === undefined) {
-    return <div className="p-6 text-sm text-muted-foreground">Chargement…</div>;
+    return <div className="p-6 text-sm text-muted-foreground">{t("common.loading")}</div>;
   }
   if (role !== "comite" && role !== "admin") return <Navigate to="/dashboard" />;
 
@@ -33,36 +29,36 @@ export function ComiteShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-2 font-serif text-base">
             <Landmark className="h-4 w-4 text-ochre" />
             <span className="tracking-tight">Vision One</span>
-            <Badge variant="ochre">Comité d'experts</Badge>
+            <Badge variant="ochre">{t("comite.expertCommittee")}</Badge>
           </div>
           <nav className="flex flex-wrap items-center gap-1 ml-auto">
-            {TABS.map((t) => {
-              const active = loc.pathname.startsWith(t.to);
+            {TAB_ROUTES.map((tab) => {
+              const active = loc.pathname.startsWith(tab.to);
               return (
                 <Link
-                  key={t.to}
-                  to={t.to as any}
+                  key={tab.to}
+                  to={tab.to as any}
                   className={`px-3 py-1.5 text-xs font-medium rounded-sm transition-colors ${
                     active
                       ? "bg-parch/15 text-parch"
                       : "text-parch/70 hover:bg-parch/10 hover:text-parch"
                   }`}
                 >
-                  {t.label}
+                  {t(`comite.tabs.${tab.key}`)}
                 </Link>
               );
             })}
           </nav>
         </div>
         <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-t border-parch/10 bg-parch/5">
-          {PIPELINE.map((s, i) => (
-            <span key={s} className="flex items-center gap-2">
-              <Badge variant="ochre-soft">{s}</Badge>
-              {i < PIPELINE.length - 1 && <span className="text-parch/40">→</span>}
+          {PIPELINE_KEYS.map((k, i) => (
+            <span key={k} className="flex items-center gap-2">
+              <Badge variant="ochre-soft">{t(`comite.pipeline.${k}`)}</Badge>
+              {i < PIPELINE_KEYS.length - 1 && <span className="text-parch/40">→</span>}
             </span>
           ))}
           <span className="ml-auto font-serif italic text-parch/70 text-[12px]">
-            Double validation : le comité valide le fond, l'admin approuve la gouvernance. Personne ne publie seul.
+            {t("comite.doubleValidation")}
           </span>
         </div>
       </div>

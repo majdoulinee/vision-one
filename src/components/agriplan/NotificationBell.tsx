@@ -1,16 +1,18 @@
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { Bell, Check, CheckCheck, Trash2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useNotifications, type Notification } from "@/hooks/use-notifications";
 import { useState } from "react";
+import i18n from "@/lib/i18n";
 
 function formatWhen(iso: string) {
   const d = new Date(iso);
   const diff = (Date.now() - d.getTime()) / 1000;
-  if (diff < 60) return "à l'instant";
-  if (diff < 3600) return `il y a ${Math.floor(diff / 60)} min`;
-  if (diff < 86400) return `il y a ${Math.floor(diff / 3600)} h`;
+  if (diff < 60) return i18n.t("notifications.justNow");
+  if (diff < 3600) return i18n.t("notifications.minutesAgo", { n: Math.floor(diff / 60) });
+  if (diff < 86400) return i18n.t("notifications.hoursAgo", { n: Math.floor(diff / 3600) });
   return d.toLocaleDateString();
 }
 
@@ -23,6 +25,7 @@ function kindTone(kind: string) {
 }
 
 export function NotificationBell() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { data, unreadCount, markAsRead, markAllAsRead, remove } = useNotifications(20);
   const navigate = useNavigate();
@@ -42,7 +45,7 @@ export function NotificationBell() {
       <PopoverTrigger asChild>
         <button
           className="relative inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-foreground transition-colors hover:bg-accent/10"
-          aria-label="Notifications"
+          aria-label={t("notifications.title")}
         >
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
@@ -54,7 +57,7 @@ export function NotificationBell() {
       </PopoverTrigger>
       <PopoverContent align="end" className="w-96 p-0">
         <div className="flex items-center justify-between border-b px-3 py-2">
-          <div className="text-sm font-semibold">Notifications</div>
+          <div className="text-sm font-semibold">{t("notifications.title")}</div>
           <div className="flex items-center gap-1">
             {unreadCount > 0 && (
               <Button
@@ -63,7 +66,7 @@ export function NotificationBell() {
                 className="h-7 px-2 text-xs"
                 onClick={() => markAllAsRead.mutate()}
               >
-                <CheckCheck className="mr-1 h-3.5 w-3.5" /> Tout lu
+                <CheckCheck className="mr-1 h-3.5 w-3.5" /> {t("notifications.markAllRead")}
               </Button>
             )}
             <Button
@@ -75,13 +78,13 @@ export function NotificationBell() {
                 navigate({ to: "/app/inbox" });
               }}
             >
-              Voir tout
+              {t("notifications.viewAll")}
             </Button>
           </div>
         </div>
         <div className="max-h-96 overflow-auto">
           {list.length === 0 && (
-            <div className="p-6 text-center text-sm text-muted-foreground">Aucune notification.</div>
+            <div className="p-6 text-center text-sm text-muted-foreground">{t("notifications.empty")}</div>
           )}
           {list.map((n) => (
             <div
@@ -105,8 +108,8 @@ export function NotificationBell() {
                       e.stopPropagation();
                       markAsRead.mutate(n.id);
                     }}
-                    title="Marquer comme lu"
-                    aria-label="Marquer comme lu"
+                    title={t("notifications.markRead")}
+                    aria-label={t("notifications.markRead")}
                   >
                     <Check className="h-3.5 w-3.5" />
                   </button>
@@ -117,8 +120,8 @@ export function NotificationBell() {
                     e.stopPropagation();
                     remove.mutate(n.id);
                   }}
-                  title="Supprimer"
-                  aria-label="Supprimer"
+                  title={t("notifications.delete")}
+                  aria-label={t("notifications.delete")}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>

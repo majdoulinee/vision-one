@@ -143,19 +143,19 @@ function Settings() {
           p_org: orgId, p_user: reasonDialog.userId, p_role: reasonDialog.newRole, p_motif: motif,
         });
         if (error) throw error;
-        toast.success("Rôle mis à jour.");
+        toast.success(t("settings.roleUpdated"));
       } else if (reasonDialog.kind === "remove_member") {
         const { error } = await supabase.rpc("org_remove_member", {
           p_org: orgId, p_user: reasonDialog.userId, p_motif: motif,
         });
         if (error) throw error;
-        toast.success("Membre retiré.");
+        toast.success(t("settings.memberRemoved"));
       } else if (reasonDialog.kind === "revoke_consultant") {
         const { error } = await supabase.rpc("client_request_consultant_revocation", {
           p_link_id: reasonDialog.linkId, p_motif: motif,
         });
         if (error) throw error;
-        toast.success("Demande envoyée aux administrateurs.");
+        toast.success(t("consultants.revocationSent"));
       }
       qc.invalidateQueries({ queryKey: ["members", orgId] });
       qc.invalidateQueries({ queryKey: ["consultant_links_client", orgId] });
@@ -169,7 +169,7 @@ function Settings() {
     try {
       const { error } = await supabase.rpc("org_leave", { p_org: orgId });
       if (error) throw error;
-      toast.success("Vous avez quitté l'organisation.");
+      toast.success(t("settings.leftOrg"));
       qc.invalidateQueries({ queryKey: ["my-orgs"] });
       qc.invalidateQueries({ queryKey: ["members", orgId] });
     } catch (e) {
@@ -189,8 +189,8 @@ function Settings() {
         <div className="rounded-md border border-accent/50 bg-accent/10 px-4 py-2 text-sm flex items-start gap-2">
           <Info className="h-4 w-4 mt-0.5 shrink-0" />
           <div>
-            Vous agissez dans cette organisation en tant que <strong>{t(`role.${myRole}`)}</strong>.
-            Vos privilèges plateforme (<strong>{myPlatformRole}</strong>) s'exercent sur{" "}
+            {t("settings.actingAs", { role: t(`role.${myRole}`) })}{" "}
+            {t("settings.platformPrivileges", { role: myPlatformRole })}{" "}
             {myPlatformRole === "admin" ? (
               <a className="underline" href="/app/admin/organizations">/app/admin</a>
             ) : (
@@ -225,7 +225,7 @@ function Settings() {
           <div>
             <CardTitle>{t("settings.members")}</CardTitle>
             <CardDescription>
-              {members.data?.length ?? 0} membre(s) · {ownerCount} propriétaire(s)
+              {t("settings.membersCount", { count: members.data?.length ?? 0, owners: ownerCount })}
             </CardDescription>
           </div>
           {myRole && myRole !== "owner" && (
@@ -241,7 +241,7 @@ function Settings() {
                 <TableHead>{t("auth.fullName")}</TableHead>
                 <TableHead>{t("settings.email")}</TableHead>
                 <TableHead>{t("settings.role")}</TableHead>
-                {canManage && <TableHead className="text-end">Actions</TableHead>}
+                {canManage && <TableHead className="text-end">{t("common.actions")}</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -255,14 +255,14 @@ function Settings() {
                   <TableRow key={m.user_id}>
                     <TableCell>
                       <div className="font-medium">{m.profile?.full_name ?? "—"}</div>
-                      {isSelf && <div className="text-[10px] uppercase tracking-wide text-muted-foreground">vous</div>}
+                      {isSelf && <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("settings.you")}</div>}
                     </TableCell>
                     <TableCell>{m.profile?.email ?? "—"}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap items-center gap-1">
                         <Badge variant="secondary">{t(`role.${m.role}`)}</Badge>
-                        {pf === "admin" && <Badge variant="ochre" className="mono-eyebrow">Admin plateforme</Badge>}
-                        {pf === "comite" && <Badge variant="sky" className="mono-eyebrow">Comité</Badge>}
+                        {pf === "admin" && <Badge variant="ochre" className="mono-eyebrow">{t("settings.platformAdmin")}</Badge>}
+                        {pf === "comite" && <Badge variant="sky" className="mono-eyebrow">{t("settings.committee")}</Badge>}
                       </div>
                     </TableCell>
                     {canManage && (
@@ -319,7 +319,7 @@ function Settings() {
           <CardHeader>
             <CardTitle>{t("settings.invitations")}</CardTitle>
             <CardDescription>
-              Invitations en attente. Les invitations expirées peuvent être prolongées.
+              {t("settings.invitationsDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -335,8 +335,8 @@ function Settings() {
                 <TableRow>
                   <TableHead>{t("settings.email")}</TableHead>
                   <TableHead>{t("settings.role")}</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t("common.status")}</TableHead>
+                  <TableHead className="text-right">{t("common.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -350,7 +350,7 @@ function Settings() {
                       </TableCell>
                       <TableCell>
                         {expired ? (
-                          <Badge variant="destructive">Expirée</Badge>
+                          <Badge variant="destructive">{t("settings.expired")}</Badge>
                         ) : (
                           <Badge variant="secondary">{t("settings.pending")}</Badge>
                         )}
@@ -378,7 +378,7 @@ function Settings() {
                 {(invitations.data ?? []).length === 0 && (
                   <TableRow>
                     <TableCell colSpan={4} className="p-4 text-center text-sm text-muted-foreground">
-                      Aucune invitation en attente.
+                      {t("settings.noInvitations")}
                     </TableCell>
                   </TableRow>
                 )}
@@ -391,26 +391,26 @@ function Settings() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="h-4 w-4" /> Consultants rattachés
+            <Users className="h-4 w-4" /> {t("settings.linkedConsultants")}
           </CardTitle>
           <CardDescription>
-            Cabinets ayant accès à votre organisation. La révocation passe par l'administrateur plateforme.
+            {t("settings.linkedConsultantsDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0 overflow-x-auto">
           {activeLinks.length === 0 ? (
             <div className="p-6 text-center text-sm text-muted-foreground">
-              Aucun cabinet rattaché.
+              {t("settings.noLinkedConsultants")}
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Cabinet</TableHead>
-                  <TableHead>Rôle</TableHead>
-                  <TableHead>Crédits</TableHead>
-                  <TableHead>Depuis</TableHead>
-                  {canManage && <TableHead className="text-end">Actions</TableHead>}
+                  <TableHead>{t("settings.colFirm")}</TableHead>
+                  <TableHead>{t("settings.role")}</TableHead>
+                  <TableHead>{t("consultants.colCredits")}</TableHead>
+                  <TableHead>{t("consultants.colSince")}</TableHead>
+                  {canManage && <TableHead className="text-end">{t("common.actions")}</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -418,7 +418,7 @@ function Settings() {
                   <TableRow key={l.id}>
                     <TableCell className="font-medium">{l.consultant_org?.name ?? "—"}</TableCell>
                     <TableCell><Badge variant="secondary">{l.role}</Badge></TableCell>
-                    <TableCell className="text-xs">source : {l.credits_source}</TableCell>
+                    <TableCell className="text-xs">{t("consultants.sourceLabel", { source: l.credits_source })}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {new Date(l.accorde_le).toLocaleDateString()}
                     </TableCell>
@@ -435,7 +435,7 @@ function Settings() {
                             })
                           }
                         >
-                          Demander la révocation
+                          {t("consultants.requestRevocation")}
                         </Button>
                       </TableCell>
                     )}
@@ -452,22 +452,22 @@ function Settings() {
         onOpenChange={(v) => !v && setReasonDialog(null)}
         title={
           reasonDialog?.kind === "change_role"
-            ? `Changer le rôle — ${reasonDialog.label}`
+            ? t("settings.changeRoleTitle", { label: reasonDialog.label })
             : reasonDialog?.kind === "remove_member"
-              ? `Retirer ${reasonDialog.label}`
+              ? t("settings.removeMemberTitle", { label: reasonDialog.label })
               : reasonDialog?.kind === "revoke_consultant"
-                ? `Demander la révocation — ${reasonDialog.label}`
+                ? t("settings.revokeConsultantTitle", { label: reasonDialog.label })
                 : ""
         }
-        description="Motif obligatoire (journal d'audit)."
+        description={t("settings.reasonRequired")}
         minLen={5}
         destructive={reasonDialog?.kind !== "change_role"}
         confirmLabel={
           reasonDialog?.kind === "change_role"
-            ? "Appliquer"
+            ? t("common.apply")
             : reasonDialog?.kind === "remove_member"
-              ? "Retirer"
-              : "Envoyer la demande"
+              ? t("settings.remove")
+              : t("settings.sendRequest")
         }
         onConfirm={handleReason}
       />
@@ -475,11 +475,11 @@ function Settings() {
       <ReasonDialog
         open={confirmLeave}
         onOpenChange={setConfirmLeave}
-        title="Quitter l'organisation"
-        description="Motif obligatoire (journal d'audit). Vous perdrez l'accès aux projets de cette organisation."
+        title={t("settings.leaveOrg")}
+        description={t("settings.leaveOrgDesc")}
         minLen={5}
         destructive
-        confirmLabel="Quitter"
+        confirmLabel={t("settings.leave")}
         onConfirm={async () => {
           await doLeave();
         }}

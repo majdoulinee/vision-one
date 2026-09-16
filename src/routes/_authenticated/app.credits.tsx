@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrg } from "@/hooks/use-current-org";
@@ -36,6 +37,7 @@ const PACKS = [
 ];
 
 function CreditsPage() {
+  const { t } = useTranslation();
   const { current } = useCurrentOrg();
   const wallet = useWallet();
   const pricing = usePricing();
@@ -93,32 +95,32 @@ function CreditsPage() {
       <BackButton to="/dashboard" />
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Mes crédits</h1>
-          <p className="text-muted-foreground">Solde de l'organisation · consommation et grand livre.</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("credits.title")}</h1>
+          <p className="text-muted-foreground">{t("credits.subtitle")}</p>
         </div>
       </div>
 
       <div className="rounded-md border border-accent/50 bg-accent/10 p-3 text-sm flex items-start gap-2">
         <Info className="h-4 w-4 mt-0.5 shrink-0" />
         <div>
-          <strong>Deux modes de règlement.</strong> Paiement en ligne par carte (ChariPay, crédité automatiquement après confirmation) ou virement sur facture AGRIDATA (octroi manuel après réception). Aucune donnée bancaire n'est traitée ni stockée par Vision One dans les deux cas.
+          <strong>{t("credits.paymentModesTitle")}</strong> {t("credits.paymentModesDesc")}
         </div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">
         <Card className="md:col-span-1">
           <CardHeader className="pb-2">
-            <CardDescription>Solde actuel</CardDescription>
+            <CardDescription>{t("credits.currentBalance")}</CardDescription>
             <CardTitle className="flex items-center gap-2 text-4xl tabular-nums">
               <Coins className="h-6 w-6" /> {credits}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-1">
-            <div>Plan : <strong>{wallet.data?.plan ?? "—"}</strong></div>
-            <div>Seuil d'alerte : {wallet.data?.credits_alerte ?? 3}</div>
+            <div>{t("credits.plan")} <strong>{wallet.data?.plan ?? "—"}</strong></div>
+            <div>{t("credits.alertThreshold", { n: wallet.data?.credits_alerte ?? 3 })}</div>
             {credits === 0 && (
               <div className="mt-2 rounded border border-accent/40 bg-accent/10 p-2">
-                La pré-faisabilité et la re-prévision restent gratuites.
+                {t("credits.freeNotice")}
               </div>
             )}
           </CardContent>
@@ -126,8 +128,8 @@ function CreditsPage() {
 
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Grille tarifaire</CardTitle>
-            <CardDescription>On facture la génération et la profondeur, jamais la modification.</CardDescription>
+            <CardTitle>{t("credits.pricingGrid")}</CardTitle>
+            <CardDescription>{t("credits.pricingGridDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <table className="w-full text-sm">
@@ -136,7 +138,7 @@ function CreditsPage() {
                   <tr key={p.action}>
                     <td className="py-2">{p.label}</td>
                     <td className="py-2 text-end tabular-nums">
-                      {p.cout === 0 ? <span className="text-muted-foreground">gratuit</span> : <strong>{p.cout} crédit{p.cout > 1 ? "s" : ""}</strong>}
+                      {p.cout === 0 ? <span className="text-muted-foreground">{t("credits.free")}</span> : <strong>{t("credits.creditCount", { count: p.cout })}</strong>}
                     </td>
                   </tr>
                 ))}
@@ -147,7 +149,7 @@ function CreditsPage() {
       </div>
 
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-xl font-semibold">Acheter des crédits</h2>
+        <h2 className="text-xl font-semibold">{t("credits.buyCredits")}</h2>
         {isOwner && (
           <div className="flex gap-2">
             <PayOnlineDialog orgId={current.org_id} />
@@ -159,7 +161,7 @@ function CreditsPage() {
       {(requests.data ?? []).length > 0 && (
         <Card>
           <CardHeader className="pb-2 space-y-3">
-            <CardTitle className="text-base">Mes demandes</CardTitle>
+            <CardTitle className="text-base">{t("credits.myRequests")}</CardTitle>
             <div className="flex flex-wrap items-center gap-2">
               {(["all", "en_attente", "accordee", "refusee"] as const).map((s) => (
                 <button
@@ -169,7 +171,7 @@ function CreditsPage() {
                     statusFilter === s ? "border-primary bg-primary/5 font-medium" : "border-border"
                   }`}
                 >
-                  {s === "all" ? "Toutes" : s === "en_attente" ? "En attente" : s === "accordee" ? "Accordées" : "Refusées"}
+                  {s === "all" ? t("credits.filterAll") : s === "en_attente" ? t("credits.filterPending") : s === "accordee" ? t("credits.filterGranted") : t("credits.filterRefused")}
                 </button>
               ))}
               <div className="ms-auto relative">
@@ -177,7 +179,7 @@ function CreditsPage() {
                 <Input
                   value={searchId}
                   onChange={(e) => setSearchId(e.target.value)}
-                  placeholder="Rechercher par ID…"
+                  placeholder={t("credits.searchPlaceholder")}
                   className="h-8 ps-7 text-xs w-56"
                 />
               </div>
@@ -187,17 +189,17 @@ function CreditsPage() {
             <table className="w-full text-sm">
               <thead className="bg-muted/50 text-xs uppercase">
                 <tr>
-                  <th className="p-2 text-start">ID</th>
-                  <th className="p-2 text-start">Date</th>
-                  <th className="p-2 text-start">Pack</th>
-                  <th className="p-2 text-end">Crédits</th>
-                  <th className="p-2 text-end">Montant</th>
-                  <th className="p-2 text-start">Statut</th>
+                  <th className="p-2 text-start">{t("credits.colId")}</th>
+                  <th className="p-2 text-start">{t("credits.colDate")}</th>
+                  <th className="p-2 text-start">{t("credits.colPack")}</th>
+                  <th className="p-2 text-end">{t("credits.colCredits")}</th>
+                  <th className="p-2 text-end">{t("credits.colAmount")}</th>
+                  <th className="p-2 text-start">{t("common.status")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {filteredRequests.length === 0 && (
-                  <tr><td colSpan={6} className="p-6 text-center text-muted-foreground text-sm">Aucune demande ne correspond aux filtres.</td></tr>
+                  <tr><td colSpan={6} className="p-6 text-center text-muted-foreground text-sm">{t("credits.noRequestsMatch")}</td></tr>
                 )}
                 {filteredRequests.map((r) => (
                   <tr key={r.id} className="hover:bg-muted/40 cursor-pointer">
@@ -232,7 +234,7 @@ function CreditsPage() {
                         {r.statut === "refusee" && r.motif_refus && (
                           <span className="text-xs text-muted-foreground">{r.motif_refus}</span>
                         )}
-                        <span className="text-[10px] uppercase tracking-wide text-primary/70">Détails →</span>
+                        <span className="text-[10px] uppercase tracking-wide text-primary/70">{t("credits.details")}</span>
                       </Link>
                     </td>
                   </tr>
@@ -244,31 +246,31 @@ function CreditsPage() {
       )}
 
       <Card>
-        <CardHeader><CardTitle>Grand livre</CardTitle><CardDescription>Historique complet — append-only, non modifiable.</CardDescription></CardHeader>
+        <CardHeader><CardTitle>{t("credits.ledger")}</CardTitle><CardDescription>{t("credits.ledgerDesc")}</CardDescription></CardHeader>
         <CardContent className="p-0">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 text-xs uppercase">
               <tr>
-                <th className="p-2 text-start">Date</th>
-                <th className="p-2 text-start">Type</th>
-                <th className="p-2 text-start">Action</th>
-                <th className="p-2 text-end">Δ</th>
-                <th className="p-2 text-end">Solde</th>
-                <th className="p-2 text-start">Motif</th>
+                <th className="p-2 text-start">{t("credits.colDate")}</th>
+                <th className="p-2 text-start">{t("credits.colType")}</th>
+                <th className="p-2 text-start">{t("credits.colAction")}</th>
+                <th className="p-2 text-end">{t("credits.colDelta")}</th>
+                <th className="p-2 text-end">{t("credits.colBalance")}</th>
+                <th className="p-2 text-start">{t("credits.colReason")}</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {(ledger.data ?? []).map((e: any) => (
                 <tr key={e.id}>
                   <td className="p-2 whitespace-nowrap">{new Date(e.at).toLocaleString()}</td>
-                  <td className="p-2"><LedgerTypeBadge t={e.type} /></td>
+                  <td className="p-2"><LedgerTypeBadge type={e.type} /></td>
                   <td className="p-2">
                     {e.action ?? "—"}
                     {e.ref_id && e.action === "bp_complet" && (
-                      <Link to="/app/business-plans/$id" params={{ id: e.ref_id }} className="ml-1 text-xs underline">voir</Link>
+                      <Link to="/app/business-plans/$id" params={{ id: e.ref_id }} className="ml-1 text-xs underline">{t("credits.viewLink")}</Link>
                     )}
                     {e.ref_id && e.action === "budget_campagne" && (
-                      <Link to="/app/budgets/$id" params={{ id: e.ref_id }} className="ml-1 text-xs underline">voir</Link>
+                      <Link to="/app/budgets/$id" params={{ id: e.ref_id }} className="ml-1 text-xs underline">{t("credits.viewLink")}</Link>
                     )}
                   </td>
                   <td className={`p-2 text-end tabular-nums font-semibold ${e.delta < 0 ? "text-destructive" : "text-primary"}`}>
@@ -279,7 +281,7 @@ function CreditsPage() {
                 </tr>
               ))}
               {(ledger.data ?? []).length === 0 && (
-                <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">Aucune écriture.</td></tr>
+                <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">{t("credits.noEntries")}</td></tr>
               )}
             </tbody>
           </table>
@@ -289,18 +291,20 @@ function CreditsPage() {
   );
 }
 
-function LedgerTypeBadge({ t }: { t: string }) {
+function LedgerTypeBadge({ type }: { type: string }) {
+  const { t } = useTranslation();
   const label: Record<string, string> = {
-    octroi_admin: "Octroi",
-    consommation: "Conso.",
-    remboursement: "Remb.",
-    ajustement: "Ajust.",
-    achat_en_ligne: "Achat",
+    octroi_admin: t("credits.ledgerType.octroi"),
+    consommation: t("credits.ledgerType.consommation"),
+    remboursement: t("credits.ledgerType.remboursement"),
+    ajustement: t("credits.ledgerType.ajustement"),
+    achat_en_ligne: t("credits.ledgerType.achat"),
   };
-  return <span className="text-xs rounded border px-1.5 py-0.5">{label[t] ?? t}</span>;
+  return <span className="text-xs rounded border px-1.5 py-0.5">{label[type] ?? type}</span>;
 }
 
 function PayOnlineDialog({ orgId }: { orgId: string }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [pack, setPack] = useState(PACKS[0].code);
   const [phone, setPhone] = useState("");
@@ -316,7 +320,7 @@ function PayOnlineDialog({ orgId }: { orgId: string }) {
       if (data?.error) {
         throw new Error(data.message || data.error);
       }
-      if (!data?.checkoutUrl) throw new Error("Réponse ChariPay inattendue (pas d'URL de paiement).");
+      if (!data?.checkoutUrl) throw new Error(t("credits.unexpectedResponse"));
       // Redirection pleine page vers la caisse hébergée ChariPay — la
       // confirmation se fera par webhook, pas par ce retour de fonction.
       window.location.href = data.checkoutUrl;
@@ -330,17 +334,17 @@ function PayOnlineDialog({ orgId }: { orgId: string }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="default">
-          <CreditCard className="h-4 w-4" /> Payer en ligne
+          <CreditCard className="h-4 w-4" /> {t("credits.payOnline")}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Paiement en ligne (ChariPay)</DialogTitle>
-          <DialogDescription>Carte bancaire — crédits ajoutés automatiquement dès confirmation du paiement.</DialogDescription>
+          <DialogTitle>{t("credits.payOnlineTitle")}</DialogTitle>
+          <DialogDescription>{t("credits.payOnlineDesc")}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <div>
-            <Label id="pack-label-pay">Pack</Label>
+            <Label id="pack-label-pay">{t("credits.pack")}</Label>
             <div role="group" aria-labelledby="pack-label-pay" className="mt-1 grid grid-cols-3 gap-2">
               {PACKS.map((p) => (
                 <button
@@ -351,21 +355,21 @@ function PayOnlineDialog({ orgId }: { orgId: string }) {
                   className={`rounded border p-3 text-start text-sm ${pack === p.code ? "border-primary bg-primary/5" : "border-border"}`}
                 >
                   <div className="font-semibold capitalize">{p.code}</div>
-                  <div className="text-xs text-muted-foreground">{p.credits} crédits · {p.mad} MAD</div>
+                  <div className="text-xs text-muted-foreground">{t("credits.creditsAndMad", { credits: p.credits, mad: p.mad })}</div>
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <Label htmlFor="phone">Téléphone (optionnel)</Label>
+            <Label htmlFor="phone">{t("credits.phoneOptional")}</Label>
             <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+2126XXXXXXXX" />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>Annuler</Button>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>{t("common.cancel")}</Button>
           <Button onClick={submit} disabled={busy}>
             {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-            Payer {PACKS.find((p) => p.code === pack)!.mad} MAD
+            {t("credits.pay", { amount: PACKS.find((p) => p.code === pack)!.mad })}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -374,6 +378,7 @@ function PayOnlineDialog({ orgId }: { orgId: string }) {
 }
 
 function RequestCreditsDialog({ orgId, onDone }: { orgId: string; onDone: () => void }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [pack, setPack] = useState(PACKS[0].code);
   const [message, setMessage] = useState("");
@@ -393,7 +398,7 @@ function RequestCreditsDialog({ orgId, onDone }: { orgId: string; onDone: () => 
         message: message || null,
       });
       if (error) throw error;
-      toast.success("Demande envoyée. L'admin vous répondra après règlement.");
+      toast.success(t("credits.requestSent"));
       setOpen(false);
       setMessage("");
       onDone();
@@ -407,16 +412,16 @@ function RequestCreditsDialog({ orgId, onDone }: { orgId: string; onDone: () => 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Demander des crédits</Button>
+        <Button>{t("credits.requestCredits")}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Demande de crédits</DialogTitle>
-          <DialogDescription>Encaissement hors plateforme (virement / facture AGRIDATA).</DialogDescription>
+          <DialogTitle>{t("credits.requestCreditsTitle")}</DialogTitle>
+          <DialogDescription>{t("credits.requestCreditsDesc")}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <div>
-            <Label id="pack-label-request">Pack</Label>
+            <Label id="pack-label-request">{t("credits.pack")}</Label>
             <div role="group" aria-labelledby="pack-label-request" className="mt-1 grid grid-cols-3 gap-2">
               {PACKS.map((p) => (
                 <button
@@ -427,19 +432,19 @@ function RequestCreditsDialog({ orgId, onDone }: { orgId: string; onDone: () => 
                   className={`rounded border p-3 text-start text-sm ${pack === p.code ? "border-primary bg-primary/5" : "border-border"}`}
                 >
                   <div className="font-semibold capitalize">{p.code}</div>
-                  <div className="text-xs text-muted-foreground">{p.credits} crédits · {p.mad} MAD</div>
+                  <div className="text-xs text-muted-foreground">{t("credits.creditsAndMad", { credits: p.credits, mad: p.mad })}</div>
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <Label htmlFor="msg">Message (optionnel)</Label>
+            <Label htmlFor="msg">{t("credits.messageOptional")}</Label>
             <Textarea id="msg" value={message} onChange={(e) => setMessage(e.target.value)} rows={3} />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)}>Annuler</Button>
-          <Button onClick={submit} disabled={busy}>Envoyer la demande</Button>
+          <Button variant="ghost" onClick={() => setOpen(false)}>{t("common.cancel")}</Button>
+          <Button onClick={submit} disabled={busy}>{t("settings.sendRequest")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
