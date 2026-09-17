@@ -434,7 +434,8 @@
     "contreExpertiseDesc": "Analysez les business plans qui vous sont soumis face au référentiel de normes. Disponible en V2.",
     "empty": "Aucun projet pour l'instant.",
     "emptyDesc": "Créez votre premier projet pour obtenir une recommandation de profils et un budget chiffré.",
-    "refPublished": "Version publiée"
+    "refPublished": "Version publiée",
+    "details": "Détails"
   },
   "referentiel": {
     "title": "Console référentiel",
@@ -586,5 +587,18 @@
       "inviteTeam": "Inviter votre équipe",
       "discoverReferentiel": "Découvrir le référentiel"
     }
+  },
+  "projectDetail": {
+    "context": "Contexte du projet",
+    "mode": "Mode",
+    "statusDraft": "Brouillon",
+    "statusGenere": "Généré",
+    "chosenProfile": "Profil choisi",
+    "noProfileYet": "Aucun profil n'a encore été généré pour ce projet.",
+    "noProfileYetDesc": "Reprenez le projet pour voir les recommandations et générer un budget & business plan.",
+    "resume": "Reprendre le projet",
+    "viewBudget": "Voir le budget",
+    "viewBp": "Voir le business plan",
+    "notFound": "Projet introuvable."
   }
 }

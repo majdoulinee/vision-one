@@ -150,15 +150,24 @@ function Dashboard() {
             <div className="divide-y">
               {projects.data.map((p) => (
                 <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                  <div>
+                  <Link
+                    to="/app/projects/$id/details"
+                    params={{ id: p.id }}
+                    className="min-w-0 flex-1 rounded-sm outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                  >
                     <div className="font-medium">{p.name}</div>
                     <div className="text-xs text-muted-foreground">
                       {p.zone_code} · {t("projects.created")} {fmtDate(p.created_at)}
                     </div>
-                  </div>
+                  </Link>
                   <div className="flex flex-wrap items-center gap-2">
                     {p.budgetId && <Badge variant="secondary">{t("projects.budgetOk")}</Badge>}
                     {p.bpId && <Badge variant="secondary">{t("projects.bpOk")}</Badge>}
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/app/projects/$id/details" params={{ id: p.id }}>
+                        {t("projects.details")}
+                      </Link>
+                    </Button>
                     {p.budgetId && (
                       <Button asChild size="sm" variant="outline">
                         <Link to="/app/budgets/$id" params={{ id: p.budgetId }}>Budget</Link>

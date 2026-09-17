@@ -353,7 +353,8 @@
     "contreExpertiseDesc": "Analyze submitted business plans against the reference norms. Available in V2.",
     "empty": "No project yet.",
     "emptyDesc": "Create your first project to get a profile recommendation and a costed budget.",
-    "refPublished": "Published version"
+    "refPublished": "Published version",
+    "details": "Details"
   },
   "referentiel": {
     "title": "Reference console", "subtitle": "For platform admins and expert committee only.",
@@ -484,5 +485,18 @@
       "inviteTeam": "Invite your team",
       "discoverReferentiel": "Discover the reference data"
     }
+  },
+  "projectDetail": {
+    "context": "Project context",
+    "mode": "Mode",
+    "statusDraft": "Draft",
+    "statusGenere": "Generated",
+    "chosenProfile": "Chosen profile",
+    "noProfileYet": "No profile has been generated for this project yet.",
+    "noProfileYetDesc": "Resume the project to see recommendations and generate a budget & business plan.",
+    "resume": "Resume project",
+    "viewBudget": "View budget",
+    "viewBp": "View business plan",
+    "notFound": "Project not found."
   }
 }
