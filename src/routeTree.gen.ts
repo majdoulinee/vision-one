@@ -48,6 +48,8 @@ import { Route as AuthenticatedAppAdminOrganizationsRouteImport } from './routes
 import { Route as AuthenticatedAppAdminCreditsRouteImport } from './routes/_authenticated/app.admin.credits'
 import { Route as AuthenticatedAppAdminConsultantsRouteImport } from './routes/_authenticated/app.admin.consultants'
 import { Route as AuthenticatedAppAdminAuditRouteImport } from './routes/_authenticated/app.admin.audit'
+import { Route as AuthenticatedAppAdminUsersIndexRouteImport } from './routes/_authenticated/app.admin.users.index'
+import { Route as AuthenticatedAppProjectsIdDetailsRouteImport } from './routes/_authenticated/app.projects.$id.details'
 import { Route as AuthenticatedAppCreditsRequestsIdRouteImport } from './routes/_authenticated/app.credits.requests.$id'
 import { Route as AuthenticatedAppAdminUsersIdRouteImport } from './routes/_authenticated/app.admin.users.$id'
 import { Route as AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRouteImport } from './routes/_authenticated/app.projects.$id.prefaisabilite.$profilCode'
@@ -271,6 +273,18 @@ const AuthenticatedAppAdminAuditRoute =
     path: '/app/admin/audit',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAppAdminUsersIndexRoute =
+  AuthenticatedAppAdminUsersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAppAdminUsersRoute,
+  } as any)
+const AuthenticatedAppProjectsIdDetailsRoute =
+  AuthenticatedAppProjectsIdDetailsRouteImport.update({
+    id: '/app/projects/$id/details',
+    path: '/app/projects/$id/details',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAppCreditsRequestsIdRoute =
   AuthenticatedAppCreditsRequestsIdRouteImport.update({
     id: '/requests/$id',
@@ -331,6 +345,8 @@ export interface FileRoutesByFullPath {
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/admin/users/$id': typeof AuthenticatedAppAdminUsersIdRoute
   '/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
+  '/app/projects/$id/details': typeof AuthenticatedAppProjectsIdDetailsRoute
+  '/app/admin/users/': typeof AuthenticatedAppAdminUsersIndexRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRoutesByTo {
@@ -362,7 +378,6 @@ export interface FileRoutesByTo {
   '/app/admin/organizations': typeof AuthenticatedAppAdminOrganizationsRoute
   '/app/admin/plans': typeof AuthenticatedAppAdminPlansRoute
   '/app/admin/referentiel': typeof AuthenticatedAppAdminReferentielRoute
-  '/app/admin/users': typeof AuthenticatedAppAdminUsersRouteWithChildren
   '/app/budgets/$id': typeof AuthenticatedAppBudgetsIdRoute
   '/app/business-plans/$id': typeof AuthenticatedAppBusinessPlansIdRoute
   '/app/comite/bee-one': typeof AuthenticatedAppComiteBeeOneRoute
@@ -374,6 +389,8 @@ export interface FileRoutesByTo {
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/app/admin/users/$id': typeof AuthenticatedAppAdminUsersIdRoute
   '/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
+  '/app/projects/$id/details': typeof AuthenticatedAppProjectsIdDetailsRoute
+  '/app/admin/users': typeof AuthenticatedAppAdminUsersIndexRoute
   '/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRoutesById {
@@ -419,6 +436,8 @@ export interface FileRoutesById {
   '/api/public/verify/$docId': typeof ApiPublicVerifyDocIdRoute
   '/_authenticated/app/admin/users/$id': typeof AuthenticatedAppAdminUsersIdRoute
   '/_authenticated/app/credits/requests/$id': typeof AuthenticatedAppCreditsRequestsIdRoute
+  '/_authenticated/app/projects/$id/details': typeof AuthenticatedAppProjectsIdDetailsRoute
+  '/_authenticated/app/admin/users/': typeof AuthenticatedAppAdminUsersIndexRoute
   '/_authenticated/app/projects/$id/prefaisabilite/$profilCode': typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 export interface FileRouteTypes {
@@ -464,6 +483,8 @@ export interface FileRouteTypes {
     | '/api/public/verify/$docId'
     | '/app/admin/users/$id'
     | '/app/credits/requests/$id'
+    | '/app/projects/$id/details'
+    | '/app/admin/users/'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -495,7 +516,6 @@ export interface FileRouteTypes {
     | '/app/admin/organizations'
     | '/app/admin/plans'
     | '/app/admin/referentiel'
-    | '/app/admin/users'
     | '/app/budgets/$id'
     | '/app/business-plans/$id'
     | '/app/comite/bee-one'
@@ -507,6 +527,8 @@ export interface FileRouteTypes {
     | '/api/public/verify/$docId'
     | '/app/admin/users/$id'
     | '/app/credits/requests/$id'
+    | '/app/projects/$id/details'
+    | '/app/admin/users'
     | '/app/projects/$id/prefaisabilite/$profilCode'
   id:
     | '__root__'
@@ -551,6 +573,8 @@ export interface FileRouteTypes {
     | '/api/public/verify/$docId'
     | '/_authenticated/app/admin/users/$id'
     | '/_authenticated/app/credits/requests/$id'
+    | '/_authenticated/app/projects/$id/details'
+    | '/_authenticated/app/admin/users/'
     | '/_authenticated/app/projects/$id/prefaisabilite/$profilCode'
   fileRoutesById: FileRoutesById
 }
@@ -845,6 +869,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppAdminAuditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/admin/users/': {
+      id: '/_authenticated/app/admin/users/'
+      path: '/'
+      fullPath: '/app/admin/users/'
+      preLoaderRoute: typeof AuthenticatedAppAdminUsersIndexRouteImport
+      parentRoute: typeof AuthenticatedAppAdminUsersRoute
+    }
+    '/_authenticated/app/projects/$id/details': {
+      id: '/_authenticated/app/projects/$id/details'
+      path: '/app/projects/$id/details'
+      fullPath: '/app/projects/$id/details'
+      preLoaderRoute: typeof AuthenticatedAppProjectsIdDetailsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/app/credits/requests/$id': {
       id: '/_authenticated/app/credits/requests/$id'
       path: '/requests/$id'
@@ -888,11 +926,13 @@ const AuthenticatedAppCreditsRouteWithChildren =
 
 interface AuthenticatedAppAdminUsersRouteChildren {
   AuthenticatedAppAdminUsersIdRoute: typeof AuthenticatedAppAdminUsersIdRoute
+  AuthenticatedAppAdminUsersIndexRoute: typeof AuthenticatedAppAdminUsersIndexRoute
 }
 
 const AuthenticatedAppAdminUsersRouteChildren: AuthenticatedAppAdminUsersRouteChildren =
   {
     AuthenticatedAppAdminUsersIdRoute: AuthenticatedAppAdminUsersIdRoute,
+    AuthenticatedAppAdminUsersIndexRoute: AuthenticatedAppAdminUsersIndexRoute,
   }
 
 const AuthenticatedAppAdminUsersRouteWithChildren =
@@ -926,6 +966,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppComitePublishRoute: typeof AuthenticatedAppComitePublishRoute
   AuthenticatedAppComiteVersionsRoute: typeof AuthenticatedAppComiteVersionsRoute
   AuthenticatedAppProjectsNewRoute: typeof AuthenticatedAppProjectsNewRoute
+  AuthenticatedAppProjectsIdDetailsRoute: typeof AuthenticatedAppProjectsIdDetailsRoute
   AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute: typeof AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute
 }
 
@@ -959,6 +1000,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppComitePublishRoute: AuthenticatedAppComitePublishRoute,
   AuthenticatedAppComiteVersionsRoute: AuthenticatedAppComiteVersionsRoute,
   AuthenticatedAppProjectsNewRoute: AuthenticatedAppProjectsNewRoute,
+  AuthenticatedAppProjectsIdDetailsRoute:
+    AuthenticatedAppProjectsIdDetailsRoute,
   AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute:
     AuthenticatedAppProjectsIdPrefaisabiliteProfilCodeRoute,
 }

@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { AdminShell } from "@/components/agriplan/AdminShell";
 import { BackButton } from "@/components/agriplan/BackButton";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,7 @@ import { Download } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/admin/users/$id")({
   ssr: false,
-  component: () => <AdminShell><UserDetail /></AdminShell>,
+  component: UserDetail,
 });
 
 type NewRole = "user" | "comite" | "admin";
