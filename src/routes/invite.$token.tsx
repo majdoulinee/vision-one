@@ -14,10 +14,19 @@ type Inv = {
   id: string;
   org_id: string;
   email: string;
-  role: "admin" | "editor" | "viewer";
+  role: "owner" | "admin" | "editor" | "viewer" | "member";
   expires_at: string;
   accepted_at: string | null;
-  org: { name: string; org_type: string } | null;
+  org_name: string;
+  org_type: string;
+};
+
+const ACCEPT_ERROR_MESSAGES: Record<string, string> = {
+  not_authenticated: "Vous devez être connecté·e pour accepter cette invitation.",
+  invitation_not_found: "Invitation introuvable",
+  invitation_already_accepted: "Invitation déjà acceptée",
+  invitation_expired: "Invitation expirée",
+  email_mismatch: "Cette invitation ne correspond pas à votre adresse email.",
 };
 
 function InvitePage() {
@@ -33,11 +42,10 @@ function InvitePage() {
 
   useEffect(() => {
     (async () => {
-      const { data: invData, error } = await supabase
-        .from("invitations")
-        .select("id,org_id,email,role,expires_at,accepted_at,org:organizations!inner(name,org_type)")
-        .eq("token", token)
-        .maybeSingle();
+      const { data: rows, error } = await supabase.rpc("get_invitation_by_token", {
+        p_token: token,
+      });
+      const invData = rows?.[0];
       if (error || !invData)
         return setState({ kind: "invalid", reason: "Invitation introuvable" });
       const inv = invData as unknown as Inv;
@@ -57,23 +65,18 @@ function InvitePage() {
     if (state.kind !== "ready") return;
     setBusy(true);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-      const { error: mErr } = await supabase
-        .from("org_members")
-        .insert({ org_id: state.inv.org_id, user_id: user.id, role: state.inv.role });
-      if (mErr) throw mErr;
-      const { error: uErr } = await supabase
-        .from("invitations")
-        .update({ accepted_at: new Date().toISOString() })
-        .eq("id", state.inv.id);
-      if (uErr) throw uErr;
+      const { data: rows, error } = await supabase.rpc("accept_invitation", {
+        p_token: token,
+      });
+      if (error) {
+        const msg = ACCEPT_ERROR_MESSAGES[error.message] ?? error.message;
+        throw new Error(msg);
+      }
+      const result = rows?.[0];
       window.localStorage.setItem("visionone.currentOrgId", state.inv.org_id);
       // Legacy key kept in sync for existing sessions.
       window.localStorage.setItem("agriplan.currentOrgId", state.inv.org_id);
-      toast.success("Bienvenue dans " + (state.inv.org?.name ?? ""));
+      toast.success("Bienvenue dans " + (result?.org_name ?? state.inv.org_name ?? ""));
       navigate({ to: "/dashboard" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
@@ -95,7 +98,7 @@ function InvitePage() {
           {state.kind === "need-auth" && (
             <>
               <p>
-                Vous êtes invité·e à rejoindre <b>{state.inv.org?.name}</b> en tant que{" "}
+                Vous êtes invité·e à rejoindre <b>{state.inv.org_name}</b> en tant que{" "}
                 <b>{state.inv.role}</b>. Connectez-vous avec <b>{state.inv.email}</b> pour continuer.
               </p>
               <Button
@@ -114,7 +117,7 @@ function InvitePage() {
           {state.kind === "ready" && (
             <>
               <p>
-                Rejoindre <b>{state.inv.org?.name}</b> en tant que <b>{state.inv.role}</b> ?
+                Rejoindre <b>{state.inv.org_name}</b> en tant que <b>{state.inv.role}</b> ?
               </p>
               <Button onClick={accept} disabled={busy} className="w-full">
                 Accepter l'invitation

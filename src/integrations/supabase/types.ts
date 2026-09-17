@@ -623,6 +623,99 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_sessions: {
+        Row: {
+          checkout_url: string | null
+          created_at: string
+          credits: number
+          demandeur_id: string
+          id: string
+          ledger_id: string | null
+          montant_mad: number
+          org_id: string
+          pack: string
+          provider: string
+          provider_session_id: string | null
+          raw_create: Json | null
+          raw_webhook: Json | null
+          statut: string
+          updated_at: string
+        }
+        Insert: {
+          checkout_url?: string | null
+          created_at?: string
+          credits: number
+          demandeur_id: string
+          id?: string
+          ledger_id?: string | null
+          montant_mad: number
+          org_id: string
+          pack: string
+          provider?: string
+          provider_session_id?: string | null
+          raw_create?: Json | null
+          raw_webhook?: Json | null
+          statut?: string
+          updated_at?: string
+        }
+        Update: {
+          checkout_url?: string | null
+          created_at?: string
+          credits?: number
+          demandeur_id?: string
+          id?: string
+          ledger_id?: string | null
+          montant_mad?: number
+          org_id?: string
+          pack?: string
+          provider?: string
+          provider_session_id?: string | null
+          raw_create?: Json | null
+          raw_webhook?: Json | null
+          statut?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_sessions_ledger_id_fkey"
+            columns: ["ledger_id"]
+            isOneToOne: false
+            referencedRelation: "credit_ledger"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_sessions_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_webhook_events: {
+        Row: {
+          event_id: string
+          event_type: string
+          payload: Json | null
+          provider: string
+          received_at: string
+        }
+        Insert: {
+          event_id: string
+          event_type: string
+          payload?: Json | null
+          provider?: string
+          received_at?: string
+        }
+        Update: {
+          event_id?: string
+          event_type?: string
+          payload?: Json | null
+          provider?: string
+          received_at?: string
+        }
+        Relationships: []
+      }
       plans: {
         Row: {
           actif: boolean
@@ -1086,6 +1179,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_invitation: {
+        Args: { p_token: string }
+        Returns: {
+          org_id: string
+          org_name: string
+        }[]
+      }
       admin_approve_proposition: { Args: { p_id: string }; Returns: undefined }
       admin_assign_plan: {
         Args: {
@@ -1130,6 +1230,22 @@ export type Database = {
         Args: { p_decision: string; p_id: string; p_motif: string }
         Returns: undefined
       }
+      charipay_mark_failed: {
+        Args: {
+          p_provider_session_id: string
+          p_raw: Json
+          p_session_id: string
+        }
+        Returns: undefined
+      }
+      charipay_mark_paid: {
+        Args: {
+          p_provider_session_id: string
+          p_raw: Json
+          p_session_id: string
+        }
+        Returns: string
+      }
       client_request_consultant_revocation: {
         Args: { p_link_id: string; p_motif: string }
         Returns: undefined
@@ -1150,6 +1266,19 @@ export type Database = {
       decide_credit_request: {
         Args: { p_decision: string; p_motif?: string; p_request_id: string }
         Returns: string
+      }
+      get_invitation_by_token: {
+        Args: { p_token: string }
+        Returns: {
+          accepted_at: string
+          email: string
+          expires_at: string
+          id: string
+          org_id: string
+          org_name: string
+          org_type: string
+          role: Database["public"]["Enums"]["org_role"]
+        }[]
       }
       get_published_ref_version: { Args: never; Returns: string }
       grant_credits: {
