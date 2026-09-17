@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { LanguageSwitcher } from "@/components/agriplan/LanguageSwitcher";
 import { BrandLogo } from "@/components/agriplan/BrandLogo";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
 import { formatError } from "@/lib/format-error";
 
 const searchSchema = z.object({
@@ -54,6 +54,13 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
+  // Rempli quand un email de confirmation a été envoyé (inscription, ou
+  // tentative de connexion sur un compte pas encore confirmé) : bascule
+  // l'écran vers un état dédié plutôt que de laisser le formulaire affiché
+  // avec un simple toast, qui prêtait à confusion (l'utilisateur pouvait
+  // re-soumettre en pensant que rien ne s'était passé).
+  const [pendingConfirmation, setPendingConfirmation] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
   const next = safeNext(search.next);
   const postAuthNavigate = () => {
     if (next) {
@@ -77,13 +84,31 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        toast.success(t("auth.checkEmail"));
-        // With auto-confirm enabled, session is set immediately.
+        // Si la confirmation d'email est activée côté Supabase (Authentication
+        // > Providers > Email > "Confirm email"), signUp() ne renvoie PAS de
+        // session tant que le lien reçu par email n'a pas été cliqué : on
+        // bascule alors vers l'écran "vérifiez votre boîte mail" plutôt que
+        // de rester sur le formulaire. Si la confirmation est désactivée
+        // (comportement précédent), une session est retournée immédiatement
+        // et on enchaîne normalement.
         const { data } = await supabase.auth.getSession();
-        if (data.session) postAuthNavigate();
+        if (data.session) {
+          postAuthNavigate();
+        } else {
+          setPendingConfirmation(email);
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          // Message Supabase brut ("Email not confirmed") détecté pour
+          // proposer directement le renvoi de l'email plutôt qu'une erreur
+          // générique peu actionnable.
+          if (/email not confirmed/i.test(formatError(error))) {
+            setPendingConfirmation(email);
+            return;
+          }
+          throw error;
+        }
         postAuthNavigate();
       }
     } catch (err) {
@@ -109,6 +134,26 @@ function AuthPage() {
     // Supabase performs a full-page redirect to Google from here; no further action needed.
   }
 
+  async function handleResend() {
+    if (!pendingConfirmation) return;
+    setResending(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: pendingConfirmation,
+        options: {
+          emailRedirectTo: window.location.origin + (next ?? "/dashboard"),
+        },
+      });
+      if (error) throw error;
+      toast.success(t("auth.resendSuccess"));
+    } catch (err) {
+      toast.error(formatError(err));
+    } finally {
+      setResending(false);
+    }
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="absolute left-4 top-4">
@@ -124,6 +169,38 @@ function AuthPage() {
         <LanguageSwitcher />
       </div>
       <Card className="w-full max-w-md">
+        {pendingConfirmation ? (
+          <>
+            <CardHeader className="text-center">
+              <Link to="/" className="mx-auto flex items-center gap-2">
+                <BrandLogo size="sm" />
+              </Link>
+              <Mail className="mx-auto h-8 w-8 text-primary" />
+              <CardTitle>{t("auth.confirmEmailTitle")}</CardTitle>
+              <CardDescription>
+                {t("auth.confirmEmailDesc", { email: pendingConfirmation })}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleResend}
+                disabled={resending}
+              >
+                {t("auth.resendEmail")}
+              </Button>
+              <button
+                type="button"
+                onClick={() => setPendingConfirmation(null)}
+                className="w-full text-center text-sm font-medium text-primary hover:underline"
+              >
+                {t("auth.backToSignIn")}
+              </button>
+            </CardContent>
+          </>
+        ) : (
+        <>
         <CardHeader className="text-center">
           <Link to="/" className="mx-auto flex items-center gap-2">
             <BrandLogo size="sm" />
@@ -199,6 +276,8 @@ function AuthPage() {
             </button>
           </div>
         </CardContent>
+        </>
+        )}
       </Card>
     </div>
   );
