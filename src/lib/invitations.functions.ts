@@ -88,7 +88,7 @@ export const sendInvitationEmail = createServerFn({ method: "POST" })
       supabase.from("profiles").select("full_name,email").eq("id", userId).maybeSingle(),
     ]);
 
-    const origin = process.env.SITE_URL || "https://vision-one.lovable.app";
+    const origin = process.env.SITE_URL || "https://vision-one-khaki.vercel.app";
     const link = `${origin.replace(/\/$/, "")}/invite/${inv.token}`;
 
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
