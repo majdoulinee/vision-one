@@ -19,7 +19,16 @@ import { fmtHa, fmtMAD } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/app/projects/$id/prefaisabilite/$profilCode")({
   ssr: false,
   component: Prefaisabilite,
-  validateSearch: (s: Record<string, unknown>) => ({ generate: s.generate ? 1 : 0 }),
+  // Bug corrigé : cette fonction ne renvoyait que { generate }, ce qui
+  // supprimait silencieusement ?onboarding=1 de l'URL validée. Or le garde
+  // générique de _authenticated/route.tsx s'appuie justement sur ce marqueur
+  // pour laisser passer la navigation depuis l'écran Résultats du tunnel
+  // d'onboarding sans renvoyer l'utilisateur en arrière. En le supprimant ici,
+  // le marqueur n'atteignait jamais ce garde et la boucle revenait.
+  validateSearch: (s: Record<string, unknown>) => ({
+    generate: s.generate ? 1 : 0,
+    onboarding: s.onboarding ? 1 : 0,
+  }),
 });
 
 function Prefaisabilite() {
