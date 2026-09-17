@@ -11,8 +11,21 @@ export const Route = createFileRoute("/_authenticated")({
 
     // Les écrans d'onboarding se protègent eux-mêmes (guardOnboardingStep) ;
     // ici on ne fait qu'aiguiller vers le tunnel depuis le reste de l'app
-    // (dashboard, etc.) tant qu'il n'est pas terminé.
-    if (!location.pathname.startsWith("/onboarding")) {
+    // (dashboard, etc.) tant qu'il n'est pas terminé. On laisse aussi passer
+    // les pages hors-tunnel visitées DEPUIS le tunnel, marquées ?onboarding=1
+    // (ex: la pré-faisabilité générée depuis l'écran Résultats en cliquant
+    // "Pré-faisabilité" / "Générer avec mon premier crédit offert").
+    // Bug corrigé : sans cette exception, ce garde renvoyait l'utilisateur
+    // vers /onboarding/resultat SANS le contexte (mode/zoneCode/projectId)
+    // qu'exige cet écran, qui le renvoyait à son tour vers
+    // /onboarding/contexte — l'utilisateur se retrouvait bouclé en arrière
+    // dès qu'il choisissait une recommandation, avec l'impression que son
+    // projet (pourtant bien créé en base) avait disparu.
+    const isOnboardingLinked =
+      location.pathname.startsWith("/onboarding") ||
+      (location.search as Record<string, unknown> | undefined)?.onboarding === 1;
+
+    if (!isOnboardingLinked) {
       const target = await resolveOnboardingRedirect(data.user.id);
       if (target) {
         // Un admin plateforme (profiles.platform_role = "admin") accède à
