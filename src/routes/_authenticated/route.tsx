@@ -11,27 +11,15 @@ export const Route = createFileRoute("/_authenticated")({
 
     // Les écrans d'onboarding se protègent eux-mêmes (guardOnboardingStep) ;
     // ici on ne fait qu'aiguiller vers le tunnel depuis le reste de l'app
-    // (dashboard, etc.) tant qu'il n'est pas terminé. On laisse aussi passer
-    // la page de pré-faisabilité (/app/projects/$id/prefaisabilite/...),
-    // visitée DEPUIS l'écran Résultats du tunnel en cliquant "Pré-faisabilité"
-    // / "Générer avec mon premier crédit offert".
-    // Bug corrigé (2 tentatives) : on avait d'abord essayé de détecter ce cas
-    // via ?onboarding=1 dans l'URL (search), mais ce garde s'exécute AVANT
-    // que la route de destination ne valide ses propres search params
-    // (validateSearch) — donc `location.search` ne contient jamais encore
-    // cette clé à ce stade, quoi qu'on fasse côté validateSearch de la page
-    // cible. On teste donc le chemin (pathname), connu et stable dès le
-    // départ, plutôt qu'un search param dont la disponibilité dépend de
-    // l'ordre d'exécution du router. Sans cette exception, ce garde
-    // renvoyait l'utilisateur vers /onboarding/resultat SANS le contexte
-    // (mode/zoneCode/projectId) qu'exige cet écran, qui le renvoyait à son
-    // tour vers /onboarding/contexte — boucle en arrière à chaque choix
-    // d'une recommandation, avec l'impression que le projet avait disparu.
-    const isOnboardingLinked =
-      location.pathname.startsWith("/onboarding") ||
-      location.pathname.includes("/prefaisabilite/");
-
-    if (!isOnboardingLinked) {
+    // (dashboard, etc.) tant qu'il n'est pas terminé. Le vrai correctif pour
+    // la navigation depuis l'écran Résultats ("Pré-faisabilité", "Générer",
+    // "Demander des crédits"...) est dans resolveOnboardingRedirect
+    // (src/lib/onboarding.ts) : dès qu'un projet existe, cette fonction
+    // renvoie null quelle que soit la page visitée, donc plus besoin ici
+    // d'une exception au cas par cas par chemin ou par search param (les deux
+    // approches essayées précédemment cassaient dès qu'un nouveau lien de
+    // sortie du tunnel apparaissait, ex: "Demander des crédits").
+    if (!location.pathname.startsWith("/onboarding")) {
       const target = await resolveOnboardingRedirect(data.user.id);
       if (target) {
         // Un admin plateforme (profiles.platform_role = "admin") accède à

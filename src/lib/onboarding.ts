@@ -49,11 +49,26 @@ export async function resolveOnboardingRedirect(userId: string): Promise<string 
   const step = (data[0] as any).org?.onboarding_step as OnboardingStep | undefined;
   if (!step) return null;
 
-  // À partir de 'team_step', les écrans 5/6 sont accessibles via leurs propres
-  // CTA (§6 "Plus tard" / §7 "Passer cette étape") mais ne doivent plus forcer
-  // la redirection depuis le reste de l'app : c'est la checklist du dashboard
-  // (§8) qui prend le relais pour les actions optionnelles restantes.
-  if (step === "team_step" || step === "completed") return null;
+  // Bug corrigé : cette condition ne coupait la redirection forcée qu'à
+  // partir de 'team_step'. Or dès l'écran Résultats ('context_done'), les
+  // boutons "Pré-faisabilité" / "Générer" envoient volontairement
+  // l'utilisateur hors du tunnel (/app/projects/.../prefaisabilite/...,
+  // /app/credits pour "Demander des crédits" en cas de solde insuffisant,
+  // etc.) — une "porte de sortie" assumée du parcours linéaire. Comme rien
+  // ne fait jamais progresser onboarding_step au-delà de 'context_done'
+  // pour un utilisateur qui emprunte cette sortie (les étapes 'result_done'
+  // et 'project_created' ne sont en pratique jamais atteintes), ce garde le
+  // renvoyait ensuite en boucle vers /onboarding/resultat sans contexte, qui
+  // le renvoyait à son tour vers /onboarding/contexte, dès la moindre
+  // navigation ultérieure (ex: clic sur "Demander des crédits").
+  // Dès qu'un projet existe ('context_done' ou au-delà), l'utilisateur a de
+  // quoi utiliser l'app (org, wallet, premier projet) : on arrête de forcer
+  // la redirection généraliste, et c'est la checklist du dashboard (§8) qui
+  // prend le relais pour les étapes optionnelles restantes (équipe...).
+  // Seule l'étape 'org_created' (organisation créée mais aucun projet/
+  // contexte encore saisi) force encore la redirection vers
+  // /onboarding/contexte.
+  if (step !== "org_created") return null;
 
   return ROUTE_FOR_STEP[step];
 }
