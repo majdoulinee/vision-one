@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { InverseWidget } from "@/components/landing/InverseWidget";
@@ -27,6 +27,13 @@ function usePublicRefVersion() {
 }
 
 export const Route = createFileRoute("/")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   component: Landing,
   head: () => ({
     meta: [
